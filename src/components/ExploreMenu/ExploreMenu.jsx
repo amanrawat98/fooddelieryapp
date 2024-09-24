@@ -1,38 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./ExploreMenu.css";
 import { menu_list } from "../../assets/assets";
+import { useNavigate } from "react-router-dom";
+import HeaderCarosel from "../carosel/HeaderCarosel";
 
-const ExploreMenu = ({ category, setCategory }) => {
+const ExploreMenu = ({ category, setCategory, menuItems }) => {
   return (
     <div className="explore-menu" id="explore-menu">
-      <h1>Explore Our Menu</h1>
-      <p className="explore-menu-text">
-        Choose from a diverse menu featuring a delectable array of dishes. Our
-        mission is to satisfy your cravings and elevate your dining experience,
-        one delicious meal at a time.
-      </p>
-      <div className="explore-menu-list">
-        {menu_list.map((item, index) => {
-          return (
-            <div
-              key={index}
-              className="explore-menu-list-item"
-              onClick={() =>
-                setCategory((prev) =>
-                  prev === item.menu_name ? "All" : item.menu_name
-                )
-              }
-            >
-              <img
-                src={item.menu_image}
-                className={category === item.menu_name ? "active" : ""}
-                alt="menu_image"
-              />
-              <p>{item.menu_name}</p>
-            </div>
-          );
-        })}
-      </div>
+      {menuItems && menuItems?.length > 0 && (
+        <>
+          <h1>Explore Our Menu</h1>
+          <p className="explore-menu-text">
+            Choose from a diverse menu featuring a delectable array of dishes.
+            Our mission is to satisfy your cravings and elevate your dining
+            experience, one delicious meal at a time.
+          </p>
+          <HeaderCarosel
+            menuItems={menuItems}
+            category={category}
+            setCategory={setCategory}
+          />
+        </>
+      )}{" "}
       <hr />
     </div>
   );

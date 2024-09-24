@@ -25,12 +25,9 @@
   overflow-x: scroll;
 }
 
-.explore-menu-list::-webkit-scrollbar {
-  display: none;
-}
+
 
 .explore-menu-list-item img {
-  width: 7.5vw;
   min-width: 80px;
   cursor: pointer;
   border-radius: 50%;

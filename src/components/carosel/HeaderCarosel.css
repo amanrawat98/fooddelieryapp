@@ -1,0 +1,11 @@
+
+
+.header-carosel {
+  padding: 0px;
+  width: 20rem;
+  height: fit-content;
+}
+
+.react-multi-carousel-track {
+height: fit-content;
+}

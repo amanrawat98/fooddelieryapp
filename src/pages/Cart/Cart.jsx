@@ -1,65 +1,130 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import "./Cart.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { useQuery } from "react-query";
+import { setUserData } from "../../feature/userSlice";
+import { fetchresturantdata } from "../../utility/FetchResturantData";
+import { setCartCount, setCartItems } from "../../feature/CartSlice";
+import {
+  setOutletData,
+  setResturantData,
+} from "../../feature/resturantDataSlice";
 
 export const deliveryFee = 2;
 
 const Cart = () => {
-  const {
-    cartItems,
-    food_list,
-    removeFromCart,
-    getTotalCartAmount,
-    getTotalQuantity,
-  } = useContext(StoreContext);
-  const totalQuantity = getTotalQuantity();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const cartData = useSelector((state) => state?.resturant?.resturantdata);
+  const cartitems = useSelector((state) => state?.cart?.cartItems);
+
+  console.log(cartitems);
+
+  const { customerCart } = cartData || {};
+
+  let cartId;
+
+  if (customerCart && customerCart.cartId) {
+    cartId = customerCart.cartId || {};
+  }
+
+  const { cartItems } = cartitems || {};
+
+  if (cartitems && cartitems?.cartId) {
+    cartId = cartitems?.cartId;
+  }
+
+  console.log(cartItems);
+
+  /*   const { resturantdata, isLoading, isError, refetch } = fetchresturantdata();
+  const { customerCart: cartData } = resturantdata || {};
+
+  // Use useEffect to dispatch actions after rendering
+  useEffect(() => {
+    if (cartData) {
+      dispatch(setCartCount(cartData?.cartCount));
+      dispatch(setCartItems(cartData?.cartItems));
+    }
+  }, [cartData, dispatch]); */
+
+  const handleDeleteCartItem = async (itemid, cartid) => {
+    const payload = {
+      cartId: cartid,
+      cartItemId: itemid,
+    };
+  
+    try {
+      // Delete the cart item
+      const deleteresponse = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/cart`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: payload,
+        }
+      );
+  
+      console.log(deleteresponse);
+  
+      // After successful deletion, filter out the deleted item locally
+      const updatedCartItems = cartItems.filter(
+        (item) => item.cartItemId !== itemid
+      );
+  
+      // Update the Redux store with the updated cart items
+      dispatch(setCartItems({ cartItems: updatedCartItems, cartId }));
+  
+      console.log("Updated cart items:", updatedCartItems);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
 
   return (
     <div className="cart">
-      <div className="cart-items">
-        <div className="cart-items-title cart-heading">
-          <p>Items</p>
-          <p>Title</p>
-          <p>Price</p>
-          <p>Quantity</p>
-          <p>Total</p>
-          <p>Remove</p>
+      <div className="cart-items space-y-3">
+        <div className="cart-items-title cart-heading grid grid-cols-6">
+          <p className=" col-span-2 text-lg font-semibold">Title</p>
+          <p className=" col-span-1 text-lg font-semibold">Price</p>
+          <p className=" col-span-1 text-lg font-semibold">Quantity</p>
+          <p className=" col-span-1 text-lg font-semibold">Total</p>
+          <p className=" col-span-1 text-lg font-semibold">Remove</p>
         </div>
-        <br />
-        <hr />
-        {totalQuantity === 0 ? (
+
+        {cartitems?.length === 0 ? (
           <p className="NoItems">No Items in cart</p>
         ) : (
-          food_list.map((item, index) => {
-            if (cartItems[item._id] > 0) {
-              return (
-                <React.Fragment key={item._id}>
-                  <div
-                    className="cart-items-title cart-items-item"
-                    key={item._id}
-                  >
-                    <img src={item.image} alt="food img" />
-                    <p>{item.name}</p>
-                    <p>${item.price}</p>
-                    <p>{cartItems[item._id]}</p>
-                    <p>${item.price * cartItems[item._id]}</p>
-                    <p
-                      className="Remove"
-                      onClick={() => removeFromCart(item._id)}
-                    >
-                      <img
-                        src={assets.remove_icon_cross}
-                        alt="remove_icon_cross"
-                      />
-                    </p>
-                  </div>
-                  <hr key={`hr-${item._id}-${index}`} />
-                </React.Fragment>
-              );
-            }
+          cartItems?.map((item, index) => {
+            return (
+              <div
+                className="cart-items-title cart-heading grid grid-cols-6"
+                key={item?.cartItemId}
+              >
+                <p className="col-span-2">{item?.cartMenuItemName}</p>
+                <p className="col-span-1">${item?.cartMenuItemPrice}</p>
+                <p className="col-span-1">{item?.quantity}</p>
+                <p className="col-span-1">
+                  $
+                  {(
+                    parseFloat(item?.cartMenuItemPrice) * item?.quantity
+                  ).toFixed(2)}
+                </p>
+                <img
+                  src={assets.remove_icon_cross}
+                  alt="remove_icon_cross"
+                  className="size-8 cursor-pointer col-span-1"
+                  onClick={() => {
+                    handleDeleteCartItem(item?.cartItemId, cartId);
+                  }}
+                />
+              </div>
+            );
           })
         )}
       </div>
@@ -69,30 +134,19 @@ const Cart = () => {
           <div>
             <div className="cart-total-details">
               <p>Subtotal</p>
-              <p>${getTotalCartAmount()}</p>
+              <p>${customerCart?.cartSubTotal}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <p>Delivery Free</p>
-              <p>${getTotalCartAmount() === 0 ? 0 : deliveryFee}</p>
+              <p>${customerCart?.cartTax}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <b>Total</b>
-              <b>
-                $
-                {getTotalCartAmount() === 0
-                  ? 0
-                  : getTotalCartAmount() + deliveryFee}
-              </b>
+              <p>${customerCart?.cartTotal}</p>
             </div>
           </div>
-          <button
-            disabled={getTotalCartAmount() === 0}
-            onClick={() => navigate("/order")}
-          >
-            PROCEED TO CHECKOUT
-          </button>
         </div>
         <div className="cart-promocode">
           <div>

@@ -1,22 +1,63 @@
 import React from "react";
 import "./Header.css";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
 
-const Header = () => {
+const Header = ({ data }) => {
+  const responsive = {
+    superLargeDesktop: {
+      breakpoint: { max: 4000, min: 3000 },
+      items: 1,
+    },
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
+      items: 1,
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 464 },
+      items: 1,
+    },
+    mobile: {
+      breakpoint: { max: 464, min: 0 },
+      items: 1,
+    },
+  };
+
   return (
-    <header>
-      <div className="header-contents">
-        <h2>Order Your Favourite Food Here</h2>
-        <p>
-          Choose from a diverse menu featuring a delectable array of dishes
-          crafted with the finest ingredients and culinary expertise. Our
-          mission is to satisfy your cravings and elevate your dining
-          experience, one delicious meal at a time.
-        </p>
-        <a href="#explore-menu">
-          <button>View Menu</button>
-        </a>
-      </div>
-    </header>
+    <>
+      {data?.bannerImages && data.bannerImages.length > 0 ? (
+        <Carousel
+          responsive={responsive}
+          autoPlaySpeed={2000}
+          transitionDuration={500}
+          showDots={true}
+          autoPlay={true}
+          arrows={false}
+          renderDotsOutside={true}
+          dotListClass="relative"
+          infinite={true}
+        >
+          {data.bannerImages.map((item, index) => {
+            return (
+              <div key={index}>
+                <div
+                  className="rounded-xl"
+                  style={{
+                    backgroundImage: `url(${item?.bannerImageUrl})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    height: "400px",
+                    width: "100%",
+                  }}
+                ></div>
+              </div>
+            );
+          })}
+        </Carousel>
+      ) : (
+        <p>No banner images available</p>
+      )}
+    </>
   );
 };
 

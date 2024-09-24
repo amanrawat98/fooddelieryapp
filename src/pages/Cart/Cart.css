@@ -16,7 +16,6 @@
 }
 
 .cart-items-item img {
-  width: 80%;
   border-radius: 8px;
 }
 
@@ -29,7 +28,6 @@
 .cart-items-item .Remove {
   cursor: pointer;
   margin: auto;
-  width: 50%;
 }
 
 .NoItems {

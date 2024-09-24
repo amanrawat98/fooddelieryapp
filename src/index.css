@@ -28,6 +28,19 @@ a {
   color: inherit;
 }
 
+.carousel-item-padding {
+  padding:17px;
+}
+
+.shadow-all-sides {
+  box-shadow: 
+    0px 8px 8px rgba(255, 128, 8, 0.5),  /* bottom shadow */
+    0px -8px 8px rgba(255, 128, 8, 0.5), /* top shadow */
+    8px 0px 8px rgba(255, 128, 39, 0.5),  /* right shadow */
+    -8px 0px 8px rgba(255, 128, 39, 0.5); /* left shadow */
+}
+
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -36,3 +49,7 @@ a {
     opacity: 1;
   }
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities; 
