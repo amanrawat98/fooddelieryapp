@@ -39,7 +39,7 @@ const Header = ({ data }) => {
         >
           {data.bannerImages.map((item, index) => {
             return (
-              <div key={index}>
+              <div key={index} className="rounded-xl object-cover">
                 <div
                   className="rounded-xl"
                   style={{
@@ -48,6 +48,8 @@ const Header = ({ data }) => {
                     backgroundPosition: "center",
                     height: "400px",
                     width: "100%",
+                    borderRadius:"10px"
+                    
                   }}
                 ></div>
               </div>

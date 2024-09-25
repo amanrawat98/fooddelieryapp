@@ -7,13 +7,25 @@ import {
 } from "../../feature/resturantDataSlice";
 import { setCartItems } from "../../feature/CartSlice";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login = ({ setIsLogin }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const resturantdata = useSelector((state) => state.resturant.resturantdata);
-  const { cartId } = cartItems;
-  const { restaurantId } = resturantdata?.result;
+  const navigate = useNavigate();
+
+  let cartId;
+  let outletId;
+  if (cartItems && cartItems.cartId) {
+    cartId = cartItems.cartId;
+  }
+
+  if (cartItems && cartItems.outletId) {
+    outletId = cartItems.outletId;
+  }
+
+  console.log(cartItems, cartId, outletId);
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -21,7 +33,7 @@ const Login = ({ setIsLogin }) => {
     loginMethod: "email",
     role: "customer",
     phone: "",
-    outletId: cartItems?.outletId || null,
+    outletId: outletId || null,
     temporaryCartId: cartId || null,
   });
 
@@ -49,6 +61,8 @@ const Login = ({ setIsLogin }) => {
     const { result, customerCart, restaurantData } = resturantdata || {};
     const { restaurantOutlets } = restaurantData || {};
 
+    console.log(customerCart);
+
     if (resturantdata && restaurantOutlets) {
       dispatch(setResturantData(resturantdata));
       dispatch(setOutletData(restaurantOutlets[0]));
@@ -60,6 +74,8 @@ const Login = ({ setIsLogin }) => {
 
     dispatch(setUserData(data?.result));
     localStorage.clear("sessionid");
+    setIsLogin(false);
+    navigate("/")
   };
 
   return (

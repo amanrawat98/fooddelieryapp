@@ -1,18 +1,10 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import "./Cart.css";
-import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { useQuery } from "react-query";
-import { setUserData } from "../../feature/userSlice";
-import { fetchresturantdata } from "../../utility/FetchResturantData";
-import { setCartCount, setCartItems } from "../../feature/CartSlice";
-import {
-  setOutletData,
-  setResturantData,
-} from "../../feature/resturantDataSlice";
+import { setCartItems } from "../../feature/CartSlice";
 
 export const deliveryFee = 2;
 
@@ -21,42 +13,32 @@ const Cart = () => {
   const dispatch = useDispatch();
   const cartData = useSelector((state) => state?.resturant?.resturantdata);
   const cartitems = useSelector((state) => state?.cart?.cartItems);
+  const userdata = useSelector((state) => state?.user?.userData);
 
-  console.log(cartitems);
+  console.log(userdata);
+
+  // Use customerId and outletId from the userdata and cartitems if available
+  const outletId = cartitems?.outletId || null;
+  const customerId = cartitems?.customerId || null;
 
   const { customerCart } = cartData || {};
 
-  let cartId;
+  // Assign cartId based on the customerCart or cartitems
 
-  if (customerCart && customerCart.cartId) {
-    cartId = customerCart.cartId || {};
-  }
+  const { cartItems, cartId } = cartitems || {};
 
-  const { cartItems } = cartitems || {};
-
-  if (cartitems && cartitems?.cartId) {
-    cartId = cartitems?.cartId;
-  }
-
-  console.log(cartItems);
-
-  /*   const { resturantdata, isLoading, isError, refetch } = fetchresturantdata();
-  const { customerCart: cartData } = resturantdata || {};
-
-  // Use useEffect to dispatch actions after rendering
-  useEffect(() => {
-    if (cartData) {
-      dispatch(setCartCount(cartData?.cartCount));
-      dispatch(setCartItems(cartData?.cartItems));
-    }
-  }, [cartData, dispatch]); */
+  console.log(cartItems, cartId);
 
   const handleDeleteCartItem = async (itemid, cartid) => {
-    const payload = {
+    let payload;
+
+    payload = {
       cartId: cartid,
       cartItemId: itemid,
     };
-  
+
+    console.log(payload);
+
     try {
       // Delete the cart item
       const deleteresponse = await axios.delete(
@@ -68,23 +50,50 @@ const Cart = () => {
           data: payload,
         }
       );
-  
-      console.log(deleteresponse);
-  
-      // After successful deletion, filter out the deleted item locally
-      const updatedCartItems = cartItems.filter(
-        (item) => item.cartItemId !== itemid
-      );
-  
-      // Update the Redux store with the updated cart items
-      dispatch(setCartItems({ cartItems: updatedCartItems, cartId }));
-  
-      console.log("Updated cart items:", updatedCartItems);
+
+      console.log("Delete response:", deleteresponse.data);
+
+      const getResturantData = async () => {
+        let response;
+        const sessionid = localStorage.getItem("sessionid");
+
+        console.log(sessionid);
+        if (customerId && outletId) {
+          console.log(customerId, outletId);
+          response = await axios.get(`${import.meta.env.VITE_BASE_URL}/cart/`, {
+            params: {
+              cartId,
+            },
+          });
+        } else {
+          response = await axios.get(
+            `${import.meta.env.VITE_BASE_URL}/restaurant-data/`,
+            {
+              params: {
+                sessionKey: sessionid,
+                restaurantId: 1,
+              },
+            }
+          );
+        }
+
+        return response.data;
+      };
+
+      const resturantdata = await getResturantData(); // Await the restaurant data fetching
+
+      console.log(resturantdata, "resturantdata");
+      const { customerCart } = resturantdata || {};
+
+      if (customerCart) {
+        dispatch(setCartItems(customerCart));
+      }
+
+      console.log("Updated cart items:", customerCart);
     } catch (error) {
-      console.log(error);
+      console.log(error?.response.data);
     }
   };
-  
 
   return (
     <div className="cart">
@@ -97,10 +106,10 @@ const Cart = () => {
           <p className=" col-span-1 text-lg font-semibold">Remove</p>
         </div>
 
-        {cartitems?.length === 0 ? (
+        {cartItems?.length === 0 ? (
           <p className="NoItems">No Items in cart</p>
         ) : (
-          cartItems?.map((item, index) => {
+          cartItems?.map((item) => {
             return (
               <div
                 className="cart-items-title cart-heading grid grid-cols-6"
@@ -134,17 +143,17 @@ const Cart = () => {
           <div>
             <div className="cart-total-details">
               <p>Subtotal</p>
-              <p>${customerCart?.cartSubTotal}</p>
+              <p>${cartitems?.cartSubTotal}</p>
             </div>
             <hr />
             <div className="cart-total-details">
-              <p>Delivery Free</p>
-              <p>${customerCart?.cartTax}</p>
+              <p>Delivery Fee</p>
+              <p>${cartitems?.cartTax}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <b>Total</b>
-              <p>${customerCart?.cartTotal}</p>
+              <p>${cartitems?.cartTotal}</p>
             </div>
           </div>
         </div>

@@ -12,6 +12,9 @@ import { v4 } from "uuid";
 import { useSelector } from "react-redux";
 import Login from "./components/LoginPopup/LoginPopup";
 import SignUp from "./components/SignUpPage/SignUpPage";
+import Profile from "./pages/Profile/Profile";
+import Orders from "./pages/Profile/Orders";
+import User from "./pages/Profile/User";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -32,12 +35,18 @@ const App = () => {
   return (
     <>
       {showLogin ? <LoginPopup setShowLogin={setShowLogin} /> : <></>}
-      <div className="app">
+      <div className="app px-2 md:px-10">
         <Navbar setShowLogin={setShowLogin} />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/order" element={<PlaceOrder />} />
+          <Route path="/profile" element={<Profile />}>
+            <Route path="/profile/orders" element={<Orders />} />
+            <Route index element={<User />} />
+
+          </Route>
+
           <Route
             path="/product/:menuid/:productid"
             element={<ProductDetail />}
