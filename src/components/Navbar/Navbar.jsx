@@ -85,44 +85,7 @@ const Navbar = () => {
         <Link to="/">
           <img src={assets?.logo} alt="logo" className="w-32" />
         </Link>
-        <ul className=" space-x-6 hidden md:flex ">
-          <Link
-            to="/"
-            onClick={() => setMenu("home")}
-            className={`hover:text-orange-600 ${
-              menu === "home" ? "text-orange-600" : "text-gray-800"
-            }`}
-          >
-            Home
-          </Link>
-          <a
-            href="#explore-menu"
-            onClick={() => setMenu("menu")}
-            className={`hover:text-orange-600 ${
-              menu === "menu" ? "text-orange-600" : "text-gray-800"
-            }`}
-          >
-            Menu
-          </a>
-          <a
-            href="#app-download"
-            onClick={() => setMenu("mobile-app")}
-            className={`hover:text-orange-600 ${
-              menu === "mobile-app" ? "text-orange-600" : "text-gray-800"
-            }`}
-          >
-            Mobile App
-          </a>
-          <a
-            href="#footer"
-            onClick={() => setMenu("contact-us")}
-            className={`hover:text-orange-600 ${
-              menu === "contact-us" ? "text-orange-600" : "text-gray-800"
-            }`}
-          >
-            Contact Us
-          </a>
-        </ul>
+    
         <div className="flex items-center space-x-6">
           <div className="relative">
             <Link to="/cart">

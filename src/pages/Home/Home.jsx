@@ -37,7 +37,7 @@ const Home = () => {
       {
         params: {
           sessionKey: sessionid,
-          restaurantId: 1,
+          restaurantId: 5,
         },
       }
     );
@@ -68,6 +68,10 @@ const Home = () => {
         if (customerCart) {
           dispatch(setCartItems(customerCart));
         }
+      }
+    } else {
+      if (restaurantOutlets && outletNumber && restaurantOutlets[outletNumber]) {
+        dispatch(setOutletData(restaurantOutlets[outletNumber]));
       }
     }
   }, [resturantdata, outletNumber, dispatch]);

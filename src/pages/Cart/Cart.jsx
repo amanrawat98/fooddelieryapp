@@ -53,6 +53,28 @@ const Cart = () => {
 
       console.log("Delete response:", deleteresponse.data);
 
+      console.log("cartItems", cartItems, "itemid", itemid);
+
+      const items = cartItems?.filter((item) => {
+        return item?.cartItemId !== itemid;
+      });
+
+      console.log(items);
+
+      const obj = {
+        ...cartitems,
+        cartItems: items,
+      };
+
+      console.log("obj",obj);
+
+      dispatch(
+        setCartItems({
+          ...cartitems,
+          cartItems: items,
+        })
+      );
+
       const getResturantData = async () => {
         let response;
         const sessionid = localStorage.getItem("sessionid");
@@ -71,7 +93,7 @@ const Cart = () => {
             {
               params: {
                 sessionKey: sessionid,
-                restaurantId: 1,
+                restaurantId: 5,
               },
             }
           );
@@ -83,13 +105,20 @@ const Cart = () => {
       const resturantdata = await getResturantData(); // Await the restaurant data fetching
 
       console.log(resturantdata, "resturantdata");
-      const { customerCart } = resturantdata || {};
+      const { result, customerCart } = resturantdata || {};
+
+      console.log(customerCart, "customerCart");
+
 
       if (customerCart) {
         dispatch(setCartItems(customerCart));
       }
 
-      console.log("Updated cart items:", customerCart);
+      if (result) {
+        dispatch(setCartItems(result));
+      }
+
+      console.log("Updated cart items:", result);
     } catch (error) {
       console.log(error?.response.data);
     }

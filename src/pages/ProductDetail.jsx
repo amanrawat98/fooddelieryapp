@@ -14,10 +14,11 @@ const ProductDetail = () => {
   const resturantdata = useSelector((state) => state?.resturant?.resturantdata);
   const cartitems = useSelector((state) => state?.cart?.cartItems);
 
-
   const dispatch = useDispatch();
 
-  const { cartId } = cartitems || {};
+  const { cartId, cartItems: cartitem } = cartitems || {};
+
+  console.log(cartitem);
 
   const { menuid, productid } = useParams();
   const [productQuantity, setProductQuantity] = useState(0);
@@ -34,9 +35,42 @@ const ProductDetail = () => {
 
   const product = filteredbyproductid[0] || [];
 
+  console.log(cartitem);
+
+  console.log(product?.cartQuantity);
+
+  const item = cartitem?.find((item) => {
+    return item?.cartMenuItemId === parseFloat(productid);
+  });
+
+  console.log(item);
+
+  useEffect(() => {
+    setProductQuantity(product?.cartQuantity);
+  }, [product]);
+
+  useEffect(() => {
+    console.log(item);
+
+    if (item !== undefined) {
+      setProductQuantity(item?.quantity);
+    } else {
+      setProductQuantity(0);
+    }
+    console.log(productQuantity);
+
+    console.log(typeof productQuantity);
+  }, [item]);
+
+  console.log(product?.cartQuantity);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    console.log(productQuantity);
+  }, [productQuantity]);
 
   const addToCart = async (payload) => {
     const response = await axios.post(
@@ -49,32 +83,36 @@ const ProductDetail = () => {
     dispatch(setCartItems(response?.data?.result));
   };
 
-  const handleAddToCart = (type) => {
-    let latestQuantity;
-
+  const handleAddToCart = async (type) => {
+    let latestQuantity = productQuantity; 
+  
     if (type === "increment") {
-      setProductQuantity((prev) => {
-        latestQuantity = prev + 1;
-
-        addToCart({
+      latestQuantity = productQuantity + 1;
+      setProductQuantity(latestQuantity); 
+    } else if (type === "decrement" && productQuantity > 0) {
+      latestQuantity = productQuantity - 1; 
+      setProductQuantity(latestQuantity); 
+    }
+  
+    console.log("latestQuantity", latestQuantity);
+  
+    // Only make the API call if latestQuantity is valid
+    if (latestQuantity >= 0) {
+      try {
+        console.log("Updating cart with quantity:", latestQuantity);
+        await addToCart({
           cartId: cartId,
           menuItemId: productid,
           quantity: latestQuantity, // Use the updated quantity here
         });
-        return latestQuantity; // Return the updated value to update the state
-      });
-    } else if (productQuantity > 0) {
-      setProductQuantity((prev) => {
-        latestQuantity = prev - 1;
-        addToCart({
-          cartId: cartId,
-          menuItemId: productid,
-          quantity: latestQuantity, // Use the updated quantity here
-        });
-        return latestQuantity; // Return the updated value to update the state
-      });
+      } catch (error) {
+        console.error("Error updating cart:", error);
+        // Optionally revert the state if the API call fails
+        setProductQuantity(type === "increment" ? productQuantity - 1 : productQuantity + 1);
+      }
     }
   };
+  
 
   return (
     <div className="flex justify-center mt-3 flex-col ">
