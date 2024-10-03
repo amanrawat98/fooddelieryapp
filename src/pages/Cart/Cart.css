@@ -59,16 +59,7 @@
   margin: 10px 0;
 }
 
-.cart-total button {
-  border: none;
-  color: #fff;
-  font-weight: 600;
-  background-color: var(--primary);
-  width: max(15vw, 200px);
-  padding: 12px 0px;
-  border-radius: 4px;
-  cursor: pointer;
-}
+
 
 .cart-total button:disabled {
   opacity: 50%;

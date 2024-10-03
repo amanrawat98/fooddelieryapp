@@ -9,7 +9,7 @@ const Profile = () => {
   const navigate = useNavigate();
   return (
     <div className="grid grid-cols-5 h-auto  ">
-      <div className="col-span-1 text-xl space-y-5 bg-gray-300  h-auto ">
+      <div className="col-span-1 text-xl space-y-5   h-auto ">
         <div
           className="cursor-pointer flex  gap-3 items-center hover:bg-slate-200 p-2"
           onClick={() => navigate("/profile")}
@@ -28,7 +28,7 @@ const Profile = () => {
           <IoIosLogOut className="text-[#ea580c]  size-7" /> Logout
         </div>
       </div>
-      <div className="col-span-4 bg-slate-400 h-auto py-5">
+      <div className="col-span-4  h-auto ">
         <Outlet />
       </div>
     </div>

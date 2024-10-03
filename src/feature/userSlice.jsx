@@ -5,6 +5,7 @@ const initialState = {
   isUserLogin: false,
   userRole: null,
   userData: {},
+  selectedAddress:{}
 };
 
 const userSlice = createSlice({
@@ -27,11 +28,14 @@ const userSlice = createSlice({
     setUserData: (state, action) => {
       state.userData = action.payload;
     },
+    setSelectedAddress: (state, action) => {
+      state.selectedAddress = action.payload;
+    }
     
   },
 });
 
-export const { setToken, setUserLoginStatus, setUserRole, setUserData } =
+export const { setToken, setUserLoginStatus, setUserRole, setUserData, setSelectedAddress } =
   userSlice.actions;
 
 export default userSlice.reducer;

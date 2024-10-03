@@ -46,7 +46,7 @@ const Header = ({ data }) => {
                     backgroundImage: `url(${item?.bannerImageUrl})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
-                    height: "400px",
+                    height: "450px",
                     width: "100%",
                     borderRadius:"10px"
                     

@@ -4,6 +4,7 @@ const initialState = {
   resturantdata: {},
   outletData: {},
   customerCart: {},
+  resturantTheme:{}
 };
 
 const resturantSlice = createSlice({
@@ -18,9 +19,12 @@ const resturantSlice = createSlice({
     setOutletData: (state, action) => {
       state.outletData = action.payload;
     },
+    setResturantTheme: (state, action) => {
+      state.resturantTheme = action.payload;
+    }
   },
 });
 
-export const { setResturantData, setOutletData } = resturantSlice.actions;
+export const { setResturantData, setOutletData, setResturantTheme } = resturantSlice.actions;
 
 export default resturantSlice.reducer;

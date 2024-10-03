@@ -79,23 +79,22 @@ const ProductDetail = () => {
     );
 
     console.log(response?.data);
-    console.log("dispatched");
     dispatch(setCartItems(response?.data?.result));
   };
 
   const handleAddToCart = async (type) => {
-    let latestQuantity = productQuantity; 
-  
+    let latestQuantity = productQuantity;
+
     if (type === "increment") {
       latestQuantity = productQuantity + 1;
-      setProductQuantity(latestQuantity); 
+      setProductQuantity(latestQuantity);
     } else if (type === "decrement" && productQuantity > 0) {
-      latestQuantity = productQuantity - 1; 
-      setProductQuantity(latestQuantity); 
+      latestQuantity = productQuantity - 1;
+      setProductQuantity(latestQuantity);
     }
-  
+
     console.log("latestQuantity", latestQuantity);
-  
+
     // Only make the API call if latestQuantity is valid
     if (latestQuantity >= 0) {
       try {
@@ -108,11 +107,12 @@ const ProductDetail = () => {
       } catch (error) {
         console.error("Error updating cart:", error);
         // Optionally revert the state if the API call fails
-        setProductQuantity(type === "increment" ? productQuantity - 1 : productQuantity + 1);
+        setProductQuantity(
+          type === "increment" ? productQuantity - 1 : productQuantity + 1
+        );
       }
     }
   };
-  
 
   return (
     <div className="flex justify-center mt-3 flex-col ">

@@ -13,15 +13,13 @@ import SignUp from "../SignUpPage/SignUpPage";
 import Login from "../LoginPopup/LoginPopup";
 import { assets } from "../../assets/assets";
 
-const Navbar = () => {
+const Navbar = ({ isLogin, setIsLogin, isSignUp, setIsSignUp }) => {
   const [menu, setMenu] = useState("home");
-  const [isLogin, setIsLogin] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
 
   const cartitems = useSelector((state) => state?.cart?.cartItems);
   const isUserLogin = useSelector((state) => state?.user?.isUserLogin);
-  console.log(cartitems);
+  const theme = useSelector((state) => state?.resturant?.resturantTheme);
 
   const { cartCount } = cartitems || {};
 
@@ -79,13 +77,19 @@ const Navbar = () => {
     }
   };
 
+  const props = { isLogin, setIsLogin, isSignUp, setIsSignUp };
+
   return (
     <div className="">
       <div className="container mx-auto flex justify-between items-center py-4">
         <Link to="/">
-          <img src={assets?.logo} alt="logo" className="w-32" />
+          <img
+            src={theme?.appLogoImageUrl}
+            alt="logo"
+            className="w-16 rounded-full"
+          />
         </Link>
-    
+
         <div className="flex items-center space-x-6">
           <div className="relative">
             <Link to="/cart">
@@ -121,7 +125,7 @@ const Navbar = () => {
             <div className="flex gap-2">
               <button
                 onClick={handleLogout}
-                className="bg-orange-600 text-white py-1 px-4 rounded-lg hover:bg-orange-500 transition duration-200"
+                className={`bg-orange-400 text-white py-1 px-4 rounded-lg hover:bg-orange-500 transition duration-200`}
               >
                 Logout
               </button>
@@ -141,7 +145,7 @@ const Navbar = () => {
           )}
         </div>
       </div>
-      {isLogin && <Login setIsLogin={setIsLogin} />}
+      {isLogin && <Login setIsLogin={setIsLogin} {...props} />}
       {isSignUp && <SignUp setIsSignUp={setIsSignUp} />}
     </div>
   );

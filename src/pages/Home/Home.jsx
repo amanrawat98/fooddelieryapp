@@ -27,7 +27,6 @@ const Home = () => {
   const [outletNumber, setOutletNumber] = useState(0);
 
   const sessionid = localStorage.getItem("sessionid") || null;
-  console.log(sessionid);
   /*   const data = resturantData?.result?.restaurantOutlets[0];
    */
   const getResturantData = async () => {
@@ -54,8 +53,6 @@ const Home = () => {
   const { result, customerCart } = resturantdata || {};
   const { restaurantOutlets } = result || {};
 
-  console.log("resturantdata", resturantdata);
-
   useEffect(() => {
     if (sessionid !== null) {
       if (resturantdata && restaurantOutlets) {
@@ -70,9 +67,14 @@ const Home = () => {
         }
       }
     } else {
-      if (restaurantOutlets && outletNumber && restaurantOutlets[outletNumber]) {
+      if (restaurantOutlets) {
+        console.log("i m here");
+
         dispatch(setOutletData(restaurantOutlets[outletNumber]));
       }
+
+      console.log("api end here ");
+
     }
   }, [resturantdata, outletNumber, dispatch]);
 

@@ -5,8 +5,17 @@ import { useSelector } from "react-redux";
 const SignUp = ({ setIsSignUp }) => {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const resturantdata = useSelector((state) => state.resturant.resturantdata);
-  const { restaurantId } = resturantdata?.result;
-  const { cartId } = cartItems;
+
+  let restaurantId;
+  let cartId;
+
+  if (cartItems?.cartId) {
+    cartId = cartItems?.cartId;
+  }
+
+  if (resturantdata?.result?.restaurantId) {
+    restaurantId = resturantdata?.result?.restaurantId;
+  }
 
   const [signUpData, setSignUpData] = useState({
     firstName: "",

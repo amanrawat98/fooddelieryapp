@@ -9,7 +9,7 @@ const ExploreMenu = ({ category, setCategory, menuItems }) => {
     <div className="explore-menu" id="explore-menu">
       {menuItems && menuItems?.length > 0 && (
         <>
-          <h1>Explore Our Menu</h1>
+          <h1 className="text-3xl">Explore Our Menu</h1>
           <p className="explore-menu-text">
             Choose from a diverse menu featuring a delectable array of dishes.
             Our mission is to satisfy your cravings and elevate your dining
