@@ -81,7 +81,7 @@ const App = () => {
           <Route path="/order" element={<PlaceOrder />} />
           <Route path="/profile" element={<Profile />}>
             <Route path="/profile/orders" element={<Orders />} />
-            <Route path="/profile/orderstatus" element={<OrderStatus />} />
+            <Route path="/profile/orderstatus/:orderid" element={<OrderStatus />} />
 
             <Route index element={<User />} />
           </Route>

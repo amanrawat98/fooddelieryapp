@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
@@ -34,6 +34,21 @@ const Navbar = ({ isLogin, setIsLogin, isSignUp, setIsSignUp }) => {
   console.log(cartCount); */
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (isLogin || isSignUp) {
+      // Disable scroll
+      document.body.style.overflow = "hidden";
+    } else {
+      // Enable scroll
+      document.body.style.overflow = "auto";
+    }
+
+    // Clean up function to reset scroll when component unmounts or modal closes
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isLogin, isSignUp]);
 
   // Handle Logout
   const handleLogout = async () => {

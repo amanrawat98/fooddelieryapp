@@ -4,7 +4,6 @@ import Header from "../../components/Header/Header";
 import ExploreMenu from "../../components/ExploreMenu/ExploreMenu";
 import AppDownload from "../../components/AppDownload.jsx/AppDownload";
 import { useQuery } from "react-query";
-import axios from "axios";
 import CategorySection from "../../components/CategorySection";
 import CategoryDetail from "../../components/CategoryDetail";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,36 +11,19 @@ import {
   setOutletData,
   setResturantData,
 } from "../../feature/resturantDataSlice";
-import { v4 } from "uuid";
-import { setUserData } from "../../feature/userSlice";
 import Outlet from "../../components/Outlet";
-import { setCartItems, setRefetchFunction } from "../../feature/CartSlice";
+import { setCartItems } from "../../feature/CartSlice";
+import { getResturantData } from "../../utility/apiServices";
 
 const Home = () => {
-  const [category, setCategory] = useState("All");
   const dispatch = useDispatch();
-  const data = useSelector((state) => state?.resturant?.resturantdata);
   const outletData = useSelector((state) => state?.resturant?.outletData);
-  const isUserLogin = useSelector((state) => state?.user?.isUserLogin);
 
   const [outletNumber, setOutletNumber] = useState(0);
 
   const sessionid = localStorage.getItem("sessionid") || null;
   /*   const data = resturantData?.result?.restaurantOutlets[0];
    */
-  const getResturantData = async () => {
-    console.log(sessionid);
-    const response = await axios.get(
-      `${import.meta.env.VITE_BASE_URL}/restaurant-data/`,
-      {
-        params: {
-          sessionKey: sessionid,
-          restaurantId: 5,
-        },
-      }
-    );
-    return response.data;
-  };
 
   const {
     data: resturantdata,
@@ -68,13 +50,8 @@ const Home = () => {
       }
     } else {
       if (restaurantOutlets) {
-        console.log("i m here");
-
         dispatch(setOutletData(restaurantOutlets[outletNumber]));
       }
-
-      console.log("api end here ");
-
     }
   }, [resturantdata, outletNumber, dispatch]);
 

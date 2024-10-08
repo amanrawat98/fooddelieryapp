@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { resturantData } from "../demoData/resturantdata";
 import { useParams } from "react-router-dom";
 import nonvegimg from "../assets/non_veg.png";
@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { assets } from "../assets/assets";
 import axios from "axios";
 import { setCartCount, setCartItems } from "../feature/CartSlice";
+import { debounce } from "@mui/material";
 
 const ProductDetail = () => {
   const outletData = useSelector((state) => state?.resturant?.outletData);
@@ -18,59 +19,48 @@ const ProductDetail = () => {
 
   const { cartId, cartItems: cartitem } = cartitems || {};
 
-  console.log(cartitem);
-
   const { menuid, productid } = useParams();
   const [productQuantity, setProductQuantity] = useState(0);
 
-  const filteredbycategoryid = outletData?.menuCategories?.filter((item) => {
-    return item.menuCategoryId.toString() === menuid.toString();
-  });
+  const filteredbycategoryid = useMemo(() => {
+    const filteredbycategoryid = outletData?.menuCategories?.filter((item) => {
+      return item.menuCategoryId.toString() === menuid.toString();
+    });
 
-  const filteredbyproductid = filteredbycategoryid[0]?.menuItems?.filter(
-    (item) => {
-      return item?.menuItemId?.toString() === productid?.toString();
-    }
-  );
+    return filteredbycategoryid;
+  }, [outletData]);
+
+  const filteredbyproductid = useMemo(() => {
+    const filteredbyproductid = filteredbycategoryid[0]?.menuItems?.filter(
+      (item) => {
+        return item?.menuItemId?.toString() === productid?.toString();
+      }
+    );
+
+    return filteredbyproductid;
+  }, [filteredbycategoryid]);
 
   const product = filteredbyproductid[0] || [];
-
-  console.log(cartitem);
-
-  console.log(product?.cartQuantity);
 
   const item = cartitem?.find((item) => {
     return item?.cartMenuItemId === parseFloat(productid);
   });
-
-  console.log(item);
 
   useEffect(() => {
     setProductQuantity(product?.cartQuantity);
   }, [product]);
 
   useEffect(() => {
-    console.log(item);
-
     if (item !== undefined) {
       setProductQuantity(item?.quantity);
     } else {
       setProductQuantity(0);
     }
-    console.log(productQuantity);
-
-    console.log(typeof productQuantity);
   }, [item]);
-
-  console.log(product?.cartQuantity);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  useEffect(() => {
-    console.log(productQuantity);
-  }, [productQuantity]);
 
   const addToCart = async (payload) => {
     const response = await axios.post(
@@ -82,37 +72,30 @@ const ProductDetail = () => {
     dispatch(setCartItems(response?.data?.result));
   };
 
-  const handleAddToCart = async (type) => {
-    let latestQuantity = productQuantity;
+  const debouncedAddToCart = useCallback(
+    debounce(async (type) => {
+      let latestQuantity = productQuantity;
+      latestQuantity =
+        type === "increment" ? productQuantity + 1 : productQuantity - 1;
 
-    if (type === "increment") {
-      latestQuantity = productQuantity + 1;
+      console.log("latestQuantity", latestQuantity);
       setProductQuantity(latestQuantity);
-    } else if (type === "decrement" && productQuantity > 0) {
-      latestQuantity = productQuantity - 1;
-      setProductQuantity(latestQuantity);
-    }
 
-    console.log("latestQuantity", latestQuantity);
-
-    // Only make the API call if latestQuantity is valid
-    if (latestQuantity >= 0) {
-      try {
-        console.log("Updating cart with quantity:", latestQuantity);
-        await addToCart({
-          cartId: cartId,
-          menuItemId: productid,
-          quantity: latestQuantity, // Use the updated quantity here
-        });
-      } catch (error) {
-        console.error("Error updating cart:", error);
-        // Optionally revert the state if the API call fails
-        setProductQuantity(
-          type === "increment" ? productQuantity - 1 : productQuantity + 1
-        );
+      if (latestQuantity >= 0) {
+        try {
+          console.log("Updating cart with quantity:", latestQuantity);
+          await addToCart({
+            cartId: cartId,
+            menuItemId: productid,
+            quantity: latestQuantity,
+          });
+        } catch (error) {
+          console.error("Error updating cart:", error);
+        }
       }
-    }
-  };
+    }, 30),
+    [productQuantity]
+  );
 
   return (
     <div className="flex justify-center mt-3 flex-col ">
@@ -144,7 +127,7 @@ const ProductDetail = () => {
             <button
               className="border-2 py-2 px-8 text-orange-400 border-orange-500 w-fit mt-3"
               onClick={() => {
-                handleAddToCart("increment");
+                debouncedAddToCart("increment");
               }}
             >
               Add to Cart
@@ -155,7 +138,7 @@ const ProductDetail = () => {
                 src={assets.remove_icon_red}
                 alt="remove_icon_red"
                 onClick={() => {
-                  handleAddToCart("decrement");
+                  debouncedAddToCart("decrement");
                 }}
               />
               <p className="w-9 bg-slate-300 p-2 text-center rounded-md">
@@ -165,7 +148,7 @@ const ProductDetail = () => {
                 src={assets.add_icon_green}
                 alt="add_icon_green"
                 onClick={() => {
-                  handleAddToCart("increment");
+                  debouncedAddToCart("increment");
                 }}
               />
             </div>

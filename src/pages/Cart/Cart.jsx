@@ -12,6 +12,19 @@ import { CiLocationOn } from "react-icons/ci";
 import { IoHomeOutline } from "react-icons/io5";
 import { setSelectedAddress, setUserData } from "../../feature/userSlice";
 import { SiTicktick } from "react-icons/si";
+import { debounce } from "lodash";
+
+import {
+  deleteCartItem,
+  getCartItems,
+  getResturantData,
+  handleCreateIntentId,
+} from "../../utility/apiServices";
+import SearchLocationInput from "../../components/mapApi.jsx/SearchLocationInput";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AddOrSelectAddress from "../../components/Address.jsx/AddOrSelectAddress";
+import CartItem from "../../components/Cart/CartItem";
 
 export const deliveryFee = 2;
 
@@ -29,30 +42,6 @@ const Cart = ({ setShowLogin, showLoginPage }) => {
   const [paymentIntentId, setPaymentIntentId] = useState("");
   const [productQuantity, setProductQuantity] = useState(0);
   const [isSelectPassword, setIsSelectPassword] = useState(false);
-  const [addressValue, setAddressValue] = useState({
-    customerId: userData?.customerId,
-    addressType: "home",
-    receiverName: userData?.firstName,
-    receiverPhone: userData?.phone,
-    houseNo: "7722",
-    floor: "1rd Floor",
-    building: "PAU",
-    landmark: "Near PAU Gate no. 1",
-    areaLocality: "Ludhiana",
-    isDefault: true,
-  });
-
-  const handleSetAddressValue = (e) => {
-    const { name, value } = e.target;
-    setAddressValue((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  useEffect(() => {
-    console.log(addressValue);
-  }, [addressValue]);
 
   const sessionid = localStorage.getItem("sessionid");
   // Use customerId and outletId from the userdata and cartitems if available
@@ -65,9 +54,15 @@ const Cart = ({ setShowLogin, showLoginPage }) => {
     address = userData.addresses;
   }
 
-  console.log(address[0]);
+  let floor, houseNo, building, areaLocality;
 
-  const { floor, houseNo, building, areaLocality } = address[0] || {};
+  if (address & address?.[0]) {
+    let addr = address?.[0];
+    floor = addr;
+    houseNo = addr;
+    building = addr;
+    areaLocality = addr;
+  }
 
   const props = {
     deliveryType,
@@ -76,150 +71,41 @@ const Cart = ({ setShowLogin, showLoginPage }) => {
     setClientSecret,
   };
 
-  const handleDeleteCartItem = async (itemid, cartid) => {
-    const payload = {
-      cartId: cartid,
-      cartItemId: itemid,
-    };
-
-    try {
-      const deleteresponse = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}/cart`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          data: payload,
-        }
-      );
-
-      const updatedItems = cartItems?.filter(
-        (item) => item?.cartItemId !== itemid
-      );
-
-      dispatch(
-        setCartItems({
-          ...cartitems,
-          cartItems: updatedItems,
-        })
-      );
-
-      const getResturantData = async () => {
-        const sessionid = localStorage.getItem("sessionid");
-        let response;
-
-        if (customerId && outletId) {
-          response = await axios.get(`${import.meta.env.VITE_BASE_URL}/cart/`, {
-            params: { cartId },
-          });
-        } else {
-          response = await axios.get(
-            `${import.meta.env.VITE_BASE_URL}/restaurant-data/`,
-            {
-              params: {
-                sessionKey: sessionid,
-                restaurantId: 5,
-              },
-            }
-          );
-        }
-
-        return response.data;
-      };
-
-      const resturantdata = await getResturantData();
-
-      const { result, customerCart } = resturantdata || {};
-
-      console.log("customerCart", customerCart);
-      console.log("resturantdata", resturantdata);
-
-      if (customerCart) {
-        dispatch(setCartItems(customerCart));
-      }
-
-      if (result && customerId) {
-        dispatch(setCartItems(result));
-      }
-    } catch (error) {
-      console.log(error?.response?.data);
-    }
-  };
-
   const handleCheckout = async () => {
     try {
-      if (deliveryType === "takeaway") {
-        console.log("hi");
-        if (sessionid !== null) {
-          console.log("i m here");
-          console.log(sessionid === null);
-          showLoginPage();
-          navigate("/");
-        }
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/create-payment-intent/`,
-          {
-            outletId: outletId,
-            cartId: cartId,
-          }
-        );
+      if (cartitems.cartItems.length <= 0) {
+        return toast.error("No Item in Cart !");
+      }
+      const payload = {
+        outletId: outletId,
+        cartId: cartId,
+      };
+      const handleCreatePaymentIntent = async () => {
+        const response = await handleCreateIntentId(payload);
+        return response;
+      };
 
-        const { clientSecret, paymentIntentId } = response?.data;
+      if (sessionid !== null) {
+        showLoginPage();
+        navigate("/");
+      }
 
-        setClientSecret(clientSecret);
-        setPaymentIntentId(paymentIntentId);
-      } else {
-        if (sessionid !== null) {
-          showLoginPage();
-          navigate("/");
-        }
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/create-payment-intent/`,
-          {
-            outletId: outletId,
-            cartId: cartId,
-          }
-        );
-
-        const { clientSecret, paymentIntentId } = response?.data;
+      if (deliveryType === "takeaway" || deliveryType !== "takeaway") {
+        const { clientSecret, paymentIntentId } =
+          await handleCreatePaymentIntent();
 
         setClientSecret(clientSecret);
         setPaymentIntentId(paymentIntentId);
+        // const response = await axios.post(
+        //   `${import.meta.env.VITE_BASE_URL}/create-payment-intent/`,
+        //   {
+        //     outletId: outletId,
+        //     cartId: cartId,
+        //   }
+        // );
       }
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  const addToCart = async (payload) => {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/cart/`,
-      payload
-    );
-
-    console.log(response?.data);
-    dispatch(setCartItems(response?.data?.result));
-  };
-
-  const handleAddToCart = async (type, item) => {
-    console.log(item);
-
-    if (type === "increment") {
-      let latestQuantity = item?.quantity + 1;
-
-      await addToCart({
-        cartId: cartId,
-        menuItemId: item?.cartMenuItemId,
-        quantity: latestQuantity,
-      });
-    } else {
-      let latestQuantity = item?.quantity - 1;
-
-      await addToCart({
-        cartId: cartId,
-        menuItemId: item?.cartMenuItemId,
-        quantity: latestQuantity,
-      });
     }
   };
 
@@ -244,60 +130,52 @@ const Cart = ({ setShowLogin, showLoginPage }) => {
     }
   };
 
+  useEffect(() => {
+    if (isSelectPassword) {
+      // Disable scroll
+      document.body.style.overflow = "hidden";
+    } else {
+      // Enable scroll
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isSelectPassword]);
+
+  // AddorSelectAddress component props
+
+  const AddorSelectAddressProps = {
+    page,
+    setPage,
+    setIsSelectPassword,
+    isSelectPassword,
+    handleSetAddress,
+    handleAddNewAddress,
+    address,
+    selectedAddress,
+  };
+
   return (
     <div className=" relative">
+      <ToastContainer position="top-center" />
+
       <div className="cart-items space-y-3">
         <div className="cart-items-title cart-heading grid grid-cols-6">
-          <p className="col-span-2 text-lg font-semibold">Title</p>
-          <p className="col-span-1 text-lg font-semibold">Price</p>
-          <p className="col-span-1 text-lg font-semibold">Quantity</p>
-          <p className="col-span-1 text-lg font-semibold">Total</p>
-          <p className="col-span-1 text-lg font-semibold">Remove</p>
+          {["Title", "Price", "Quantity", "Total", "Remove"].map((item) => {
+            if (item === "Title") {
+              return <p className="col-span-2 text-lg font-semibold">{item}</p>;
+            } else {
+              <p className="col-span-1 text-lg font-semibold">{item}</p>;
+            }
+          })}
         </div>
 
         {cartItems?.length === 0 ? (
           <p className="NoItems">No Items in cart</p>
         ) : (
-          cartItems?.map((item) => (
-            <div
-              className="cart-items-title cart-heading grid grid-cols-6"
-              key={item?.cartItemId}
-            >
-              <p className="col-span-2">{item?.cartMenuItemName}</p>
-              <p className="col-span-1">${item?.cartMenuItemPrice}</p>
-
-              <div className="flex align-middle col-span-1 mt-2 space-x-3">
-                <img
-                  src={assets.remove_icon_red}
-                  className="cursor-pointer"
-                  alt="remove_icon_red"
-                  onClick={() => {
-                    handleAddToCart("decrement", item);
-                  }}
-                />
-                <p className="w-9 bg-slate-300 p-2 text-center rounded-md">
-                  {item?.quantity}
-                </p>
-                <img
-                  src={assets.add_icon_green}
-                  className="cursor-pointer"
-                  alt="add_icon_green"
-                  onClick={() => {
-                    handleAddToCart("increment", item);
-                  }}
-                />
-              </div>
-              <p className="col-span-1">
-                ${(item?.cartMenuItemPrice * item?.quantity).toFixed(2)}
-              </p>
-              <img
-                src={assets.remove_icon_cross}
-                alt="remove_icon_cross"
-                className="size-8 cursor-pointer col-span-1 ml-5"
-                onClick={() => handleDeleteCartItem(item?.cartItemId, cartId)}
-              />
-            </div>
-          ))
+          cartItems?.map((item) => <CartItem item={item} cartId={cartId} />)
         )}
       </div>
 
@@ -331,6 +209,7 @@ const Cart = ({ setShowLogin, showLoginPage }) => {
         </div>
       </div>
 
+      {/*  Address Type Selection */}
       <div className="flex gap-9 mt-6 pl-[27rem] text-lg">
         <div className="flex items-center gap-1">
           <input
@@ -407,110 +286,7 @@ const Cart = ({ setShowLogin, showLoginPage }) => {
 
       {isSelectPassword && (
         <>
-          <div className="fixed bg-black opacity-75 w-full h-full z-40 inset-0"></div>
-          {page === "selectAddress" ? (
-            <div className=" absolute mt-2 inset-x-0 inset-y-0 m-auto bg-gray-200 rounded-xl w-fit px-5 py-6 space-y-4 z-50 justify-center items-center flex flex-col h-fit   ">
-              <h2 className="text-2xl text-center ">Select Address</h2>
-              <button
-                className="bg-orange-400 px-14 py-2 rounded-3xl text-white mx-auto relative  !mb-3 "
-                onClick={() => setPage("addNewAddress")}
-              >
-                Add New Address
-              </button>
-
-              <div className="gap-3 flex flex-col">
-                {address?.map((item) => {
-                  return (
-                    <div
-                      className="mx-auto border-2 cursor-pointer border-orange-500 bg-white p-3 rounded-lg w-[30rem] "
-                      onClick={() => {
-                        handleSetAddress(item);
-                      }}
-                    >
-                      <h2 className="text-xl w-fit">Delivery Address</h2>
-                      <div className="grid grid-cols-7 gap-4 cursor-pointer  space-y-3 w-full">
-                        <IoHomeOutline className="size-6 self-center mt-2 col-span-1" />
-                        <p className="text-lg col-span-5">{`${item?.floor} ${item?.houseNo} ${item?.building} ${item?.areaLocality} `}</p>{" "}
-                        {selectedAddress &&
-                          selectedAddress?.addressId &&
-                          selectedAddress?.addressId === item?.addressId && (
-                            <SiTicktick className="size-7 col-span-1" />
-                          )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <button
-                className="bg-orange-400 px-14 py-2 rounded-3xl text-white mx-auto !mt-[4rem]"
-                onClick={() => setIsSelectPassword(false)}
-              >
-                Save
-              </button>
-            </div>
-          ) : (
-            <div className="fixed inset-0 m-auto bg-gray-200 rounded-xl w-fit px-5 py-6 space-y-4 z-50  flex flex-col h-fit   ">
-              {" "}
-              <h2 className="text-2xl text-center mb-3 ">Add Address</h2>
-              <div className="gap-4 flex items-center flex-col">
-                <input
-                  type="text"
-                  name="houseNo"
-                  id="houseNo"
-                  className="outline-none py-2 rounded-3xl bg-orange-200 text-gray-800 w-full px-8"
-                  placeholder="House number / Block*"
-                  onChange={handleSetAddressValue}
-                />
-                <input
-                  type="number"
-                  name="floor"
-                  id="floor"
-                  className="outline-none py-2 rounded-3xl bg-orange-200 text-gray-800 w-full px-8"
-                  placeholder="Floor"
-                  onChange={handleSetAddressValue}
-                />{" "}
-                <input
-                  type="text"
-                  name="building"
-                  id="building"
-                  className="outline-none  py-2 rounded-3xl bg-orange-200 text-gray-800 w-full px-8"
-                  placeholder="Building"
-                  onChange={handleSetAddressValue}
-                />{" "}
-                <input
-                  type="text"
-                  name="areaLocality"
-                  id="areaLocality"
-                  className="outline-none  py-2 rounded-3xl bg-orange-200 text-gray-800 w-full px-8"
-                  placeholder="Locality*"
-                  onChange={handleSetAddressValue}
-                />
-                <input
-                  type="text"
-                  name="landmark"
-                  id="landmark"
-                  className="outline-none  py-2 rounded-3xl bg-orange-200 text-gray-800 w-full px-8"
-                  placeholder="Landmark*"
-                  onChange={handleSetAddressValue}
-                />
-              </div>
-              <div className="flex gap-3">
-                <button
-                  className="bg-white text-orange-500 px-14 py-2 rounded-3xl border-2 border-orange-400 mx-auto !mt-[2rem]"
-                  onClick={() => setIsSelectPassword(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="bg-orange-400 px-14 py-2 rounded-3xl text-white mx-auto !mt-[2rem]"
-                  onClick={handleAddNewAddress}
-                >
-                  Add Address
-                </button>
-              </div>
-            </div>
-          )}{" "}
+          <AddOrSelectAddress {...AddorSelectAddressProps} />
         </>
       )}
     </div>

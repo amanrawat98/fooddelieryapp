@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import userFallBackImg from "../../assets/user.png";
 import { MdModeEdit } from "react-icons/md";
@@ -21,9 +21,6 @@ const User = () => {
     gender: "",
   });
 
-  useEffect(() => {
-    console.log(isEdit);
-  }, [isEdit]);
 
   useEffect(() => {
     setUser({
@@ -78,39 +75,36 @@ const User = () => {
     setIsEdit((prev) => !prev); // Only toggle the edit mode without resetting the user data
   };
 
-  const userinputdata = [
+  const userInputData = useMemo(() => [
     {
       value: user?.name,
       handleEditUserValue,
       name: "name",
       Labeltext: "Name",
-      inputType:"text"
+      inputType: "text"
     },
     {
       value: user?.email,
       handleEditUserValue,
       name: "email",
       Labeltext: "Email",
-      inputType:"email"
-
+      inputType: "email"
     },
     {
       value: user?.phone,
       handleEditUserValue,
       name: "phone",
       Labeltext: "Mobile No",
-      inputType:"number"
-
+      inputType: "number"
     },
     {
       value: user?.dateOfBirth,
       handleEditUserValue,
       name: "dateOfBirth",
       Labeltext: "D.O.B",
-      inputType:"date"
-
+      inputType: "date"
     },
-  ];
+  ], [user, handleEditUserValue]); 
 
   return (
     <div className="space-y-3">
@@ -156,7 +150,7 @@ const User = () => {
         ) : (
           // Display input fields when in edit mode
           <form className="space-y-5" onSubmit={handleUserEdit}>
-            {userinputdata?.map((item) => {
+            {userInputData?.map((item) => {
               return (
                 <InputField
                   value={item?.value}

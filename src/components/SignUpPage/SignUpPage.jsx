@@ -48,7 +48,6 @@ const SignUp = ({ setIsSignUp }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = await handleUserSignUp(signUpData);
-    console.log("Sign Up Successful", data);
   };
 
   return (

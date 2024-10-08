@@ -9,8 +9,7 @@ import { setCartItems } from "../../feature/CartSlice";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ShowAndHidePassword from "../ShowAndHidePassword";
-import { FaEyeSlash } from "react-icons/fa";
-import { FaEye } from "react-icons/fa";
+import { emailRegex, phoneRegex } from "../../constaints/constaints";
 
 const Login = ({ setIsLogin }) => {
   const dispatch = useDispatch();
@@ -19,13 +18,12 @@ const Login = ({ setIsLogin }) => {
 
   let restaurantId;
 
-  if(resturantdata?.result?.restaurantId) {
-    restaurantId =  resturantdata?.result?.restaurantId;
+  if (resturantdata?.result?.restaurantId) {
+    restaurantId = resturantdata?.result?.restaurantId;
   }
 
   const navigate = useNavigate();
   const [page, setPage] = useState("login");
-  const [email, setEmail] = useState("");
   const [resetPasswordData, setResetPasswordData] = useState({
     otp: "",
     password: "",
@@ -40,10 +38,6 @@ const Login = ({ setIsLogin }) => {
     }));
   };
 
-  useEffect(() => {
-    console.log(resetPasswordData);
-  }, [resetPasswordData]);
-
   let cartId;
   let outletId;
   if (cartItems && cartItems.cartId) {
@@ -56,23 +50,34 @@ const Login = ({ setIsLogin }) => {
 
   const [loginData, setLoginData] = useState({
     email: "",
+    phone: "",
     password: "",
     loginMethod: "email",
     role: "customer",
-    phone: "",
     outletId: outletId || null,
     temporaryCartId: cartId || null,
   });
 
   const handleSetUserData = (e) => {
-    const { value, name } = e.target;
-    setLoginData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    const { value } = e.target;
+
+    if (emailRegex.test(value)) {
+      setLoginData((prev) => ({
+        ...prev,
+        email: value,
+        phone: "",
+      }));
+    } else if (phoneRegex.test(value)) {
+      setLoginData((prev) => ({
+        ...prev,
+        phone: value,
+        email: "",
+      }));
+    }
   };
 
   const handleUserLogin = async (payload) => {
+    console.log(payload);
     const response = await axios.post(
       `${import.meta.env.VITE_BASE_URL}/login`,
       payload
@@ -82,8 +87,19 @@ const Login = ({ setIsLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = await handleUserLogin(loginData);
 
+    const payload = {
+      ...(loginData.email
+        ? { email: loginData.email }
+        : { phone: loginData.phone }),
+      password: loginData.password,
+      loginMethod: loginData.email ? "email" : "phone", // Set login method
+      role: "customer",
+      outletId: outletId || null,
+      temporaryCartId: cartId || null,
+    };
+
+    const data = await handleUserLogin(payload);
     const resturantdata = data;
     const { result, customerCart, restaurantData } = resturantdata || {};
     const { restaurantOutlets } = restaurantData || {};
@@ -102,24 +118,17 @@ const Login = ({ setIsLogin }) => {
     setIsLogin(false);
   };
 
-  const handleSetEmail = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const payload = {
-    email: email,
-    restaurantId: restaurantId,
-  };
-
   const handleSendOtp = async (e) => {
     e.preventDefault();
+    const payload = {
+      email: loginData.email, // You may choose to send the email or phone here
+      restaurantId: restaurantId,
+    };
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/forgot-password`,
         payload
       );
-
-      console.log(response?.data);
 
       const { result } = response?.data;
 
@@ -148,9 +157,8 @@ const Login = ({ setIsLogin }) => {
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <input
-              type="email"
-              placeholder="Your email"
-              name="email"
+              type="text" // Changed to text to accept both email and phone
+              placeholder="Your email or Phone no"
               required
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={handleSetUserData}
@@ -161,16 +169,11 @@ const Login = ({ setIsLogin }) => {
               name="password"
               required
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={handleSetUserData}
+              onChange={(e) =>
+                setLoginData((prev) => ({ ...prev, password: e.target.value }))
+              }
             />
-            <input
-              type="text"
-              placeholder="Phone No."
-              name="phone"
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={handleSetUserData}
-            />
+
             <button
               type="submit"
               className="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-500 transition duration-300"
@@ -187,7 +190,6 @@ const Login = ({ setIsLogin }) => {
             <h3
               className="text-center text-gray-400 text-sm cursor-pointer"
               onClick={() => {
-                console.log("clicked");
                 setPage("forgotPassword");
               }}
             >
@@ -216,13 +218,11 @@ const Login = ({ setIsLogin }) => {
 
           <form className="space-y-6" onSubmit={handleSendOtp}>
             <input
-              type="email"
-              placeholder="Your email"
-              name="email"
+              type="text" // Changed to text to accept both email and phone
+              placeholder="Your email or Phone no"
               required
-              value={email}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={handleSetEmail}
+              onChange={(e) => handleSetUserData(e)}
             />
             <button
               type="submit"
@@ -266,28 +266,29 @@ const Login = ({ setIsLogin }) => {
               required
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={handleSetResetPasswordData}
-              value={resetPasswordData.otp}
             />
-
-            <ShowAndHidePassword
-              placeholderValue="password"
-              value={resetPasswordData?.password}
-              inputName='password'
-
-              handleSetResetPasswordData={handleSetResetPasswordData}
+            <input
+              type="password"
+              placeholder="New Password"
+              name="password"
+              required
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleSetResetPasswordData}
             />
-            <ShowAndHidePassword
-              placeholderValue="comform password"
-              inputName='comformPassword'
-              value={resetPasswordData?.comformPassword}
-              handleSetResetPasswordData={handleSetResetPasswordData}
+            <input
+              type="password"
+              placeholder="Confirm New Password"
+              name="comformPassword"
+              required
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleSetResetPasswordData}
             />
 
             <button
               type="submit"
               className="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-500 transition duration-300"
             >
-              Submit
+              Reset Password
             </button>
             <button
               type="button"
@@ -296,12 +297,6 @@ const Login = ({ setIsLogin }) => {
             >
               Cancel
             </button>
-            <p
-              onClick={handleSendOtp}
-              className="text-center text-gray-400 text-sm"
-            >
-              Didn't recieve OTP? Resend OTP
-            </p>
           </form>
         </div>
       )}

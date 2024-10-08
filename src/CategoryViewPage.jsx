@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { resturantData } from "./demoData/resturantdata";
 import { useNavigate, useParams } from "react-router-dom";
 import FoodItem from "./components/FoodItem/FoodItem";
@@ -9,12 +9,15 @@ const CategoryViewPage = () => {
 
   const { menuCategories } = outletData;
 
-
   const { categoryid } = useParams();
   const navigate = useNavigate();
 
-  const filteredData = menuCategories?.filter((item) => {
-    return item.menuCategoryId.toString() === categoryid.toString();
+  const filteredData = useMemo(() => {
+    const filteredData = menuCategories?.filter((item) => {
+      return item.menuCategoryId.toString() === categoryid.toString();
+    });
+
+    return filteredData;
   });
 
   const filterValue = filteredData[0];
