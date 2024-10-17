@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./FoodItem.css";
 import { assets } from "../../assets/assets";
 import nonvegimg from "../../assets/non_veg.png";
@@ -7,18 +7,15 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { setCartItems } from "../../feature/CartSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { debounce } from "@mui/material";
 
-const FoodItem = ({ id, name, price, description, image, item, categoryid }) => {
+const FoodItem = ({ item, categoryid }) => {
   const [productQuantity, setProductQuantity] = useState(0);
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const { cartId, cartItems: cartItem } = cartItems;
+  const { cartId, cartItems: cartItem } = cartItems || {};
 
-  console.log("item", item);
   const { menuItemId } = item;
-  console.log(menuItemId);
-
-  console.log("cartItems", cartItem);
 
   // Ensure both cartMenuItemId and menuItemId are defined, trimmed, and of the same type
   const filterCartItem = cartItem?.find((cartItem) => {
@@ -29,47 +26,48 @@ const FoodItem = ({ id, name, price, description, image, item, categoryid }) => 
     );
   });
 
-  console.log(filterCartItem?.quantity);
+  let quantity;
+  if (filterCartItem) {
+    quantity = filterCartItem?.quantity;
+  }
 
-  const addToCart = async (payload) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/cart/`,
-        payload
-      );
-      console.log(response?.data?.result);
-      dispatch(setCartItems(response?.data?.result));
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-    }
-  };
+  const debouncedAddToCart = useCallback(
+    debounce(async (payload) => {
+      try {
+        console.log("payload", payload);
+        const response = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/cart/`,
+          payload
+        );
+        dispatch(setCartItems(response?.data?.result));
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+      }
+    }, 50),
+    []
+  );
 
   const handleAddToCart = async (type) => {
-    let latestQuantity = productQuantity;
-
-    if (type === "increment") {
-      latestQuantity = productQuantity + 1;
-      setProductQuantity(latestQuantity);
-    } else if (type === "decrement" && productQuantity > 0) {
-      latestQuantity = productQuantity - 1;
-      setProductQuantity(latestQuantity);
-    }
+    let latestQuantity = quantity;
 
     console.log("latestQuantity", latestQuantity);
+    if (latestQuantity !== undefined) {
+      latestQuantity = type === "increment" ? quantity + 1 : quantity - 1;
+      setProductQuantity(latestQuantity);
+    } else {
+      latestQuantity = 1;
+    }
 
     if (latestQuantity >= 0) {
       try {
-        console.log("Updating cart with quantity:", latestQuantity);
-        await addToCart({
+        await debouncedAddToCart({
           cartId: cartId,
           menuItemId: item.menuItemId,
           quantity: latestQuantity,
         });
       } catch (error) {
         console.error("Error updating cart:", error);
-        setProductQuantity(
-          type === "increment" ? productQuantity - 1 : productQuantity + 1
-        );
+        setProductQuantity(type === "increment" ? quantity - 1 : quantity + 1);
       }
     }
   };
@@ -77,8 +75,8 @@ const FoodItem = ({ id, name, price, description, image, item, categoryid }) => 
   return (
     <>
       <div className="relative">
-        <div className="absolute z-40 right-4 cursor-pointer">
-          {filterCartItem?.quantity === 0 || filterCartItem?.quantity === undefined ? (
+        <div className="absolute z-40 right-4 top-2 cursor-pointer">
+          {quantity === 0 || quantity === undefined ? (
             <div className="border-2 z-40 rounded-full">
               <img
                 src={assets.add_icon_white}
@@ -90,7 +88,7 @@ const FoodItem = ({ id, name, price, description, image, item, categoryid }) => 
               />
             </div>
           ) : (
-            <div className="food-item-counter relative top-5 left-2">
+            <div className="food-item-counter relative top-1 left-1">
               <img
                 src={assets.remove_icon_red}
                 alt="remove_icon_red"
@@ -98,7 +96,7 @@ const FoodItem = ({ id, name, price, description, image, item, categoryid }) => 
                   handleAddToCart("decrement");
                 }}
               />
-              <p>{filterCartItem?.quantity}</p>
+              <p>{quantity}</p>
               <img
                 src={assets.add_icon_green}
                 alt="add_icon_green"

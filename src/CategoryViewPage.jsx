@@ -14,13 +14,14 @@ const CategoryViewPage = () => {
 
   const filteredData = useMemo(() => {
     const filteredData = menuCategories?.filter((item) => {
-      return item.menuCategoryId.toString() === categoryid.toString();
+      return item.menuCategoryId?.toString() === categoryid?.toString();
     });
 
     return filteredData;
-  });
+  }, []);
 
-  const filterValue = filteredData[0];
+  const filterValue = filteredData?.[0];
+  filterValue && console.log(filterValue);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -30,11 +31,11 @@ const CategoryViewPage = () => {
     <>
       <h2 className="text-3xl text-center mb-5"> {filterValue?.name}</h2>{" "}
       <div className="grid grid-cols-3 gap-4">
-        {filterValue?.menuItems.map((item) => {
+        {filterValue?.menuItems?.map((item) => {
           return (
             <FoodItem
               item={item}
-              key={item.menuItemId}
+              key={item?.menuItemId}
               categoryid={categoryid}
             />
           );

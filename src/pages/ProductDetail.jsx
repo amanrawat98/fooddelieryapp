@@ -9,6 +9,7 @@ import { assets } from "../assets/assets";
 import axios from "axios";
 import { setCartCount, setCartItems } from "../feature/CartSlice";
 import { debounce } from "@mui/material";
+import { handleAddToCart } from "../utility/apiServices";
 
 const ProductDetail = () => {
   const outletData = useSelector((state) => state?.resturant?.outletData);
@@ -40,7 +41,7 @@ const ProductDetail = () => {
     return filteredbyproductid;
   }, [filteredbycategoryid]);
 
-  const product = filteredbyproductid[0] || [];
+  const product = filteredbyproductid?.[0] || [];
 
   const item = cartitem?.find((item) => {
     return item?.cartMenuItemId === parseFloat(productid);
@@ -63,12 +64,7 @@ const ProductDetail = () => {
   }, []);
 
   const addToCart = async (payload) => {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/cart/`,
-      payload
-    );
-
-    console.log(response?.data);
+    const response = await handleAddToCart(payload);
     dispatch(setCartItems(response?.data?.result));
   };
 
@@ -77,13 +73,10 @@ const ProductDetail = () => {
       let latestQuantity = productQuantity;
       latestQuantity =
         type === "increment" ? productQuantity + 1 : productQuantity - 1;
-
-      console.log("latestQuantity", latestQuantity);
       setProductQuantity(latestQuantity);
 
       if (latestQuantity >= 0) {
         try {
-          console.log("Updating cart with quantity:", latestQuantity);
           await addToCart({
             cartId: cartId,
             menuItemId: productid,

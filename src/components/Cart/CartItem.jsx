@@ -4,6 +4,7 @@ import {
   deleteCartItem,
   getCartItems,
   getResturantData,
+  handleAddToCart,
 } from "../../utility/apiServices";
 import { useDispatch, useSelector } from "react-redux";
 import { setCartItems } from "../../feature/CartSlice";
@@ -70,10 +71,7 @@ const CartItem = ({ item }) => {
   // Add to Cart
 
   const addToCart = async (payload) => {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/cart/`,
-      payload
-    );
+    const response = await handleAddToCart(payload);
 
     dispatch(setCartItems(response?.data?.result));
   };

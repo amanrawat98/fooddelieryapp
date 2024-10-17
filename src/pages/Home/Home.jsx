@@ -9,38 +9,67 @@ import CategoryDetail from "../../components/CategoryDetail";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setOutletData,
-  setResturantData,
+  setResturantData as setresturantdata,
 } from "../../feature/resturantDataSlice";
 import Outlet from "../../components/Outlet";
 import { setCartItems } from "../../feature/CartSlice";
 import { getResturantData } from "../../utility/apiServices";
+import axios from "axios";
+import { v4 } from "uuid";
 
 const Home = () => {
   const dispatch = useDispatch();
   const outletData = useSelector((state) => state?.resturant?.outletData);
-
   const [outletNumber, setOutletNumber] = useState(0);
+  const [resturantData, setResturantData] = useState({});
+  const [restaurantOutlets, setRestaurantOutlets] = useState([]);
+  const isUserLogin = useSelector((state) => state.user.isUserLogin);
 
   const sessionid = localStorage.getItem("sessionid") || null;
   /*   const data = resturantData?.result?.restaurantOutlets[0];
    */
 
-  const {
-    data: resturantdata,
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery("resturant-data", getResturantData);
-
-  const { result, customerCart } = resturantdata || {};
-  const { restaurantOutlets } = result || {};
+  // const {
+  //   data: resturantdata,
+  //   isLoading,
+  //   isError,
+  //   refetch,
+  // } = useQuery("resturant-data", getResturantData);
 
   useEffect(() => {
-    if (sessionid !== null) {
-      if (resturantdata && restaurantOutlets) {
-        dispatch(setResturantData(resturantdata));
+    const fetchResturantData = async () => {
+      const response = await getResturantData();
+      setResturantData(response);
+      console.log(response);
+    };
 
-        if (restaurantOutlets[outletNumber]) {
+    fetchResturantData();
+  }, [sessionid]);
+
+  useEffect(() => {
+    const sessionid = localStorage.getItem("sessionid");
+    const id = v4();
+
+    if (sessionid === null && isUserLogin === false) {
+      localStorage.setItem("sessionid", id);
+    } else if (sessionid === "") {
+      console.log("user has login");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!resturantData) return;
+    const { result, customerCart } = resturantData || {};
+    const { restaurantOutlets } = result || {};
+    setRestaurantOutlets(restaurantOutlets);
+
+    if (sessionid !== null) {
+      if (resturantData && restaurantOutlets) {
+        console.log("resturantData", resturantData);
+
+        dispatch(setresturantdata(resturantData));
+
+        if (restaurantOutlets?.[outletNumber]) {
           dispatch(setOutletData(restaurantOutlets[outletNumber]));
         }
 
@@ -49,11 +78,16 @@ const Home = () => {
         }
       }
     } else {
-      if (restaurantOutlets) {
-        dispatch(setOutletData(restaurantOutlets[outletNumber]));
+      if (restaurantOutlets && outletNumber) {
+        dispatch(setOutletData(restaurantOutlets?.[outletNumber]));
       }
     }
-  }, [resturantdata, outletNumber, dispatch]);
+  }, [resturantData, sessionid, dispatch, outletNumber]);
+
+  // const { result, customerCart } = resturantdata || {};
+  // const { restaurantOutlets } = result || {};
+
+  // useEffect(() => {}, [resturantdata, outletNumber, dispatch]);
 
   const props = {
     outletNumber,

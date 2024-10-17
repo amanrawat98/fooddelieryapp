@@ -3,7 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserLoginStatus } from "../../feature/userSlice";
+import {
+  setSelectedAddress,
+  setUserData,
+  setUserLoginStatus,
+} from "../../feature/userSlice";
 import {
   setResturantData,
   setOutletData,
@@ -12,14 +16,18 @@ import { setCartItems } from "../../feature/CartSlice";
 import SignUp from "../SignUpPage/SignUpPage";
 import Login from "../LoginPopup/LoginPopup";
 import { assets } from "../../assets/assets";
+import userFallBackImg from "../../../src/assets/user.png";
+import { getResturantData } from "../../utility/apiServices";
 
 const Navbar = ({ isLogin, setIsLogin, isSignUp, setIsSignUp }) => {
-  const [menu, setMenu] = useState("home");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const cartitems = useSelector((state) => state?.cart?.cartItems);
   const isUserLogin = useSelector((state) => state?.user?.isUserLogin);
   const theme = useSelector((state) => state?.resturant?.resturantTheme);
+  const userData = useSelector((state) => state.user.userData);
+  const [menu, setMenu] = useState("home");
 
   const { cartCount } = cartitems || {};
 
@@ -32,8 +40,6 @@ const Navbar = ({ isLogin, setIsLogin, isSignUp, setIsSignUp }) => {
   }
 
   console.log(cartCount); */
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (isLogin || isSignUp) {
@@ -54,20 +60,17 @@ const Navbar = ({ isLogin, setIsLogin, isSignUp, setIsSignUp }) => {
   const handleLogout = async () => {
     dispatch(setUserLoginStatus(false));
     const newSessionId = uuidv4();
-    localStorage.setItem("sessionid", newSessionId);
+    localStorage.clear("sessionid");
 
-    const getResturantData = async (sessionid) => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/restaurant-data/`,
-        {
-          params: { sessionKey: sessionid, restaurantId: 1 },
-        }
-      );
-      return response.data;
+    navigate("/");
+
+    const handleGetResturantData = async () => {
+      const response = await getResturantData();
+      return response;
     };
 
     try {
-      const data = await getResturantData(newSessionId);
+      const data = await handleGetResturantData();
       const { result, customerCart } = data || {};
       const { restaurantOutlets } = result || {};
 
@@ -81,7 +84,8 @@ const Navbar = ({ isLogin, setIsLogin, isSignUp, setIsSignUp }) => {
         dispatch(setCartItems(customerCart));
       }
 
-      navigate("/");
+      dispatch(setUserData(null));
+      dispatch(setSelectedAddress(null));
 
       console.log("API Response after logout:", data);
     } catch (error) {
@@ -151,7 +155,7 @@ const Navbar = ({ isLogin, setIsLogin, isSignUp, setIsSignUp }) => {
               >
                 <div className="w-12 rounded-full">
                   <img
-                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                    src={userData?.customerImageUrl || userFallBackImg}
                     className="rounded-full"
                   />
                 </div>

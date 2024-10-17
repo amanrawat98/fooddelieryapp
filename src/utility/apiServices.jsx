@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 
 // Get Resturant Data
 
-const sessionid = localStorage.getItem("sessionid");
+const sessionid = localStorage.getItem("sessionid") || null;
 
 export const getResturantData = async () => {
   const response = await axios.get(

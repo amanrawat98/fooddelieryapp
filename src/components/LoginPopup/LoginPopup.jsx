@@ -116,6 +116,8 @@ const Login = ({ setIsLogin }) => {
     dispatch(setUserData(data?.result));
     localStorage.clear("sessionid");
     setIsLogin(false);
+
+    navigate('/')
   };
 
   const handleSendOtp = async (e) => {

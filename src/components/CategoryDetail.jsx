@@ -7,11 +7,10 @@ const CategoryDetail = ({ menuitem, category }) => {
     <div className="my-6">
       <CategoryHeader value={menuitem} />
       <div className="grid grid-cols-4 gap-4">
-        {menuitem?.menuItems.map((item, index) => {
-          return <FoodItem item={item} key={index} categoryid={menuitem.menuCategoryId} />;
+        {menuitem?.menuItems?.map((item, index) => {
+          return <FoodItem item={item} key={index} categoryid={menuitem?.menuCategoryId} />;
         })}
       </div>
-      {}{" "}
     </div>
   );
 };

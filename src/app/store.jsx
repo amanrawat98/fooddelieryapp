@@ -16,7 +16,7 @@ const presistConfig = {
 const reducer = combineReducers({
   user: useReducer,
   resturant: resturantReducer,
-  cart: CartReducer
+  cart: CartReducer,
 });
 
 const presistedreducer = persistReducer(presistConfig, reducer);
