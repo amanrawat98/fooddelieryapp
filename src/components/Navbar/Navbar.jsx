@@ -128,7 +128,7 @@ const Navbar = ({ isLogin, setIsLogin=()=>{}, isSignUp, setIsSignUp }) => {
   
         <Stack direction="row" alignItems="center" spacing={4}>
   <IconButton component={Link} to="/cart" sx={{ color: 'white' }}>
-    <Badge badgeContent={cartCount} color="error">
+    <Badge badgeContent={cartCount|| "0"} color="error">
       <ShoppingBasketIcon sx={{ color: 'white' }} />
     </Badge>
   </IconButton>

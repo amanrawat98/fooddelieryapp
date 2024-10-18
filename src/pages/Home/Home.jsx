@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Home.css";
 import Header from "../../components/Header/Header";
-import ExploreMenu from "../../components/ExploreMenu/ExploreMenu";
+import ExploreMenu from "../../components/ExploreMenu";
 import AppDownload from "../../components/AppDownload.jsx/AppDownload";
 import { useQuery } from "react-query";
 import CategorySection from "../../components/CategorySection";
@@ -99,7 +99,7 @@ const Home = () => {
       <Outlet restaurantOutlets={restaurantOutlets} {...props} />
       <Header data={outletData} />
       <ExploreMenu menuItems={outletData?.menuCategories} />
-      <CategorySection menuItems={outletData?.menuCategories} />{" "}
+      <CategorySection menuItems={outletData?.menuCategories} />
       {outletData?.menuCategories?.slice(1, 4)?.map((item, index) => {
         if (item?.menuItems?.length <= 0) {
           return;

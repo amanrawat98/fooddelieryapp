@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import "./FoodItem.css";
+// import "./FoodItem.css";
 import { assets } from "../../assets/assets";
 import nonvegimg from "../../assets/non_veg.png";
 import vegimg from "../../assets/veg.png";
@@ -7,7 +7,8 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { setCartItems } from "../../feature/CartSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { debounce } from "@mui/material";
+import { Box, Card, CardContent, CardMedia, debounce, IconButton, Rating, styled, Typography } from "@mui/material";
+import { Add, ArrowCircleRight, Fastfood, Grass, Remove } from "@mui/icons-material";
 
 const FoodItem = ({ item, categoryid }) => {
   const [productQuantity, setProductQuantity] = useState(0);
@@ -71,70 +72,169 @@ const FoodItem = ({ item, categoryid }) => {
       }
     }
   };
+  const [ratingValue, setRatingValue] = useState(4);
 
+  const handleRatingChange = (event, newValue) => {
+    setRatingValue(newValue);
+  };
+  const StyledRating = styled(Rating)(({ theme }) => ({
+    '&.MuiRating-root': {
+      color: 'red',
+    },
+    '&.MuiRating-root .MuiRating-iconEmpty': {
+      color: 'lightgrey',
+    },
+  }));
   return (
     <>
-      <div className="relative">
-        <div className="absolute z-40 right-4 top-2 cursor-pointer">
-          {quantity === 0 || quantity === undefined ? (
-            <div className="border-2 z-40 rounded-full">
-              <img
-                src={assets.add_icon_white}
-                alt="add_icon_white"
-                className="relative"
-                onClick={() => {
-                  handleAddToCart("increment");
-                }}
-              />
-            </div>
-          ) : (
-            <div className="food-item-counter relative top-1 left-1">
-              <img
-                src={assets.remove_icon_red}
-                alt="remove_icon_red"
-                onClick={() => {
-                  handleAddToCart("decrement");
-                }}
-              />
-              <p>{quantity}</p>
-              <img
-                src={assets.add_icon_green}
-                alt="add_icon_green"
-                onClick={() => {
-                  handleAddToCart("increment");
-                }}
-              />
-            </div>
-          )}
-        </div>
+      <Card
+        variant="outlined"
+        sx={{
+          width: '100%',
+          height: '22rem',
+          borderRadius: 6,
+          display: 'flex',
 
-        <div className="food-item">
-          <div className="food-item-img-container">
-            <img
-              src={item?.menuItemImageUrl}
-              alt="image"
-              className="food-item-img h-[17rem] object-contain w-[100%]"
+          flexDirection: 'column',
+          overflow: 'hidden',
+          boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.4)',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.5)',
+            color: 'var(--primary)',
+            transform: 'scale(1.05)',
+            '& .price-color, & .arrow-icon': {
+              color: 'green',
+            },
+          },
+        }}
+      >
+        <CardMedia
+          component="img"
+
+          sx={{
+            height: '50%',
+            objectFit: 'cover',
+          }}
+          image={item?.menuItemImageUrl}
+          alt={item?.name}
+        />
+        <CardContent sx={{ flexGrow: 1 }}>
+        <Typography variant="body" sx={{ fontWeight: '600' }}>
+          {item?.name}
+        </Typography>
+          <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ marginBlock: "1rem" }}>
+            <StyledRating
+              name="rating"
+              value={ratingValue}
+              onChange={handleRatingChange}
+              precision={0.5}
             />
-          </div>
-          <Link to={`/product/${categoryid}/${item.menuItemId}`}>
-            <div className="food-item-info">
-              <div className="food-item-name-rating">
-                <p>{item.name}</p>
-              </div>
-              <img src={assets.rating_starts} alt="rating_starts" />
-              <p className="food-item-desc">{item.description.slice(0, 80)}</p>
-              <div className="flex justify-between items-center">
-                <p className="food-item-price">${item.price}</p>
-                <img
-                  src={item.mealType === "non-veg" ? nonvegimg : vegimg}
-                  alt=""
-                  className="size-5"
-                />
-              </div>
-            </div>
-          </Link>
-        </div>
-      </div>
+            <Box className="size-5">
+              {item.mealType === "non-veg" ? (
+                <Fastfood style={{ fontSize: '2rem', color: 'red' }} />
+              ) : (
+                <Grass style={{ fontSize: '2rem', color: 'green' }} />
+              )}
+            </Box>
+          </Box>
+          {item?.description ? <Typography
+            variant="body2"
+            color="gray"
+            noWrap
+            sx={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'wrap',
+            }}
+          >
+            {item?.description?.length > 50 ? `${item?.description?.substring(0, 50)}...` : item?.description}
+          </Typography> : null}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <Link to={`/product/${categoryid}/${item.menuItemId}`}>
+              {item?.price && (
+                <Box
+                  sx={{
+                    fontWeight: '500',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '.5rem',
+                    marginTop: '.5rem',
+                  }}
+                >
+                  <Box>Price:</Box>
+                  <Box className="price-color" color="var(--primary)">
+                    ${item?.price}
+                  </Box>
+                  <ArrowCircleRight className="arrow-icon" sx={{ color: 'var(--primary)', textAlign: 'right' }} />
+                </Box>
+              )}
+            </Link>
+            <Box
+              sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}
+            >
+              {quantity === 0 || quantity === undefined ? (
+                <IconButton
+                  onClick={() => handleAddToCart("increment")}
+                  sx={{
+                    bgcolor: 'var(--primary)',
+                    borderRadius: '50%',
+                    '&:hover': {
+                      transform: 'scale(1.1)',
+                      bgcolor: 'var(--secondary)',
+                    },
+                    transition: 'transform 0.2s ease-in-out',
+                  }}
+                >
+                  <Add sx={{ color: 'white' }} />
+                </IconButton>
+              ) : (
+                <>
+                  <IconButton
+                    onClick={() => handleAddToCart("decrement")}
+                    sx={{
+                      bgcolor: 'var(--primary)',
+                      borderRadius: '50%',
+                      '&:hover': {
+                        transform: 'scale(1.1)',
+                        bgcolor: 'var(--secondary)',
+                      },
+                      transition: 'transform 0.2s ease-in-out',
+                    }}
+                  >
+                    <Remove sx={{ color: 'white' }} />
+                  </IconButton>
+                  <Typography variant="body2" sx={{ mx: 1, fontWeight: "600", color: "green" }}>
+                    {quantity}
+                  </Typography>
+                  <IconButton
+                    onClick={() => handleAddToCart("increment")}
+                    sx={{
+                      bgcolor: 'var(--primary)',
+                      borderRadius: '50%',
+                      '&:hover': {
+                        transform: 'scale(1.1)',
+                        bgcolor: 'var(--secondary)',
+                      },
+                      transition: 'transform 0.2s ease-in-out',
+                    }}
+                  >
+                    <Add sx={{ color: 'white' }} />
+                  </IconButton>
+                </>
+              )}
+            </Box>
+
+          </Box>
+        </CardContent>
+      </Card>
     </>
   );
 };
