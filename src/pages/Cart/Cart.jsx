@@ -13,7 +13,7 @@ import CartItem from "../../components/Cart/CartItem";
 
 export const deliveryFee = 2;
 
-const Cart = ({ showLoginPage }) => {
+const Cart = ({ showLoginPage=()=>{} }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartitems = useSelector((state) => state?.cart?.cartItems);

@@ -1,83 +1,54 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData, setUserLoginStatus } from "../../feature/userSlice";
-import {
-  setOutletData,
-  setResturantData,
-} from "../../feature/resturantDataSlice";
+import { setOutletData, setResturantData } from "../../feature/resturantDataSlice";
 import { setCartItems } from "../../feature/CartSlice";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ShowAndHidePassword from "../ShowAndHidePassword";
 import { emailRegex, phoneRegex } from "../../constaints/constaints";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  IconButton,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { useForm } from "react-hook-form";
+import useCustomToast from "../../hooks/Toast/useToast";
 
-const Login = ({ setIsLogin }) => {
+const Login = ({ setIsLogin = () => {} }) => {
   const dispatch = useDispatch();
+  const toast = useCustomToast();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const resturantdata = useSelector((state) => state?.resturant?.resturantdata);
 
   let restaurantId;
-
   if (resturantdata?.result?.restaurantId) {
     restaurantId = resturantdata?.result?.restaurantId;
   }
 
   const navigate = useNavigate();
   const [page, setPage] = useState("login");
-  const [resetPasswordData, setResetPasswordData] = useState({
-    otp: "",
-    password: "",
-    comformPassword: "",
+  const [loading, setLoading] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+
+  const { register, handleSubmit, setValue,getValues, formState: { errors } } = useForm({
+    mode: 'onBlur', 
+    defaultValues: {
+      email: '',
+      phone: '',
+      password: '',
+      comformPassword: '', 
+    },
   });
-
-  const handleSetResetPasswordData = (e) => {
-    const { value, name } = e.target;
-    setResetPasswordData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  let cartId;
-  let outletId;
-  if (cartItems && cartItems.cartId) {
-    cartId = cartItems.cartId;
-  }
-
-  if (cartItems && cartItems.outletId) {
-    outletId = cartItems.outletId;
-  }
-
-  const [loginData, setLoginData] = useState({
-    email: "",
-    phone: "",
-    password: "",
-    loginMethod: "email",
-    role: "customer",
-    outletId: outletId || null,
-    temporaryCartId: cartId || null,
-  });
-
-  const handleSetUserData = (e) => {
-    const { value } = e.target;
-
-    if (emailRegex.test(value)) {
-      setLoginData((prev) => ({
-        ...prev,
-        email: value,
-        phone: "",
-      }));
-    } else if (phoneRegex.test(value)) {
-      setLoginData((prev) => ({
-        ...prev,
-        phone: value,
-        email: "",
-      }));
-    }
-  };
 
   const handleUserLogin = async (payload) => {
-    console.log(payload);
     const response = await axios.post(
       `${import.meta.env.VITE_BASE_URL}/login`,
       payload
@@ -85,45 +56,50 @@ const Login = ({ setIsLogin }) => {
     return response.data;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
+    setLoading(true);
 
     const payload = {
-      ...(loginData.email
-        ? { email: loginData.email }
-        : { phone: loginData.phone }),
-      password: loginData.password,
-      loginMethod: loginData.email ? "email" : "phone", // Set login method
+      ...(data.email ? { email: data.email } : { phone: data.phone }),
+      password: data.password,
+      loginMethod: data.email ? "email" : "phone",
       role: "customer",
-      outletId: outletId || null,
-      temporaryCartId: cartId || null,
+      outletId: cartItems?.outletId || null,
+      temporaryCartId: cartItems?.cartId || null,
     };
 
-    const data = await handleUserLogin(payload);
-    const resturantdata = data;
-    const { result, customerCart, restaurantData } = resturantdata || {};
-    const { restaurantOutlets } = restaurantData || {};
+    try {
+      const resturantdata = await handleUserLogin(payload);
+      const { result, customerCart, restaurantData } = resturantdata || {};
+      const { restaurantOutlets } = restaurantData || {};
 
-    if (resturantdata && restaurantOutlets) {
-      dispatch(setResturantData(resturantdata));
-      dispatch(setOutletData(restaurantOutlets[0]));
-      dispatch(setCartItems(customerCart));
+      if (resturantdata && restaurantOutlets) {
+        dispatch(setResturantData(resturantdata));
+        dispatch(setOutletData(restaurantOutlets[0]));
+        dispatch(setCartItems(customerCart));
+      }
+      if (resturantdata.detail) {
+        dispatch(setUserLoginStatus(true));
+        toast.success(<span>Login successfully</span>);
+      }
+
+      dispatch(setUserData(data?.result));
+      localStorage.clear("sessionid");
+      setIsLogin(false);
+      navigate("/");
+    } catch (error) {
+      toast.error(<span>Something went wrong </span>);
+      console.error("Login failed:", error);
+    } finally {
+      setLoading(false);
     }
-    if (resturantdata.detail) {
-      dispatch(setUserLoginStatus(true));
-    }
-
-    dispatch(setUserData(data?.result));
-    localStorage.clear("sessionid");
-    setIsLogin(false);
-
-    navigate('/')
   };
 
-  const handleSendOtp = async (e) => {
-    e.preventDefault();
+  const handleSendOtp = async (data) => {
+    setOtpLoading(true);
+
     const payload = {
-      email: loginData.email, // You may choose to send the email or phone here
+      email: data.email,
       restaurantId: restaurantId,
     };
     try {
@@ -139,170 +115,215 @@ const Login = ({ setIsLogin }) => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setOtpLoading(false);
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-      {page === "login" && (
-        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md h-[65%] ">
-          <div
-            className="text-end text-3xl cursor-pointer "
-            onClick={() => setIsLogin(false)}
-          >
-            X
-          </div>
-          <h2 className="text-center text-3xl font-semibold mb-3">Login</h2>
-          <h3 className="text-center text-gray-400 text-sm mb-3">
-            Add your details to login
-          </h3>
+  const inputStyles = {
+    // mb: 2,
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderRadius: '4px',
+      },
+      '& input': {
+        padding: '10px 14px',
+        height: 'auto',
+      },
+    },
+  };
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <input
-              type="text" // Changed to text to accept both email and phone
+  return (
+    <Dialog open={true} onClose={() => setIsLogin(false)} maxWidth="xs" fullWidth>
+      <DialogTitle>
+        <Typography variant="h6" align="center" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {page === "login" ? "Login" : page === "forgotPassword" ? "Forgot Password" : "Reset Password"}
+          <IconButton edge="end" color="inherit" onClick={() => setIsLogin(false)}>
+            <CloseIcon />
+          </IconButton>
+        </Typography>
+      </DialogTitle>
+      <DialogContent sx={{ paddingBottom: "2rem" }}>
+        {page === "login" && (
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+              type="text"
               placeholder="Your email or Phone no"
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={handleSetUserData}
+           
+              fullWidth
+              variant="outlined"
+              {...register("email", {
+                required: "Email or phone number is required",
+                pattern: {
+                  value: emailRegex,
+                  message: "Invalid email format",
+                },
+              })}
+              error={!!errors.email}
+              helperText={errors.email ? errors.email.message : ''}
+              sx={inputStyles}
             />
-            <input
+            <TextField
               type="password"
               placeholder="Password"
-              name="password"
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={(e) =>
-                setLoginData((prev) => ({ ...prev, password: e.target.value }))
-              }
+          
+              {...register("password", {
+                required: "Password is required",
+              })}
+              error={!!errors.password}
+              helperText={errors.password ? errors.password.message : ''}
+              fullWidth
+              variant="outlined"
+              sx={inputStyles}
             />
-
-            <button
+            <Button
               type="submit"
-              className="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-500 transition duration-300"
-            >
-              Login
-            </button>
-            <button
-              type="button"
-              className="w-full border-2 py-2 rounded-lg border-orange-400 text-black"
-              onClick={() => setIsLogin(false)}
-            >
-              Cancel
-            </button>
-            <h3
-              className="text-center text-gray-400 text-sm cursor-pointer"
-              onClick={() => {
-                setPage("forgotPassword");
+              variant="contained"
+              fullWidth
+              disabled={loading}
+              sx={{
+                backgroundColor: "#ff6347",
+                "&:hover": { backgroundColor: "#e5533d" },
+                mb: 2,
               }}
             >
-              Forgot Your password?
-            </h3>
-          </form>
-        </div>
-      )}
-
-      {page === "forgotPassword" && (
-        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md h-[65%]">
-          <div
-            className="text-end text-3xl cursor-pointer"
-            onClick={() => setIsLogin(false)}
-          >
-            X
-          </div>
-          <div className="space-y-4 mb-11 mt-6">
-            <h2 className="text-center text-3xl font-semibold">
-              Forgot Password
-            </h2>
-            <h3 className="text-center text-gray-400 text-sm">
-              Add your details to reset your password
-            </h3>
-          </div>
-
-          <form className="space-y-6" onSubmit={handleSendOtp}>
-            <input
-              type="text" // Changed to text to accept both email and phone
-              placeholder="Your email or Phone no"
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={(e) => handleSetUserData(e)}
-            />
-            <button
-              type="submit"
-              className="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-500 transition duration-300"
-            >
-              Get OTP
-            </button>
-            <button
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
+            </Button>
+            <Button
               type="button"
-              className="w-full border-2 py-2 rounded-lg border-orange-400 text-black"
+              variant="outlined"
+              fullWidth
+              sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
               onClick={() => setIsLogin(false)}
             >
               Cancel
-            </button>
+            </Button>
+            <Typography
+              variant="body2"
+              align="center"
+              sx={{ cursor: "pointer", color: "#676767" }}
+              onClick={() => setPage("forgotPassword")}
+            >
+              Forgot Your password?
+            </Typography>
           </form>
-        </div>
-      )}
+        )}
 
-      {page === "resetPassword" && (
-        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md h-[75%]">
-          <div
-            className="text-end text-3xl cursor-pointer"
-            onClick={() => setIsLogin(false)}
-          >
-            X
-          </div>
-          <div className="space-y-4 mb-4 ">
-            <h2 className="text-center text-3xl font-semibold">
-              Reset Password
-            </h2>
-            <h3 className="text-center text-gray-400 text-sm">
-              Add your details to update your password
-            </h3>
-          </div>
+        {page === "forgotPassword" && (
+          <form className="space-y-4" onSubmit={handleSubmit(handleSendOtp)}>
+            <TextField
+              type="text"
+              placeholder="Your email or Phone no"
+         
+              fullWidth
+              variant="outlined"
+              {...register("email", {
+                required: "Email or phone number is required",
+                pattern: {
+                  value: emailRegex,
+                  message: "Invalid email format",
+                },
+              })}
+              error={!!errors.email}
+              helperText={errors.email ? errors.email.message : ''}
+              sx={inputStyles}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              disabled={otpLoading}
+              sx={{
+                backgroundColor: "#ff6347",
+                "&:hover": { backgroundColor: "#e5533d" },
+                mb: 2,
+              }}
+            >
+              {otpLoading ? <CircularProgress size={24} color="inherit" /> : "Get OTP"}
+            </Button>
+            <Button
+              type="button"
+              variant="outlined"
+              fullWidth
+              sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
+              onClick={() => setIsLogin(false)}
+            >
+              Cancel
+            </Button>
+          </form>
+        )}
 
-          <form className="space-y-6" onSubmit={handleSendOtp}>
-            <input
+        {page === "resetPassword" && (
+          <form className="space-y-4" onSubmit={handleSubmit(handleSendOtp)}>
+            <TextField
               type="text"
               placeholder="OTP"
               name="otp"
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={handleSetResetPasswordData}
+             
+              fullWidth
+              variant="outlined"
+              {...register("otp", {
+                required: "OTP is required",
+              })}
+              error={!!errors.otp}
+              helperText={errors.otp ? errors.otp.message : ''}
+              sx={inputStyles}
             />
-            <input
+            <TextField
               type="password"
               placeholder="New Password"
               name="password"
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={handleSetResetPasswordData}
+           
+              fullWidth
+              variant="outlined"
+              {...register("password", {
+                required: "New password is required",
+              })}
+              error={!!errors.password}
+              helperText={errors.password ? errors.password.message : ''}
+              sx={inputStyles}
             />
-            <input
+            <TextField
               type="password"
-              placeholder="Confirm New Password"
+              placeholder="Confirm Password"
               name="comformPassword"
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={handleSetResetPasswordData}
+            
+              fullWidth
+              variant="outlined"
+              {...register("comformPassword", {
+                required: "Confirm password is required",
+                validate: value => value === getValues("password") || "Passwords do not match",
+              })}
+              error={!!errors.comformPassword}
+              helperText={errors.comformPassword ? errors.comformPassword.message : ''}
+              sx={inputStyles}
             />
-
-            <button
+            <Button
               type="submit"
-              className="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-500 transition duration-300"
+              variant="contained"
+              fullWidth
+              disabled={loading}
+              sx={{
+                backgroundColor: "#ff6347",
+                "&:hover": { backgroundColor: "#e5533d" },
+                mb: 2,
+              }}
             >
-              Reset Password
-            </button>
-            <button
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Reset Password"}
+            </Button>
+            <Button
               type="button"
-              className="w-full border-2 py-2 rounded-lg border-orange-400 text-black"
+              variant="outlined"
+              fullWidth
+              sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
               onClick={() => setIsLogin(false)}
             >
               Cancel
-            </button>
+            </Button>
           </form>
-        </div>
-      )}
-    </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
 

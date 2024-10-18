@@ -18,11 +18,25 @@ import Login from "../LoginPopup/LoginPopup";
 import { assets } from "../../assets/assets";
 import userFallBackImg from "../../../src/assets/user.png";
 import { getResturantData } from "../../utility/apiServices";
+import useCustomToast from "../../hooks/Toast/useToast";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Badge,
+  Button,
+  Avatar,
+  Typography,
+  Container,
+  Box,
+  Stack,
+} from '@mui/material';
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 
-const Navbar = ({ isLogin, setIsLogin, isSignUp, setIsSignUp }) => {
+const Navbar = ({ isLogin, setIsLogin=()=>{}, isSignUp, setIsSignUp }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const toast = useCustomToast();
   const cartitems = useSelector((state) => state?.cart?.cartItems);
   const isUserLogin = useSelector((state) => state?.user?.isUserLogin);
   const theme = useSelector((state) => state?.resturant?.resturantTheme);
@@ -61,7 +75,7 @@ const Navbar = ({ isLogin, setIsLogin, isSignUp, setIsSignUp }) => {
     dispatch(setUserLoginStatus(false));
     const newSessionId = uuidv4();
     localStorage.clear("sessionid");
-
+    toast.success("User logout successfully")
     navigate("/");
 
     const handleGetResturantData = async () => {
@@ -88,85 +102,82 @@ const Navbar = ({ isLogin, setIsLogin, isSignUp, setIsSignUp }) => {
       dispatch(setSelectedAddress(null));
 
       console.log("API Response after logout:", data);
-    } catch (error) {
+    }
+     catch (error) {
       console.error(
         "Error fetching restaurant data with new session ID",
         error
       );
     }
+  
   };
 
   const props = { isLogin, setIsLogin, isSignUp, setIsSignUp };
 
   return (
-    <div className="">
-      <div className="container mx-auto flex justify-between items-center py-4">
+    <Box sx={{ backgroundColor: '#090b15', py: "10px" }}>
+    <Box sx={{px:4}}>
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Link to="/">
           <img
             src={theme?.appLogoImageUrl}
             alt="logo"
-            className="w-16 rounded-full"
+            style={{ width: '64px', borderRadius: '50%' }}
           />
         </Link>
+  
+        <Stack direction="row" alignItems="center" spacing={4}>
+  <IconButton component={Link} to="/cart" sx={{ color: 'white' }}>
+    <Badge badgeContent={cartCount} color="error">
+      <ShoppingBasketIcon sx={{ color: 'white' }} />
+    </Badge>
+  </IconButton>
+  <Stack direction="row" spacing={3}>
+  {!isUserLogin ? (
+    <>
+      <Button
+        variant="contained"
+        color="warning"
+        onClick={() => setIsLogin(true)}
+      >
+        Login
+      </Button>
+      <Button
+        variant="outlined"
+        color="warning"
+        onClick={() => setIsSignUp(true)}
+      >
+        Signup
+      </Button>
+    </>
+  ) : (
+    <>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={handleLogout}
+      >
+        Logout
+      </Button>
+      <Avatar
+        alt="User Avatar"
+        src={userData?.customerImageUrl || userFallBackImg}
+        onClick={() => navigate("/profile")}
+        sx={{ cursor: 'pointer', width: 36, height: 36, ml: 2 }} 
+      />
+    </>
+  )}
+</Stack>
 
-        <div className="flex items-center space-x-6">
-          <div className="relative">
-            <Link to="/cart">
-              <img
-                src={assets?.basket_icon}
-                alt="basket_icon"
-                className="w-6"
-              />
-            </Link>
-            <div
-              className={` flex absolute -top-2 -right-2 bg-orange-600 text-white rounded-full w-5 h-5 justify-center items-center`}
-            >
-              <p className="text-xs">{cartCount}</p>
-            </div>
-          </div>
-          {!isUserLogin && (
-            <div className="flex space-x-2">
-              <button
-                onClick={() => setIsLogin(true)}
-                className="bg-orange-600 text-white py-1 px-4 rounded-lg hover:bg-orange-500 transition duration-200"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => setIsSignUp(true)}
-                className="border border-orange-600 text-orange-600 py-1 px-4 rounded-lg hover:bg-orange-600 hover:text-white transition duration-200"
-              >
-                Signup
-              </button>
-            </div>
-          )}
-          {isUserLogin && (
-            <div className="flex gap-2">
-              <button
-                onClick={handleLogout}
-                className={`bg-orange-400 text-white py-1 px-4 rounded-lg hover:bg-orange-500 transition duration-200`}
-              >
-                Logout
-              </button>
 
-              <div
-                className="avatar cursor-pointer"
-                onClick={() => navigate("/profile")}
-              >
-                <div className="w-12 rounded-full">
-                  <img
-                    src={userData?.customerImageUrl || userFallBackImg}
-                    className="rounded-full"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-      {isLogin && <Login setIsLogin={setIsLogin} {...props} />}
-      {isSignUp && <SignUp setIsSignUp={setIsSignUp} />}
-    </div>
+        </Stack>
+      </Toolbar>
+    </Box>
+  
+    {isLogin && <Login {...props} />}
+    {isSignUp && <SignUp setIsSignUp={setIsSignUp} />}
+  </Box>
+  
   );
 };
 
