@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Navbar from "./components/Navbar/Navbar";
-import { Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home/Home";
 import Cart from "./pages/Cart/Cart";
-import PlaceOrder from "./pages/PlaceOrder/PlaceOrder";
 import Footer from "./components/Footer/Footer";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
 import ProductDetail from "./pages/ProductDetail";
 import CategoryViewPage from "./CategoryViewPage";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Profile from "./pages/Profile/Profile";
 import Orders from "./pages/Profile/Orders";
 import User from "./pages/Profile/User";
@@ -17,9 +16,11 @@ import axios from "axios";
 import { setResturantTheme } from "./feature/resturantDataSlice";
 import OrderStatus from "./pages/Profile/OrderStatus";
 import ProtectedRoutes from "./components/Routes/ProtectedRoutes";
+import { Box, CircularProgress } from "@mui/material";
+import NotFoundPage from "./components/NotFoundPage";
 
 const App = () => {
-  const [showLogin, setShowLogin] = useState(false);
+
   const dispatch = useDispatch();
   const [isLogin, setIsLogin] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
@@ -59,15 +60,26 @@ const App = () => {
 
   return (
     <>
-      {isLogin ? <LoginPopup setShowLogin={setShowLogin} /> : <></>}
-      <div className="app px-2 md:px-10">
-        <Navbar setShowLogin={setShowLogin} {...props} />
-        <Routes>
+      <Routes>
+        <Route path="/" element={
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+            <Navbar  {...props} />
+            <Box sx={{ flex: 1, overflowY: 'auto', display:"flex",flexDirection:"column"
+             }}>
+              <Box sx={{ px: "1rem", mb: "1rem",flex:1 }}>
+                <Suspense fallback={<CircularProgress />}>
+                  <Outlet />
+                </Suspense>
+              </Box>
+              <Footer />
+            </Box>
+          </Box>
+        }>
           <Route path="/" element={<Home />} />
           <Route
             path="/cart"
             element={
-              <Cart setShowLogin={setShowLogin} showLoginPage={showLoginPage} />
+              <Cart showLoginPage={showLoginPage} />
             }
           />
           <Route
@@ -104,15 +116,16 @@ const App = () => {
               }
             />
           </Route>
-
           <Route
             path="/product/:menuid/:productid"
             element={<ProductDetail />}
           />
           <Route path="/category/:categoryid" element={<CategoryViewPage />} />
-        </Routes>
-      </div>
-      <Footer />
+          <Route path="*" element={<NotFoundPage/>} />
+        </Route>
+      </Routes>
+
+
     </>
   );
 };

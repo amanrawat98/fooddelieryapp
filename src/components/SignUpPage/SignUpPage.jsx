@@ -1,11 +1,28 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import {
+  TextField,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  Typography,
+  Box,
+  CircularProgress,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { emailRegex, phoneRegex } from "../../constaints/constaints";
+import useCustomToast from "../../hooks/Toast/useToast";
 
 const SignUp = ({ setIsSignUp }) => {
+  const [loading, setLoading] = useState(false);
   const cartItems = useSelector((state) => state.cart.cartItems);
   const resturantdata = useSelector((state) => state.resturant.resturantdata);
-
+  const toast = useCustomToast();
   let restaurantId;
   let cartId;
 
@@ -17,101 +34,192 @@ const SignUp = ({ setIsSignUp }) => {
     restaurantId = resturantdata?.result?.restaurantId;
   }
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      phone: "",
+    },
+    mode: "onBlur",
+  });
+
   const [signUpData, setSignUpData] = useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
-    email: "",
-    password: "",
     resturantId: restaurantId,
     outletId: cartItems?.outletId || null,
     temporaryCartId: cartId,
     role: "customer",
   });
 
-  const handleSetUserData = (e) => {
-    const { value, name } = e.target;
-    setSignUpData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   const handleUserSignUp = async (payload) => {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/signup`,
-      payload
-    );
-    return response.data;
+    try {
+      setLoading(true)
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/signup`,
+        payload
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error during sign up:", error);
+      toast.error(<div>Some thing went wrong form our side</div>)
+    }
+    finally{
+      setLoading(false)
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const data = await handleUserSignUp(signUpData);
+
+  const onSubmit = async (data) => {
+    const signUpDetails = { ...signUpData, ...data };
+    await handleUserSignUp(signUpDetails);
+  };
+
+
+  const inputStyles = {
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderRadius: '4px',
+      },
+      '& input': {
+        padding: '10px 14px',
+        height: 'auto',
+        fontSize: '16px',
+      },
+    },
+    mb: 2,
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div
-            className="text-end text-3xl cursor-pointer"
-            onClick={() => setIsSignUp(false)}
-          >
-            X
-          </div>
-          <h2 className="text-center text-2xl font-semibold">Sign Up</h2>
+    <Dialog
+      open={true}
+      onClose={() => setIsSignUp(false)}
+      aria-labelledby="sign-up-dialog-title"
+      maxWidth="sm"
+      fullWidth
+    >
+      <DialogTitle id="sign-up-dialog-title">
+        <Typography variant="h6" align="center" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          Sign Up
+          <IconButton edge="end" color="inherit" onClick={() => setIsSignUp(false)}>
+            <CloseIcon />
+          </IconButton>
+        </Typography>
 
-          <input
+      </DialogTitle>
+      <DialogContent>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <TextField
             type="text"
             placeholder="First name"
-            name="firstName"
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleSetUserData}
+            {...register("firstName", { required: "First name is required" })}
+            error={!!errors.firstName}
+            helperText={errors.firstName ? errors.firstName.message : ""}
+            fullWidth
+            variant="outlined"
+            sx={inputStyles}
           />
-          <input
+          <TextField
             type="text"
             placeholder="Last name"
-            name="lastName"
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleSetUserData}
+            {...register("lastName", { required: "Last name is required" })}
+            error={!!errors.lastName}
+            helperText={errors.lastName ? errors.lastName.message : ""}
+            fullWidth
+            variant="outlined"
+            sx={inputStyles}
           />
-          <input
+          <TextField
             type="email"
-            placeholder="Your email"
-            name="email"
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleSetUserData}
+            placeholder="Email"
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: emailRegex,
+                message: "Invalid email address",
+              },
+            })}
+            error={!!errors.email}
+            helperText={errors.email ? errors.email.message : ""}
+            fullWidth
+            variant="outlined"
+            sx={inputStyles}
           />
-          <input
+          <TextField
             type="password"
             placeholder="Password"
-            name="password"
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleSetUserData}
+            {...register("password", { required: "Password is required" })}
+            error={!!errors.password}
+            helperText={errors.password ? errors.password.message : ""}
+            fullWidth
+            variant="outlined"
+            sx={inputStyles}
           />
-          <input
-            type="text"
-            placeholder="Phone Number"
-            name="phone"
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleSetUserData}
+          <TextField
+            type="tel"
+            placeholder="Phone"
+            {...register("phone", {
+              required: "Phone number is required",
+              pattern: {
+                value: phoneRegex,
+                message: "Invalid phone number",
+              },
+            })}
+            error={!!errors.phone}
+            helperText={errors.phone ? errors.phone.message : ""}
+            fullWidth
+            variant="outlined"
+            sx={inputStyles}
           />
+     <Box
+  sx={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center", 
+    gap: 2, 
+    my:2
+  }}
+>
+  <Button
+    type="button"
+    variant="outlined"
+    sx={{
+      borderColor: "#ff6347",
+      color: "#ff6347",
+      width: "45%",
+    }}
+    onClick={() => setIsSignUp(false)}
+  >
+    Cancel
+  </Button>
 
-          <button
-            type="submit"
-            className="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition duration-300"
-          >
-            Create Account
-          </button>
+  <Button
+    type="submit"
+    variant="contained"
+    fullWidth
+    disabled={loading}
+    sx={{
+      backgroundColor: "#ff6347",
+      "&:hover": { backgroundColor: "#e5533d" },
+      width: "45%",
+    }}
+  >
+    {loading ? (
+      <CircularProgress size={24} color="inherit" />
+    ) : (
+      "Create Account"
+    )}
+  </Button>
+</Box>
+
         </form>
-      </div>
-    </div>
+      </DialogContent>
+
+    </Dialog>
   );
 };
 

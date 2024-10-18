@@ -113,9 +113,7 @@ const Home = () => {
           );
         }
       })}
-      {/*             <FoodDisplay category={category} menuItems={data?.menuCategories} />
-       */}{" "}
-      <AppDownload />
+     <AppDownload />
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { store } from "./app/store.jsx";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { PersistGate } from "redux-persist/integration/react";
 import persistStore from "redux-persist/es/persistStore";
+import { ToastProvider } from "./hooks/Toast/ToastContext.jsx";
 
 let presistor = persistStore(store);
 
@@ -18,11 +19,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <QueryClientProvider client={queryClient}>
     <PersistGate loading={null} persistor={presistor}>
+    <ToastProvider>
         <BrowserRouter>
           <StoreContextProvider>
             <App />
           </StoreContextProvider>
-        </BrowserRouter>{" "}
+        </BrowserRouter>
+        </ToastProvider>
       </PersistGate>
     </QueryClientProvider>
   </Provider>

@@ -7,10 +7,11 @@ import CartReducer from "../feature/CartSlice";
 import storage from "redux-persist/lib/storage";
 import persistReducer from "redux-persist/es/persistReducer";
 
-const presistConfig = {
+const persistConfig = {
   key: "root",
   version: 1,
   storage,
+  whitelist: ["user", "cart","resturant"],  // other then these no one persist
 };
 
 const reducer = combineReducers({
@@ -19,7 +20,7 @@ const reducer = combineReducers({
   cart: CartReducer,
 });
 
-const presistedreducer = persistReducer(presistConfig, reducer);
+const presistedreducer = persistReducer(persistConfig, reducer);
 
 export const store = configureStore({
   reducer: presistedreducer,

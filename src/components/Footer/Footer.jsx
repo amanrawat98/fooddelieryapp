@@ -1,53 +1,119 @@
 import React from "react";
-import "./Footer.css";
-import { assets } from "../../assets/assets";
+import { Box, Typography, List, ListItem, Divider, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { MdPhone, MdEmail, MdLocationOn } from "react-icons/md";
+import { assets } from "../../assets/assets";
+import { productLinks, resourceLinks, socialLinks } from "./data";
 
 const Footer = () => {
   const navigate = useNavigate();
   return (
-    <footer id="footer">
-      <div className="footer-content">
-        <div className="footer-content-left">
-          <img src={assets.logo} alt="logo" />
-          <p>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit
-            ratione fugiat vitae quisquam dolores sint id, nisi veniam
-            repellendus. Tempore, expedita. At praesentium deserunt minima!
-            Porro iste beatae maxime voluptatem?
-          </p>
-          <div className="footer-social-icons">
-            <a href="https://www.facebook.com">
-              <img src={assets.facebook_icon} alt="facebook" />
-            </a>
-            <a href="https://www.twitter.com">
-              <img src={assets.twitter_icon} alt="twitter" />
-            </a>
-            <a href="https://www.linkedin.com">
-              <img src={assets.linkedin_icon} alt="linkedin" />
-            </a>
-          </div>
-        </div>
-        <div className="footer-content-center">
-          <h2>COMPANY</h2>
-          <ul>
-            <li onClick={() => navigate("/")}>Home</li>
-            <li>About Us</li>
-            <li>Delivery</li>
-            <li>Privacy Policy</li>
-          </ul>
-        </div>
-        <div className="footer-content-right">
-          <h2>GET IN TOUCH</h2>
-          <ul>
-            <li>+1-123-456-7890</li>
-            <li>contact@tomato.com</li>
-          </ul>
-        </div>
-      </div>
-      <hr />
-      <p className="footer-copyright">Copyright 2024 © Tomato.com</p>
-    </footer>
+    <Box
+      component="footer"
+      sx={{
+        backgroundColor: "#090b15",
+        color: "#fff",
+        padding: { xs: "10px", md: "20px" },
+        textAlign: "center",
+      }}
+    >
+      <Box
+        sx={{
+          display: { xs: "block", md: "flex" },
+          justifyContent: "space-between",
+          width: "100%",
+          padding: "10px",
+        }}
+      >
+        <Box sx={{ flex: "1", textAlign: "left", mb: { xs: "10px", md: 0 } }}>
+          <Box sx={{ mb: 1 }}>
+            <img src={assets.logo} alt="logo" style={{ maxWidth: "150px" }} />
+            <Typography variant="body2" sx={{ mt: 3 }}>
+              Welcome to Tomato, your favorite restaurant! Enjoy delicious meals made from fresh ingredients, served with love. Join us for a delightful dining experience.
+            </Typography>
+          </Box>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            Follow us on:
+          </Typography>
+          <Box sx={{ display: "flex", gap: "8px" }}>
+            {socialLinks.map(({ name, icon, url }) => (
+              <IconButton
+                key={name}
+                component="a"
+                href={url}
+                aria-label={name.toLowerCase()}
+                color="inherit"
+                sx={{
+                  "&:hover": { transform: "scale(1.1)", transition: "transform 0.2s" },
+                }}
+              >
+                {icon}
+              </IconButton>
+            ))}
+          </Box>
+        </Box>
+
+        <Box sx={{ flex: "1", textAlign: "left", mb: { xs: "10px", md: 0 } }}>
+          <Typography variant="h6" gutterBottom>
+            PRODUCT
+          </Typography>
+          <List>
+            {productLinks.map(({ name, path }) => (
+              <ListItem
+                key={name}
+                sx={{ cursor: "pointer", color: "#fff", "&:hover": { color: "#bbb" } }}
+                onClick={() => navigate(path)}
+              >
+                {name}
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+
+        <Box sx={{ flex: "1", textAlign: "left", mb: { xs: "10px", md: 0 } }}>
+          <Typography variant="h6" gutterBottom>
+             RESOURCES
+          </Typography>
+          <List>
+            {resourceLinks.map(({ name, path }) => (
+              <ListItem
+                key={name}
+                sx={{ cursor: "pointer", color: "#fff", "&:hover": { color: "#bbb" } }}
+                onClick={() => navigate(path)}
+              >
+                {name}
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+
+        <Box sx={{ flex: "1", textAlign: "left" }}>
+          <Typography variant="h6" gutterBottom>
+            GET IN TOUCH
+          </Typography>
+          <List>
+            <ListItem sx={{ display: "flex", alignItems: "center" }}>
+              <MdPhone size={20} style={{ marginRight: "8px" }} />
+              +1-123-456-7890
+            </ListItem>
+            <ListItem sx={{ display: "flex", alignItems: "center" }}>
+              <MdEmail size={20} style={{ marginRight: "8px" }} />
+              contact@tomato.com
+            </ListItem>
+            <ListItem sx={{ display: "flex", alignItems: "center" }}>
+              <MdLocationOn size={20} style={{ marginRight: "8px" }} />
+              123 Tomato Lane, Flavor Town, USA
+            </ListItem>
+          </List>
+        </Box>
+      </Box>
+
+      <Divider sx={{ backgroundColor: "#fff", my: 2 }} />
+
+      <Typography variant="body2" sx={{ textAlign: "center", color: "#bbb" }}>
+        Copyright 2024 © Tomato.com
+      </Typography>
+    </Box>
   );
 };
 
