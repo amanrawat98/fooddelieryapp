@@ -10,10 +10,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AddOrSelectAddress from "../../components/Address.jsx/AddOrSelectAddress";
 import CartItem from "../../components/Cart/CartItem";
+import { Box, Button, Container, Divider, FormControlLabel, Paper, Radio, RadioGroup, TextField, Typography } from "@mui/material";
+import GoBackButton from "../../components/Common/Buttons/GoBackButton";
 
 export const deliveryFee = 2;
 
-const Cart = ({ showLoginPage=()=>{} }) => {
+const Cart = ({ showLoginPage = () => { } }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartitems = useSelector((state) => state?.cart?.cartItems);
@@ -125,145 +127,179 @@ const Cart = ({ showLoginPage=()=>{} }) => {
   }, [address]);
 
   return (
-    <div className=" relative">
-      <ToastContainer position="top-center" />
+    <>
+      <GoBackButton />
+      <Box sx={{ position: 'relative', p: 3 }}>
+        <ToastContainer position="top-center" />
 
-      <div className="cart-items space-y-3">
-        <div className="cart-items-title cart-heading grid grid-cols-6">
-          {["Title", "Price", "Quantity", "Total", "Remove"].map(
-            (item, index) => {
-              if (item === "Title") {
-                return (
-                  <p className="col-span-2 text-lg font-semibold" key={index}>
-                    {item}
-                  </p>
-                );
-              } else {
-                <p className="col-span-1 text-lg font-semibold" key={index}>
-                  {item}
-                </p>;
-              }
-            }
+        <Box sx={{ mb: 3 }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(6, 1fr)",
+              mb: 2,
+            }}
+          >
+            {["Title", "Price", "Quantity", "Total", "Remove"].map((item, index) => (
+              <Typography
+                key={index}
+                sx={{
+                  gridColumn: item === "Title" ? "span 2" : "span 1",
+                  fontSize: "1.25rem",
+                  fontWeight: "bold",
+                }}
+              >
+                {item}
+              </Typography>
+            ))}
+          </Box>
+
+          {!cartItems?.length ? (
+            <Container maxWidth="md" sx={{ marginTop: "2rem", textAlign: 'center' }}>
+              <Paper elevation={3} sx={{ padding: '1rem', borderRadius: '1rem' }}>
+                <Typography variant="h6" component="h6" color={"var(--primary)"}>
+                  No Items in cart
+                </Typography>
+              </Paper>
+            </Container>
+          ) : (
+            cartItems?.map((item, idx) => (
+              <CartItem key={item.id + "cart_id" + idx} item={item} cartId={cartId} />
+            ))
           )}
-        </div>
+        </Box>
 
-        {cartItems?.length === 0 ? (
-          <p className="NoItems">No Items in cart</p>
-        ) : (
-          cartItems?.map((item) => <CartItem item={item} cartId={cartId} />)
-        )}
-      </div>
+        <Box sx={{ mt: 3, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
+          <Typography variant="h6">Cart Total</Typography>
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
+              <Typography>Subtotal</Typography>
+              <Typography>${cartitems?.cartSubTotal}</Typography>
+            </Box>
+            <Divider />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
+              <Typography>Delivery Fee</Typography>
+              <Typography>${cartitems?.cartTax}</Typography>
+            </Box>
+            <Divider />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
+              <Typography variant="h6">Total</Typography>
+              <Typography>${cartitems?.cartTotal}</Typography>
+            </Box>
+          </Box>
+        </Box>
 
-      <div className="cart-bottom">
-        <div className="cart-total">
-          <h2>Cart Total</h2>
-          <div>
-            <div className="cart-total-details">
-              <p>Subtotal</p>
-              <p>${cartitems?.cartSubTotal}</p>
-            </div>
-            <hr />
-            <div className="cart-total-details">
-              <p>Delivery Fee</p>
-              <p>${cartitems?.cartTax}</p>
-            </div>
-            <hr />
-            <div className="cart-total-details">
-              <b>Total</b>
-              <p>${cartitems?.cartTotal}</p>
-            </div>
-          </div>
-        </div>
+        <Box sx={{ mt: 3 }}>
+          <Typography>If you have a promo code, enter it here</Typography>
+          <Box sx={{ display: "flex", gap: 2, mt: 1 }}>
+            <TextField
+              type="text"
+              placeholder="Enter promo code"
 
-        <div className="cart-promocode">
-          <p>If you have a promocode, enter it here</p>
-          <div className="cart-promocode-input">
-            <input type="text" placeholder="Promo Code" />
-            <button>Submit</button>
-          </div>
-        </div>
-      </div>
 
-      {/*  Address Type Selection */}
-      <div className="flex gap-9 mt-6 pl-[27rem] text-lg">
-        <div className="flex items-center gap-1">
-          <input
-            type="radio"
-            id="Takeaway"
-            name="radio-6"
-            className="radio radio-warning size-4"
-            defaultChecked
+              variant="outlined"
+
+
+            />
+            <Button variant="contained" >Submit</Button>
+          </Box>
+        </Box>
+
+        {/* Address Type Selection */}
+        <RadioGroup
+          row
+          sx={{ mt: 3, gap: 2 }}
+          onChange={(e) => setDeliveryType(e.target.value)}
+          defaultValue="takeaway"
+        >
+          <FormControlLabel
             value="takeaway"
-            onChange={() => setDeliveryType("takeaway")}
+            control={<Radio />}
+            label="Takeaway"
           />
-          <label htmlFor="Takeaway">Takeaway</label>
-        </div>
-
-        <div className="flex items-center gap-1">
-          <input
-            type="radio"
-            name="radio-6"
-            id="delivery"
-            className="radio radio-warning size-4"
+          <FormControlLabel
             value="delivery"
-            onChange={() => setDeliveryType("delivery")}
+            control={<Radio />}
+            label="Delivery"
           />
-          <label htmlFor="delivery">Delivery</label>
-        </div>
-      </div>
-      <div className="flex justify-center">
-        {address
-          ? address?.length > 0 &&
+        </RadioGroup>
+
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+          {address ? (
             deliveryType === "delivery" && (
-              <div className="flex flex-col   justify-center my-8 border-2  border-orange-400 rounded-lg w-fit py-5 px-10  ">
-                <div className="mx-auto ">
-                  <h2 className="text-2xl w-fit">Delivery Address</h2>
-                  <div className="flex items-center gap-4 cursor-pointer w-fit space-y-3">
-                    <CiLocationOn className="text-lg" />
-                    <p className="text-lg ">{`${selectedAddress?.floor} ${selectedAddress?.houseNo} ${selectedAddress?.building} ${selectedAddress?.areaLocality} `}</p>{" "}
-                    <MdEdit
-                      className="text-lg"
-                      onClick={() => setIsSelectPassword((prev) => !prev)}
-                    />
-                  </div>
-                </div>
-              </div>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  my: 2,
+                  border: '2px solid orange',
+                  borderRadius: '8px',
+                  p: 2,
+                  width: 'fit-content',
+                }}
+              >
+                <Typography variant="h6">Delivery Address</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CiLocationOn />
+                  <Typography>
+                    {`${selectedAddress?.floor} ${selectedAddress?.houseNo} ${selectedAddress?.building} ${selectedAddress?.areaLocality}`}
+                  </Typography>
+                  <MdEdit onClick={() => setIsSelectPassword((prev) => !prev)} />
+                </Box>
+              </Box>
             )
-          : deliveryType === "delivery" && (
-              <div className="flex flex-col justify-center my-8 border-2  border-orange-400 rounded-lg w-fit px-24 py-6 mx-auto">
-                <div className="mx-auto ">
-                  <h2 className="text-2xl w-fit">Delivery Address</h2>
-                  <div className="flex items-center gap-4 cursor-pointer w-fit space-y-3   ">
-                    <h2>No address available, Add a New One....</h2>
-                    <MdEdit
-                      className="size-6 "
-                      onClick={() => setIsSelectPassword((prev) => !prev)}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}{" "}
-      </div>
+          ) : (
+            deliveryType === "delivery" && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  my: 2,
+                  border: '2px solid orange',
+                  borderRadius: '8px',
+                  p: 2,
+                  width: 'fit-content',
+                  mx: 'auto',
+                }}
+              >
+                <Typography variant="h6">Delivery Address</Typography>
+                <Typography>No address available, Add a New One...</Typography>
+                <MdEdit onClick={() => setIsSelectPassword((prev) => !prev)} />
+              </Box>
+            )
+          )}
+        </Box>
 
-      <button
-        className="bg-orange-400 px-14 py-2 rounded-3xl text-white"
-        onClick={handleCheckout}
-      >
-        Checkout
-      </button>
+        <Button
+          variant="contained"
+          onClick={handleCheckout}
+          disabled={!cartItems?.length}
+        >
+          Checkout
+        </Button>
 
-      {clientSecret && (
-        <div className="absolute w-fit h-fit bg-slate-100 p-6 inset-0 m-auto">
-          <PaymentSheetWrapper clientSecret={clientSecret} {...props} />
-        </div>
-      )}
+        {clientSecret && (
+          <Box
+            sx={{
+              position: 'absolute',
+              width: 'fit-content',
+              height: 'fit-content',
+              backgroundColor: '#f0f0f0',
+              p: 2,
+              borderRadius: '8px',
+              mx: 'auto',
+              mt: 2,
+            }}
+          >
+            <PaymentSheetWrapper clientSecret={clientSecret} {...props} />
+          </Box>
+        )}
 
-      {isSelectPassword && (
-        <>
-          <AddOrSelectAddress {...AddorSelectAddressProps} />
-        </>
-      )}
-    </div>
+        {isSelectPassword && <AddOrSelectAddress {...AddorSelectAddressProps} />}
+      </Box>
+    </>
   );
 };
 

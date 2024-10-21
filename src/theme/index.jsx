@@ -32,7 +32,7 @@ export const createDynamicTheme = (dynamicColors = {}) => {
                 outlined: {
                   borderColor: 'var(--primary)', 
                   color: 'var(--primary)', 
-                  padding: '12px 24px',
+                  padding: '8px 16px',
                   transition: "border-color 0.3s, transform 0.3s",
                   '&:hover': {
                     borderColor: 'var(--secondary)', 
@@ -49,13 +49,26 @@ export const createDynamicTheme = (dynamicColors = {}) => {
                 },
               },
             },
+            MuiOutlinedInput: {
+                styleOverrides: {
+                  root: {
+                    '& fieldset': {
+                      borderRadius: '4px',
+                    },
+                    '& input': {
+                      padding: '10px 14px',
+                      height: 'auto',
+                    },
+                  },
+                },
+              },
             MuiIconButton: {
                 styleOverrides: {
                   root: {
                     borderRadius: '50%',
                     backgroundColor: 'var(--primary)',
                     transition: 'transform 0.2s ease-in-out',
-                    color: 'white', // Set icon color for IconButton
+                    color: 'white', 
                     '&:hover': {
                       transform: 'scale(1.1)',
                       backgroundColor: 'var(--secondary)',

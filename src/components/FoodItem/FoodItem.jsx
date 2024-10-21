@@ -41,34 +41,32 @@ const FoodItem = ({ item, categoryid }) => {
       } catch (error) {
         console.error("Error adding to cart:", error);
       }
-    }, 50),
+    }, 100),
     []
   );
 
   const handleAddToCart = async (type) => {
-    let latestQuantity = quantity;
-
-    console.log("latestQuantity", latestQuantity);
-    if (latestQuantity !== undefined) {
-      latestQuantity = type === "increment" ? quantity + 1 : quantity - 1;
-      setProductQuantity(latestQuantity);
-    } else {
-      latestQuantity = 1;
-    }
-
-    if (latestQuantity >= 0) {
+    const currentQuantity = typeof quantity === 'number' ? quantity : 0; 
+    const newQuantity = type === "increment" ? currentQuantity + 1 : Math.max(currentQuantity - 1, 0);
+    
+    console.log("newQuantity", newQuantity);
+    
+    if (newQuantity >= 0) {
+      setProductQuantity(newQuantity);
+  
       try {
         await debouncedAddToCart({
           cartId: cartId,
           menuItemId: item.menuItemId,
-          quantity: latestQuantity,
+          quantity: newQuantity,
         });
       } catch (error) {
         console.error("Error updating cart:", error);
-        setProductQuantity(type === "increment" ? quantity - 1 : quantity + 1);
+        setProductQuantity(currentQuantity);
       }
     }
   };
+  
   const [ratingValue, setRatingValue] = useState(4);
 
   const handleRatingChange = (event, newValue) => {

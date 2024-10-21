@@ -47,9 +47,9 @@ const NotFoundPage = () => {
       </Typography>
       <Button
         variant="contained"
-        color="primary"
+       
         onClick={handleGoHome}
-        sx={{ bgcolor: "#ff6f61", "&:hover": { bgcolor: "#e64a19" } }}
+    
       >
         Go to Homepage
       </Button>

@@ -1,7 +1,7 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState,lazy } from "react";
 import Navbar from "./components/Navbar/Navbar";
 import { Outlet, Route, Routes } from "react-router-dom";
-import Home from "./pages/Home/Home";
+// import Home from "./pages/Home/Home";
 import Cart from "./pages/Cart/Cart";
 import Footer from "./components/Footer/Footer";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
@@ -20,7 +20,7 @@ import { Box, CircularProgress, ThemeProvider } from "@mui/material";
 import NotFoundPage from "./components/NotFoundPage";
 import { createDynamicTheme } from "./theme";
 import LayoutLoader from "./components/Loading/LayoutLoader";
-
+const Home = lazy(() => import('./pages/Home/Home'));
 const App = () => {
 
   const dispatch = useDispatch();
@@ -84,7 +84,7 @@ const App = () => {
               flex: 1, overflowY: 'auto', display: "flex", flexDirection: "column"
             }}>
               <Box sx={{ px: "1rem", mb: "1rem", flex: 1 }}>
-                <Suspense fallback={<CircularProgress />}>
+                <Suspense fallback={<LayoutLoader />}>
                   <Outlet />
                 </Suspense>
               </Box>

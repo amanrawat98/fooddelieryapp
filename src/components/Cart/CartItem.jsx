@@ -10,6 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCartItems } from "../../feature/CartSlice";
 import axios from "axios";
 import { debounce } from "lodash";
+import { Box, IconButton, Typography } from "@mui/material";
+import { Add, Delete, Remove } from "@mui/icons-material";
 
 const CartItem = ({ item }) => {
   const cartitems = useSelector((state) => state?.cart?.cartItems);
@@ -87,44 +89,52 @@ const CartItem = ({ item }) => {
   );
 
   return (
-    <div
-      className="cart-items-title cart-heading grid grid-cols-6"
+    <Box
       key={item?.cartItemId}
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(6, 1fr)',
+        alignItems: 'center',
+        borderBottom: '1px solid #e0e0e0',
+        padding: '16px 0',
+      }}
     >
-      <p className="col-span-2">{item?.cartMenuItemName}</p>
-      <p className="col-span-1">${item?.cartMenuItemPrice}</p>
-
-      <div className="flex align-middle col-span-1 mt-2 space-x-3">
-        <img
-          src={assets.remove_icon_red}
-          className="cursor-pointer"
-          alt="remove_icon_red"
-          onClick={() => {
-            handleAddToCartDebounced("decrement", item);
-          }}
-        />
-        <p className="w-9 bg-slate-300 p-2 text-center rounded-md">
-          {item?.quantity}
-        </p>
-        <img
-          src={assets.add_icon_green}
-          className="cursor-pointer"
-          alt="add_icon_green"
-          onClick={() => {
-            handleAddToCartDebounced("increment", item);
-          }}
-        />
-      </div>
-      <p className="col-span-1">
+      <Typography variant="body1" sx={{ gridColumn: 'span 2' }}>
+        {item?.cartMenuItemName}
+      </Typography>
+      <Typography variant="body1" sx={{ gridColumn: 'span 1' }}>
+        ${item?.cartMenuItemPrice}
+      </Typography>
+     
+      
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <IconButton onClick={() => handleAddToCartDebounced('decrement', item)}>
+              <Remove sx={{ color: 'white' }} />
+            </IconButton>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: '600',
+                color: 'green',
+                fontSize: '1rem',
+              }}
+            >
+              {item?.quantity}
+            </Typography>
+            <IconButton onClick={() => handleAddToCartDebounced('increment', item)}>
+              <Add sx={{ color: 'white' }} />
+            </IconButton>
+          </Box>
+     
+      <Typography variant="body1" sx={{ gridColumn: 'span 1' }}>
         ${(item?.cartMenuItemPrice * item?.quantity).toFixed(2)}
-      </p>
-      <img
-        src={assets.remove_icon_cross}
-        alt="remove_icon_cross"
-        className="size-8 cursor-pointer col-span-1 ml-5"
-        onClick={() => handleDeleteCartItem(item?.cartItemId, cartId)}
-      />
-    </div>
+      </Typography>
+      <Box>
+      <IconButton onClick={() => handleDeleteCartItem(item?.cartItemId, cartId)}>
+        <Delete />
+      </IconButton>
+      </Box>
+    </Box>
   );
 };
 
