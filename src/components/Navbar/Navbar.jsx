@@ -20,20 +20,11 @@ import userFallBackImg from "../../../src/assets/user.png";
 import { getResturantData } from "../../utility/apiServices";
 import useCustomToast from "../../hooks/Toast/useToast";
 import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Badge,
-  Button,
-  Avatar,
-  Typography,
-  Container,
-  Box,
-  Stack,
+  Toolbar, IconButton, Badge, Button, Avatar, Box, Stack,
 } from '@mui/material';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 
-const Navbar = ({ isLogin, setIsLogin=()=>{}, isSignUp, setIsSignUp }) => {
+const Navbar = ({ isLogin, setIsLogin = () => { }, isSignUp, setIsSignUp }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const toast = useCustomToast();
@@ -103,81 +94,79 @@ const Navbar = ({ isLogin, setIsLogin=()=>{}, isSignUp, setIsSignUp }) => {
 
       console.log("API Response after logout:", data);
     }
-     catch (error) {
+    catch (error) {
       console.error(
         "Error fetching restaurant data with new session ID",
         error
       );
     }
-  
+
   };
 
   const props = { isLogin, setIsLogin, isSignUp, setIsSignUp };
 
   return (
     <Box sx={{ backgroundColor: '#090b15', py: "10px" }}>
-    <Box sx={{px:4}}>
-      <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <Link to="/">
-          <img
-            src={theme?.appLogoImageUrl}
-            alt="logo"
-            style={{ width: '64px', borderRadius: '50%' }}
-          />
-        </Link>
-  
-        <Stack direction="row" alignItems="center" spacing={4}>
-  <IconButton component={Link} to="/cart" sx={{ color: 'white' }}>
-    <Badge badgeContent={cartCount|| "0"} color="error">
-      <ShoppingBasketIcon sx={{ color: 'white' }} />
-    </Badge>
-  </IconButton>
-  <Stack direction="row" spacing={3}>
-  {!isUserLogin ? (
-    <>
-      <Button
-        variant="contained"
-        color="warning"
-        onClick={() => setIsLogin(true)}
-      >
-        Login
-      </Button>
-      <Button
-        variant="outlined"
-        color="warning"
-        onClick={() => setIsSignUp(true)}
-      >
-        Signup
-      </Button>
-    </>
-  ) : (
-    <>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={handleLogout}
-      >
-        Logout
-      </Button>
-      <Avatar
-        alt="User Avatar"
-        src={userData?.customerImageUrl || userFallBackImg}
-        onClick={() => navigate("/profile")}
-        sx={{ cursor: 'pointer', width: 36, height: 36, ml: 2 }} 
-      />
-    </>
-  )}
-</Stack>
+      <Box sx={{ px: 4 }}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Link to="/">
+            <img
+              src={theme?.appLogoImageUrl}
+              alt="logo"
+              style={{ width: '64px', borderRadius: '50%' }}
+            />
+          </Link>
+
+          <Stack direction="row" alignItems="center" spacing={4}>
+            <IconButton component={Link} to="/cart" sx={{ color: 'white' }}>
+              <Badge badgeContent={cartCount || "0"} color="error">
+                <ShoppingBasketIcon sx={{ color: 'white' }} />
+              </Badge>
+            </IconButton>
+            <Stack direction="row" spacing={3}>
+              {!isUserLogin ? (
+                <>
+                  <Button
+                    variant="contained"
+                    onClick={() => setIsLogin(true)}
+                  >
+                    Login
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setIsSignUp(true)}
+                  >
+                    Signup
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </Button>
+                  <Avatar
+                    alt="User Avatar"
+                    src={userData?.customerImageUrl || userFallBackImg}
+                    onClick={() => navigate("/profile")}
+                    sx={{ cursor: 'pointer', width: 36, height: 36, ml: 2 }}
+                  />
+                </>
+              )}
+            </Stack>
 
 
-        </Stack>
-      </Toolbar>
+          </Stack>
+        </Toolbar>
+      </Box>
+
+      {isLogin && <Login {...props} />}
+      {isSignUp && <SignUp setIsSignUp={setIsSignUp} />}
     </Box>
-  
-    {isLogin && <Login {...props} />}
-    {isSignUp && <SignUp setIsSignUp={setIsSignUp} />}
-  </Box>
-  
+
   );
 };
 

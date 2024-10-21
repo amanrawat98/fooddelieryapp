@@ -1,30 +1,13 @@
 // MenuCard.js
 import React from 'react';
-import { Card, CardMedia, CardContent, Typography, Box } from '@mui/material';
+import { Card, CardMedia, CardContent, Typography, Box, useTheme } from '@mui/material';
 import ArrowCircleRight from '@mui/icons-material/ArrowCircleRight';
 
 const MenuCard = ({ item }) => {
+  const theme = useTheme();
+
   return (
-    <Card
-      sx={{
-        width: '100%',
-        height: '18rem',
-        borderRadius: 6,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.4)',
-        transition: 'all 0.3s ease',
-        '&:hover': {
-          boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.5)',
-          color: 'var(--primary)',
-          transform: 'scale(1.1)',
-          '& .price-color,.arrow-icon': {
-            color: 'green',
-          },
-        },
-      }}
-    >
+    <Card sx={{ ...theme.commonCardStyles, height: '18rem' }}>
       <CardMedia
         component="img"
         image={item?.menuItemImageUrl}

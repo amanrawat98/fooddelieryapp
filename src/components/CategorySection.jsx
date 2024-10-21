@@ -3,8 +3,7 @@ import "react-multi-carousel/lib/styles.css";
 import { Link } from "react-router-dom";
 import CategoryHeader from "./CategoryHeader";
 import CarouselWrapper from "./Common/CarouselWrapper";
-import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
-import { ArrowCircleRight } from "@mui/icons-material";
+
 import MenuCard from "./Common/Cards/MenuCard";
 
 const CategorySection = ({ menuItems }) => {
@@ -23,8 +22,7 @@ const CategorySection = ({ menuItems }) => {
             <div className="my-3" key={index}>
               <CategoryHeader value={value} />
 
-              <CarouselWrapper
-              >
+              <CarouselWrapper >
                 {value?.menuItems?.map((item, index) => {
                   return (
                     <Link

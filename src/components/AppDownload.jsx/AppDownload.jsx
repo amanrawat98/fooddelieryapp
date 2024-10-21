@@ -5,7 +5,7 @@ import AppleIcon from '@mui/icons-material/Apple'; // You may need to use a spec
 
 const AppDownload = () => {
   return (
-    <Box 
+    <Box
       id="app-download"
       sx={{
         backgroundColor: "#f8f8f8",
@@ -22,55 +22,29 @@ const AppDownload = () => {
       <Typography variant="body1" sx={{ color: "var(--primary)", marginBottom: 3 }}>
         For a better experience, download the app now!
       </Typography>
-      <Box 
+      <Box
         sx={{
           display: "flex",
           justifyContent: "center",
           gap: 2,
         }}
       >
-        <Button 
-          component="a" 
-          href="https://play.google.com/store" 
-          target="_blank" 
-          sx={{
-            backgroundColor: "var(--primary)",
-            borderRadius: 1,
-            padding: 2,
-            boxShadow: 1,
-            color: "white",
-            display: "flex",
-            alignItems: "center",
-            transition: "background-color 0.3s, transform 0.3s, box-shadow 0.3s",
-            '&:hover': {
-              backgroundColor: "var(--secondary)", 
-              boxShadow: 3,
-              transform: "scale(1.05)", 
-            }
-          }}
+        <Button
+          component="a"
+          variant="contained"
+          href="https://play.google.com/store"
+          target="_blank"
+          sx={{ padding: 2 }}
         >
           <GooglePlayIcon sx={{ marginRight: 1 }} />
           Google Play
         </Button>
-        <Button 
-          component="a" 
-          href="https://apps.apple.com/app" 
-          target="_blank" 
-          sx={{
-            backgroundColor: "var(--primary)",
-            borderRadius: 1,
-            padding: 2,
-            boxShadow: 1,
-            color: "white",
-            display: "flex",
-            alignItems: "center",
-            transition: "background-color 0.3s, transform 0.3s, box-shadow 0.3s",
-            '&:hover': {
-              backgroundColor: "var(--secondary)", 
-              boxShadow: 3,
-              transform: "scale(1.05)", 
-            }
-          }}
+        <Button
+          component="a"
+          variant="contained"
+          href="https://apps.apple.com/app"
+          target="_blank"
+          sx={{ padding: 2 }}
         >
           <AppleIcon sx={{ marginRight: 1 }} />
           App Store

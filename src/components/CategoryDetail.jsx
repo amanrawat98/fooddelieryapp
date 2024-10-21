@@ -1,17 +1,22 @@
 import React from "react";
 import CategoryHeader from "./CategoryHeader";
 import FoodItem from "./FoodItem/FoodItem";
+import { Box } from "@mui/material";
 
 const CategoryDetail = ({ menuitem, category }) => {
   return (
-    <div className="my-6">
-      <CategoryHeader value={menuitem} />
-      <div className="grid grid-cols-4 gap-4">
-        {menuitem?.menuItems?.map((item, index) => {
-          return <FoodItem item={item} key={index} categoryid={menuitem?.menuCategoryId} />;
-        })}
-      </div>
-    </div>
+    <Box className="my-6">
+    <CategoryHeader value={menuitem} />
+    <Box 
+      display="grid" 
+      gridTemplateColumns={{ xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' }} 
+      gap={6}
+    >
+      {menuitem?.menuItems?.map((item, index) => (
+        <FoodItem item={item} key={index} categoryid={menuitem?.menuCategoryId} />
+      ))}
+    </Box>
+  </Box>
   );
 };
 

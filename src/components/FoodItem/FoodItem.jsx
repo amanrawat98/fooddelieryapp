@@ -1,13 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
-// import "./FoodItem.css";
-import { assets } from "../../assets/assets";
-import nonvegimg from "../../assets/non_veg.png";
-import vegimg from "../../assets/veg.png";
+
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { setCartItems } from "../../feature/CartSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Card, CardContent, CardMedia, debounce, IconButton, Rating, styled, Typography } from "@mui/material";
+import { Box, Card, CardContent, CardMedia, debounce, IconButton, Rating, styled, Typography, useTheme } from "@mui/material";
 import { Add, ArrowCircleRight, Fastfood, Grass, Remove } from "@mui/icons-material";
 
 const FoodItem = ({ item, categoryid }) => {
@@ -15,7 +12,7 @@ const FoodItem = ({ item, categoryid }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const { cartId, cartItems: cartItem } = cartItems || {};
-
+  const theme = useTheme();
   const { menuItemId } = item;
 
   // Ensure both cartMenuItemId and menuItemId are defined, trimmed, and of the same type
@@ -89,25 +86,7 @@ const FoodItem = ({ item, categoryid }) => {
     <>
       <Card
         variant="outlined"
-        sx={{
-          width: '100%',
-          height: '22rem',
-          borderRadius: 6,
-          display: 'flex',
-
-          flexDirection: 'column',
-          overflow: 'hidden',
-          boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.4)',
-          transition: 'all 0.3s ease',
-          '&:hover': {
-            boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.5)',
-            color: 'var(--primary)',
-            transform: 'scale(1.05)',
-            '& .price-color, & .arrow-icon': {
-              color: 'green',
-            },
-          },
-        }}
+        sx={{ ...theme.commonCardStyles, height: '22rem' }}
       >
         <CardMedia
           component="img"
@@ -183,15 +162,7 @@ const FoodItem = ({ item, categoryid }) => {
               {quantity === 0 || quantity === undefined ? (
                 <IconButton
                   onClick={() => handleAddToCart("increment")}
-                  sx={{
-                    bgcolor: 'var(--primary)',
-                    borderRadius: '50%',
-                    '&:hover': {
-                      transform: 'scale(1.1)',
-                      bgcolor: 'var(--secondary)',
-                    },
-                    transition: 'transform 0.2s ease-in-out',
-                  }}
+                 
                 >
                   <Add sx={{ color: 'white' }} />
                 </IconButton>
@@ -199,15 +170,7 @@ const FoodItem = ({ item, categoryid }) => {
                 <>
                   <IconButton
                     onClick={() => handleAddToCart("decrement")}
-                    sx={{
-                      bgcolor: 'var(--primary)',
-                      borderRadius: '50%',
-                      '&:hover': {
-                        transform: 'scale(1.1)',
-                        bgcolor: 'var(--secondary)',
-                      },
-                      transition: 'transform 0.2s ease-in-out',
-                    }}
+                   
                   >
                     <Remove sx={{ color: 'white' }} />
                   </IconButton>
@@ -216,15 +179,7 @@ const FoodItem = ({ item, categoryid }) => {
                   </Typography>
                   <IconButton
                     onClick={() => handleAddToCart("increment")}
-                    sx={{
-                      bgcolor: 'var(--primary)',
-                      borderRadius: '50%',
-                      '&:hover': {
-                        transform: 'scale(1.1)',
-                        bgcolor: 'var(--secondary)',
-                      },
-                      transition: 'transform 0.2s ease-in-out',
-                    }}
+                   
                   >
                     <Add sx={{ color: 'white' }} />
                   </IconButton>
