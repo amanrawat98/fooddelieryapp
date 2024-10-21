@@ -42,10 +42,7 @@ const Footer = () => {
                 component="a"
                 href={url}
                 aria-label={name.toLowerCase()}
-                color="inherit"
-                sx={{
-                  "&:hover": { transform: "scale(1.1)", transition: "transform 0.2s" },
-                }}
+               
               >
                 {icon}
               </IconButton>

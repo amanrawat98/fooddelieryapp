@@ -1,5 +1,5 @@
 import React from "react";
-import "./Header.css";
+import { Box, Typography } from "@mui/material";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
@@ -24,8 +24,8 @@ const Header = ({ data }) => {
   };
 
   return (
-    <>
-      {data?.bannerImages && data.bannerImages.length > 0 ? (
+    <Box>
+      { data?.bannerImages?.length > 0 ? (
         <Carousel
           responsive={responsive}
           autoPlaySpeed={2000}
@@ -33,33 +33,49 @@ const Header = ({ data }) => {
           showDots={true}
           autoPlay={true}
           arrows={false}
-          renderDotsOutside={true}
+          renderDotsOutside={false}
           dotListClass="relative"
           infinite={true}
         >
-          {data.bannerImages.map((item, index) => {
+          {data?.bannerImages?.map((item, index) => {
             return (
-              <div key={index} className="rounded-xl object-cover">
-                <div
-                  className="rounded-xl"
-                  style={{
-                    backgroundImage: `url(${item?.bannerImageUrl})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    height: "450px",
-                    width: "100%",
-                    borderRadius:"10px"
-                    
+              <Box
+                key={index}
+                sx={{
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  height: "450px",
+                  width: "100%",
+                  backgroundImage: `url(${item?.bannerImageUrl})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{
+                    position: "absolute",
+                    bottom: 16,
+                    left: 16,
+                    color: "white",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    padding: 1,
+                    borderRadius: 1,
                   }}
-                ></div>
-              </div>
+                >
+               
+                  {item?.title}
+                </Typography>
+              </Box>
             );
           })}
         </Carousel>
       ) : (
-        <p>No banner images available</p>
+        <Typography variant="h6" align="center" color="textSecondary">
+          No banner images available
+        </Typography>
       )}
-    </>
+    </Box>
   );
 };
 

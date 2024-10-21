@@ -16,7 +16,7 @@ export const defaultResponsive = {
     },
     mobile: {
       breakpoint: { max: 640, min: 0 }, 
-      items: 1,
+      items: 2,
       partialVisibilityGutter: 30
     },
   };

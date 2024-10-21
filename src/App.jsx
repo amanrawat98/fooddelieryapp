@@ -1,7 +1,7 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState,lazy } from "react";
 import Navbar from "./components/Navbar/Navbar";
 import { Outlet, Route, Routes } from "react-router-dom";
-import Home from "./pages/Home/Home";
+// import Home from "./pages/Home/Home";
 import Cart from "./pages/Cart/Cart";
 import Footer from "./components/Footer/Footer";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
@@ -16,14 +16,17 @@ import axios from "axios";
 import { setResturantTheme } from "./feature/resturantDataSlice";
 import OrderStatus from "./pages/Profile/OrderStatus";
 import ProtectedRoutes from "./components/Routes/ProtectedRoutes";
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, ThemeProvider } from "@mui/material";
 import NotFoundPage from "./components/NotFoundPage";
-
+import { createDynamicTheme } from "./theme";
+import LayoutLoader from "./components/Loading/LayoutLoader";
+const Home = lazy(() => import('./pages/Home/Home'));
 const App = () => {
 
   const dispatch = useDispatch();
   const [isLogin, setIsLogin] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [theme, setTheme] = useState(null);
 
   const props = {
     isLogin,
@@ -58,16 +61,30 @@ const App = () => {
     dispatch(setResturantTheme(data));
   }, [data]);
 
+  useEffect(() => {
+    const getTheme = async () => {
+      // const dynamicColors = await fetchColorsFromAPI(); 
+      const dynamicTheme = createDynamicTheme({});
+      console.log(dynamicTheme,"my themeeee")
+      setTheme(dynamicTheme);
+    };
+
+    getTheme();
+  }, []);
+  if (!theme) {
+    return <LayoutLoader />;
+  }
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <Routes>
         <Route path="/" element={
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             <Navbar  {...props} />
-            <Box sx={{ flex: 1, overflowY: 'auto', display:"flex",flexDirection:"column"
-             }}>
-              <Box sx={{ px: "1rem", mb: "1rem",flex:1 }}>
-                <Suspense fallback={<CircularProgress />}>
+            <Box sx={{
+              flex: 1, overflowY: 'auto', display: "flex", flexDirection: "column"
+            }}>
+              <Box sx={{ px: "1rem", mb: "1rem", flex: 1 }}>
+                <Suspense fallback={<LayoutLoader />}>
                   <Outlet />
                 </Suspense>
               </Box>
@@ -121,12 +138,10 @@ const App = () => {
             element={<ProductDetail />}
           />
           <Route path="/category/:categoryid" element={<CategoryViewPage />} />
-          <Route path="*" element={<NotFoundPage/>} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
-
-
-    </>
+    </ThemeProvider>
   );
 };
 

@@ -26,20 +26,7 @@ const CategoryHeader = ({ value }) => {
         <Button
           variant="contained"
           endIcon={<ArrowForward />}
-          sx={{
-            background: 'var(--primary)',
-            color: '#fff',
-            padding: '8px 16px',
-            boxShadow: '0 3px 6px rgba(0, 0, 0, 0.1)',
-            opacity: 4,
-            transform: 'translateY(0)',
-            transition: 'all 0.5s ease, transform 0.3s ease',
-            '&:hover': {
-              backgroundColor: "var(--secondary)",
-              boxShadow: 3,
-              transform: "scale(1.05)",
-            }
-          }}
+      
           onClick={() => {
             navigate(`/category/${value?.menuCategoryId}`);
           }}

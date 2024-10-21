@@ -3,6 +3,8 @@ import { resturantData } from "./demoData/resturantdata";
 import { useNavigate, useParams } from "react-router-dom";
 import FoodItem from "./components/FoodItem/FoodItem";
 import { useSelector } from "react-redux";
+import { Box, Typography } from "@mui/material";
+import GoBackButton from "./components/Common/Buttons/GoBackButton";
 
 const CategoryViewPage = () => {
   const outletData = useSelector((state) => state?.resturant?.outletData);
@@ -29,19 +31,32 @@ const CategoryViewPage = () => {
 
   return (
     <>
-      <h2 className="text-3xl text-center mb-5"> {filterValue?.name}</h2>{" "}
-      <div className="grid grid-cols-3 gap-4">
-        {filterValue?.menuItems?.map((item) => {
-          return (
-            <FoodItem
-              item={item}
-              key={item?.menuItemId}
-              categoryid={categoryid}
-            />
-          );
-        })}
-      </div>
-    </>
+    <GoBackButton />
+    <Typography variant="h5" sx={{mb:"1rem"}} align="center" gutterBottom>
+      {filterValue?.name}
+    </Typography>
+    <Box 
+      sx={{ 
+        display: 'grid', 
+        gridTemplateColumns: { 
+          xs: 'repeat(2, 1fr)',  
+          sm: 'repeat(3, 1fr)',  
+          md: 'repeat(4, 1fr)',  
+        }, 
+        gap: 5, 
+        px: 2, 
+      }}
+    >
+      {filterValue?.menuItems?.map((item) => (
+        <FoodItem
+          item={item}
+          key={item?.menuItemId}
+          categoryid={categoryid}
+        />
+      ))}
+    </Box>
+  </>
+  
   );
 };
 
