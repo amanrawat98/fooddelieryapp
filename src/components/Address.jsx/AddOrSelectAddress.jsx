@@ -7,26 +7,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSelectedAddress, setUserData } from "../../feature/userSlice";
 import axios from "axios";
 import { Box, Button, Typography, TextField, Dialog, DialogTitle, DialogContent, IconButton } from "@mui/material";
-import { Close as CloseIcon } from '@mui/icons-material';
+import { Close as CloseIcon, Delete, TaskAlt } from '@mui/icons-material';
 import { useForm } from "react-hook-form";
 import { inputStyles } from "../../theme/utils";
+import useCustomToast from "../../hooks/Toast/useToast";
 
 const AddOrSelectAddress = ({
-  setIsSelectPassword,
-  isSelectPassword,
+  handleCancelAddressDialog,
+  isAddressDialog,
+  selectedAddressId,
   address,
 }) => {
   const userData = useSelector((state) => state?.user?.userData);
   const cartitems = useSelector((state) => state?.cart?.cartItems);
+  const [activeAddress, setActiveAddress] = useState(selectedAddressId)
   const dispatch = useDispatch();
+  const toast = useCustomToast()
   const [page, setPage] = useState("selectAddress");
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     mode: "onBlur", // Validation will trigger on blur
   });
-
+  console.log(userData,"dataaaa of addresss")
   const handleAddNewAddress = async (data) => {
-    console.warn(cartitems,"dataaaa")
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/customer-profile`,
@@ -46,14 +50,26 @@ const AddOrSelectAddress = ({
       console.log(error);
     }
   };
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}/customer-profile?addressId=${addressId}`
+      );
+      // dispatch(setUserData(response?.data?.result));
+      toast.success(<span>Address deleted successfully</span>)
+    } catch (error) {
+      toast.error(<span>Error deleting address</span>)
 
-  const handleSetAddress = (item) => {
-    const { addressId } = item;
+    }
+  };
+
+
+  const handleSetAddress = () => {
     const { addresses } = userData;
     const updatedAddresses = addresses?.map((item) => {
       return {
         ...item,
-        isDefault: item.addressId === addressId,
+        isDefault: item.addressId === activeAddress,
       };
     });
 
@@ -63,6 +79,7 @@ const AddOrSelectAddress = ({
         addresses: updatedAddresses,
       })
     );
+    handleCancelAddressDialog(false)
   };
 
   useEffect(() => {
@@ -86,8 +103,8 @@ const AddOrSelectAddress = ({
     <div>
       {/* Dialog Wrapper for Address Form */}
       <Dialog
-        open={isSelectPassword}
-        onClose={() => setIsSelectPassword(false)}
+        open={isAddressDialog}
+        onClose={() => handleCancelAddressDialog(false)}
         fullWidth
         maxWidth="sm"
       >
@@ -96,7 +113,7 @@ const AddOrSelectAddress = ({
           <IconButton
             edge="end"
             color="inherit"
-            onClick={() => setIsSelectPassword(false)}
+            onClick={() => handleCancelAddressDialog(false)}
             aria-label="close"
           >
             <CloseIcon />
@@ -117,20 +134,32 @@ const AddOrSelectAddress = ({
                   <Box
                     key={index}
                     sx={{
-                      border: "2px solid orange",
+                      border: "2px solid var(--primary)",
                       borderRadius: 2,
                       padding: 2,
+                      color:item?.addressId === activeAddress?"white":"black",
                       cursor: "pointer",
-                      bgcolor: "white",
+                      bgcolor: item?.addressId === activeAddress?"var(--primary)":"white",
                       "&:hover": { borderColor: "darkorange" },
                     }}
-                    onClick={() => handleSetAddress(item)}
+                    onClick={() =>
+                      setActiveAddress(item?.addressId)
+                    }
                   >
+                    <Box display={"flex"} justifyContent={"space-between"}>
                     <Typography variant="h6">Delivery Address</Typography>
+                  
+                        <Delete sx={{ color:item?.addressId === activeAddress?"white":"var(--primary)"}} onClick={() => handleDeleteAddress(item?.addressId)}/>
+                     
+                    </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                       <IoHomeOutline size={24} />
                       <Typography>{`${item.floor} ${item.houseNo} ${item.building} ${item.areaLocality}`}</Typography>
-                      {item.isDefault && <SiTicktick size={24} />}
+                      {item?.addressId === activeAddress &&
+                        <TaskAlt sx={{ color:item?.addressId === activeAddress?"white":"black"}}
+                        />
+                      }
+                     
                     </Box>
                   </Box>
                 ))
@@ -138,14 +167,24 @@ const AddOrSelectAddress = ({
                 <Typography>No Address Available</Typography>
               )}
 
-              {/* Add New Address Button */}
+
               <Button variant="contained" onClick={() => setPage("addNewAddress")}>
                 Add New Address
               </Button>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 2, gap: 4 }}>
+                <Button variant="outlined" sx={{ flex: 1 }}
+                  onClick={() => handleCancelAddressDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button variant="contained" sx={{ flex: 1 }} onClick={handleSetAddress}>
+                  Save
+                </Button>
+              </Box>
             </Box>
           ) : (
             <>
-              {/* Address Form for Adding New Address */}
+
               <SearchLocationInput />
               <form onSubmit={handleSubmit(handleAddNewAddress)}>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -197,13 +236,13 @@ const AddOrSelectAddress = ({
                   />
                 </Box>
 
-                {/* Action Buttons */}
-                <Box sx={{ display: "flex", gap: 2, mt: 4 }}>
+
+                <Box sx={{ display: "flex", gap: 2, mt: 4, justifyContent: "flex-end" }}>
                   <Button
                     variant="outlined"
                     onClick={() => {
                       setPage("selectAddress");
-                      reset(); // Reset form when canceling
+                      reset();
                     }}
                   >
                     Cancel

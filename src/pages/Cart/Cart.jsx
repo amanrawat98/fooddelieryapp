@@ -20,111 +20,76 @@ const Cart = ({ showLoginPage = () => { } }) => {
   const dispatch = useDispatch();
   const cartitems = useSelector((state) => state?.cart?.cartItems);
   const userData = useSelector((state) => state?.user?.userData);
+  const isUserLogin = useSelector((state) => state.user.isUserLogin);
+  
   const [selectedAddress, setSelectedAddress] = useState({});
   const [deliveryType, setDeliveryType] = useState("takeaway");
-
   const [clientSecret, setClientSecret] = useState("");
   const [paymentIntentId, setPaymentIntentId] = useState("");
-  const [isSelectPassword, setIsSelectPassword] = useState(false);
-
-  const sessionid = localStorage.getItem("sessionid");
-  // Use customerId and outletId from the userdata and cartitems if available
+  const [isAddressDialog, setIsAddressDialog] = useState(false);
   const outletId = cartitems?.outletId || null;
   const customerId = cartitems?.customerId || null;
   const { cartItems, cartId } = cartitems || {};
-
-  let address;
-  if (userData?.addresses) {
-    address = userData?.addresses;
-  }
-
-  let floor, houseNo, building, areaLocality;
-
-  if (address & address?.[0]) {
-    let addr = address?.[0];
-    floor = addr;
-    houseNo = addr;
-    building = addr;
-    areaLocality = addr;
-  }
-
-  const props = {
-    deliveryType,
-    cartId,
-    paymentIntentId,
-    setClientSecret,
+  const address = userData?.addresses || [];
+  
+  const handleNotLogin = () => {
+    showLoginPage();
+    navigate("/");
   };
-
+  
+  const handleCreatePaymentIntent = async (payload) => {
+    try {
+      const response = await handleCreateIntentId(payload);
+      return response;
+    } catch (error) {
+      console.error("Error creating payment intent:", error);
+    }
+  };
+  
   const handleCheckout = async () => {
     try {
-      if (cartitems.cartItems.length <= 0) {
-        return toast.error("No Item in Cart !");
+      if (!cartItems?.length) {
+        return toast.error("No Item in Cart!");
       }
-      const payload = {
-        outletId: outletId,
-        cartId: cartId,
-      };
-      const handleCreatePaymentIntent = async () => {
-        const response = await handleCreateIntentId(payload);
-        return response;
-      };
-
-      if (!sessionid) {
-        showLoginPage();
-        navigate("/");
+  
+      if (!isUserLogin) {
+        handleNotLogin();
+        return;
       }
-
-      if (deliveryType === "takeaway" || deliveryType !== "takeaway") {
-        const { clientSecret, paymentIntentId } =
-          await handleCreatePaymentIntent();
-
-        setClientSecret(clientSecret);
-        setPaymentIntentId(paymentIntentId);
-        // const response = await axios.post(
-        //   `${import.meta.env.VITE_BASE_URL}/create-payment-intent/`,
-        //   {
-        //     outletId: outletId,
-        //     cartId: cartId,
-        //   }
-        // );
-      }
+  
+      const payload = { outletId, cartId };
+      const { clientSecret, paymentIntentId } = await handleCreatePaymentIntent(payload);
+      setClientSecret(clientSecret);
+      setPaymentIntentId(paymentIntentId);
     } catch (error) {
-      console.log(error);
+      console.error("Checkout error:", error);
     }
   };
-
+  
   useEffect(() => {
-    if (isSelectPassword) {
-      // Disable scroll
-      document.body.style.overflow = "hidden";
-    } else {
-      // Enable scroll
-      document.body.style.overflow = "auto";
-    }
-
+    document.body.style.overflow = isAddressDialog ? "hidden" : "auto";
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [isSelectPassword]);
-
-  // AddorSelectAddress component props
-
-  const AddorSelectAddressProps = {
-    setIsSelectPassword,
-    isSelectPassword,
-    address,
+  }, [isAddressDialog]);
+  const handleCancelAddressDialog=()=>{
+    setIsAddressDialog((prev) => !prev);
+  }
+  const handleAddAddress = () => {
+    if (!isUserLogin) {
+      handleNotLogin();
+      return;
+    }
+    handleCancelAddressDialog()
   };
-
+  
   useEffect(() => {
-    console.log(address);
-
-    const seltectedAddress = address?.find((item) => {
-      return item.isDefault === true;
-    });
-
-    console.log(seltectedAddress);
-    setSelectedAddress(seltectedAddress);
+    const defaultAddress = address.find((item) => item?.isDefault);
+    if (defaultAddress) {
+      setSelectedAddress(defaultAddress);
+    }
   }, [address]);
+  
 
   return (
     <>
@@ -200,114 +165,105 @@ const Cart = ({ showLoginPage = () => { } }) => {
             <Button variant="contained" >Submit</Button>
           </Box>
         </Box>
-        <RadioGroup
-          row
-          sx={{ mt: 3, gap: 2 }}
-          onChange={(e) => setDeliveryType(e.target.value)}
-          defaultValue="takeaway"
-        >
-          <FormControlLabel
-            value="takeaway"
-            control={<Radio />}
-            label="Takeaway"
-          />
-          <FormControlLabel
-            value="delivery"
-            control={<Radio />}
-            label="Delivery"
-          />
-        </RadioGroup>
+        <Box sx={{ mt: 3, px: 2 }}>
+          <RadioGroup
+            row
+            onChange={(e) => setDeliveryType(e.target.value)}
+            defaultValue="takeaway"
+          >
+            <FormControlLabel
+              value="takeaway"
+              control={<Radio />}
+              label={<Typography sx={{ fontWeight: 'bold', color: '#4f4f4f' }}>Takeaway</Typography>}
+            />
+            <FormControlLabel
+              value="delivery"
+              control={<Radio />}
+              label={<Typography sx={{ fontWeight: 'bold', color: '#4f4f4f' }}>Delivery</Typography>}
+            />
+          </RadioGroup>
 
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-          {address ? (
-            deliveryType === "delivery" && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  my: 2,
-                  border: '2px solid orange',
-                  borderRadius: '8px',
-                  p: 2,
-                  width: 'fit-content',
-                }}
-              >
-                <Typography variant="h6">Delivery Address</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <CiLocationOn />
-                  <Typography>
-                    {`${selectedAddress?.floor} ${selectedAddress?.houseNo} ${selectedAddress?.building} ${selectedAddress?.areaLocality}`}
-                  </Typography>
-                  <MdEdit onClick={() => setIsSelectPassword((prev) => !prev)} />
-                </Box>
-              </Box>
-            )
-          ) : (
-            deliveryType === "delivery" && (
-              <Box
+          <Box
+            display="flex"
+            flexDirection={{ xs: 'column', md: 'row' }}
+            justifyContent="space-between"
+            alignItems="center"
+            gap={2} // adds spacing between items
+          >
+            <Button
+              variant="contained"
+              onClick={handleCheckout}
+              disabled={!cartItems?.length}
               sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                my: 2,
-                border: '2px solid var(--primary)',
-                borderRadius: '12px',
-                p: 3,
-                width: "40%",
-                mx: 'auto',
-                backgroundColor: 'rgba(240, 240, 240, 0.8)', 
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)', 
+                width: { xs: '100%', md: 'auto' }, // full width on mobile, auto on desktop
+                mb: { xs: 2, md: 0 }, // margin-bottom for mobile view
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
-                Delivery Address
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'gray', mb: 2 }}>
-                No address available, Add a New One...
-              </Typography>
-              <Tooltip title="Edit Address" arrow>
-                <Box>
-                <IconButton 
-                  onClick={() => setIsSelectPassword((prev) => !prev)} 
-                  
-                >
-                  <MdEdit size={24} /> 
-                </IconButton>
-                </Box>
-              </Tooltip>
-            </Box>
-              
-            )
-          )}
+              Checkout
+            </Button>
+
+            {deliveryType === "delivery" && (
+             <Box sx={{ flex: 1, width: '100%' }}>
+             <Box
+               sx={{
+                 display: 'flex',
+                 flexDirection: 'column',
+                 justifyContent: 'center',
+                 backgroundColor: '#fff8e1',
+                 border: address?.length ? '2px solid #ffb74d' : '2px solid #ff6f61',
+                 borderRadius: '12px',
+                 p: 3,
+                 boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                 width: address?.length ? '80%' : 'max-content', 
+                 my: 2,
+               }}
+             >
+               <Box display="flex" justifyContent="space-between">
+                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: '#ff6f61' }}>
+                   Delivery Address
+                 </Typography>
+                 <IconButton onClick={handleAddAddress}>
+                   <MdEdit size={24} />
+                 </IconButton>
+               </Box>
+               {address?.length ? (
+                 <>
+                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                     <CiLocationOn size={24} color="#ff6f61" />
+                     <Typography sx={{ color: '#4f4f4f', fontSize: '1rem' }}>
+                       {`${selectedAddress?.floor} ${selectedAddress?.houseNo}, ${selectedAddress?.building}, ${selectedAddress?.areaLocality}`}
+                     </Typography>
+                   </Box>
+                 </>
+               ) : (
+                 <Typography variant="body2" sx={{ color: '#757575', mb: 2 }}>
+                   No address available. Add a New One...
+                 </Typography>
+               )}
+             </Box>
+           </Box>
+           
+            )}
+          </Box>
         </Box>
 
-        <Button
-          variant="contained"
-          onClick={handleCheckout}
-          disabled={!cartItems?.length}
-        >
-          Checkout
-        </Button>
 
         {clientSecret && (
-          <Box
-            sx={{
-              position: 'absolute',
-              width: 'fit-content',
-              height: 'fit-content',
-              backgroundColor: '#f0f0f0',
-              p: 2,
-              borderRadius: '8px',
-              mx: 'auto',
-              mt: 2,
-            }}
-          >
-            <PaymentSheetWrapper clientSecret={clientSecret} {...props} />
-          </Box>
+          <PaymentSheetWrapper {...{
+            deliveryType,
+            cartId,
+            paymentIntentId,
+            setClientSecret,
+            clientSecret
+          }} />
         )}
 
-        {isSelectPassword && <AddOrSelectAddress {...AddorSelectAddressProps} />}
+        {isAddressDialog && isUserLogin ? <AddOrSelectAddress {...{
+          handleCancelAddressDialog,
+          isAddressDialog,
+          selectedAddressId:selectedAddress?.addressId,
+          address,
+        }} /> : null}
       </Box>
     </>
   );

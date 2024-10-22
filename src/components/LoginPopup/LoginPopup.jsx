@@ -73,7 +73,7 @@ const Login = ({ setIsLogin = () => {} }) => {
       const resturantdata = await handleUserLogin(payload);
       const { result, customerCart, restaurantData } = resturantdata || {};
       const { restaurantOutlets } = restaurantData || {};
-
+    
       if (resturantdata && restaurantOutlets) {
         dispatch(setResturantData(resturantdata));
         dispatch(setOutletData(restaurantOutlets[0]));
@@ -82,10 +82,10 @@ const Login = ({ setIsLogin = () => {} }) => {
       if (resturantdata.detail) {
         dispatch(setUserLoginStatus(true));
         toast.success(<span>Login successfully</span>);
-      } 
+      }
 
       dispatch(setUserData(result));
-      localStorage.clear("sessionid");
+      // localStorage.removeItem("sessionid");
       setIsLogin(false);
       navigate("/");
     } catch (error) {
