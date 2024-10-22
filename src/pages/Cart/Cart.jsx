@@ -10,7 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AddOrSelectAddress from "../../components/Address.jsx/AddOrSelectAddress";
 import CartItem from "../../components/Cart/CartItem";
-import { Box, Button, Container, Divider, FormControlLabel, Paper, Radio, RadioGroup, TextField, Typography } from "@mui/material";
+import { Box, Button, Container, Divider, FormControlLabel, IconButton, Paper, Radio, RadioGroup, TextField, Tooltip, Typography } from "@mui/material";
 import GoBackButton from "../../components/Common/Buttons/GoBackButton";
 
 export const deliveryFee = 2;
@@ -69,7 +69,7 @@ const Cart = ({ showLoginPage = () => { } }) => {
         return response;
       };
 
-      if (sessionid !== null) {
+      if (!sessionid) {
         showLoginPage();
         navigate("/");
       }
@@ -195,17 +195,11 @@ const Cart = ({ showLoginPage = () => { } }) => {
             <TextField
               type="text"
               placeholder="Enter promo code"
-
-
               variant="outlined"
-
-
             />
             <Button variant="contained" >Submit</Button>
           </Box>
         </Box>
-
-        {/* Address Type Selection */}
         <RadioGroup
           row
           sx={{ mt: 3, gap: 2 }}
@@ -252,22 +246,38 @@ const Cart = ({ showLoginPage = () => { } }) => {
           ) : (
             deliveryType === "delivery" && (
               <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  my: 2,
-                  border: '2px solid orange',
-                  borderRadius: '8px',
-                  p: 2,
-                  width: 'fit-content',
-                  mx: 'auto',
-                }}
-              >
-                <Typography variant="h6">Delivery Address</Typography>
-                <Typography>No address available, Add a New One...</Typography>
-                <MdEdit onClick={() => setIsSelectPassword((prev) => !prev)} />
-              </Box>
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                my: 2,
+                border: '2px solid var(--primary)',
+                borderRadius: '12px',
+                p: 3,
+                width: "40%",
+                mx: 'auto',
+                backgroundColor: 'rgba(240, 240, 240, 0.8)', 
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)', 
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                Delivery Address
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'gray', mb: 2 }}>
+                No address available, Add a New One...
+              </Typography>
+              <Tooltip title="Edit Address" arrow>
+                <Box>
+                <IconButton 
+                  onClick={() => setIsSelectPassword((prev) => !prev)} 
+                  
+                >
+                  <MdEdit size={24} /> 
+                </IconButton>
+                </Box>
+              </Tooltip>
+            </Box>
+              
             )
           )}
         </Box>

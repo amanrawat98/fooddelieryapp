@@ -62,6 +62,17 @@ export const createDynamicTheme = (dynamicColors = {}) => {
                   },
                 },
               },
+              MuiRadio: {
+                styleOverrides: {
+                  root: {
+                    color: 'var(--primary)',
+                    '&.Mui-checked': {
+                      color: 'var(--primary)',
+                    },
+                  },
+                }
+              },
+              
             MuiIconButton: {
                 styleOverrides: {
                   root: {

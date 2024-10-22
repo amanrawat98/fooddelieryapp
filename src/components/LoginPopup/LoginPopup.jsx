@@ -21,6 +21,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import useCustomToast from "../../hooks/Toast/useToast";
+import { inputStyles } from "../../theme/utils";
 
 const Login = ({ setIsLogin = () => {} }) => {
   const dispatch = useDispatch();
@@ -81,9 +82,9 @@ const Login = ({ setIsLogin = () => {} }) => {
       if (resturantdata.detail) {
         dispatch(setUserLoginStatus(true));
         toast.success(<span>Login successfully</span>);
-      }
+      } 
 
-      dispatch(setUserData(data?.result));
+      dispatch(setUserData(result));
       localStorage.clear("sessionid");
       setIsLogin(false);
       navigate("/");
@@ -120,18 +121,7 @@ const Login = ({ setIsLogin = () => {} }) => {
     }
   };
 
-  const inputStyles = {
-    // mb: 2,
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderRadius: '4px',
-      },
-      '& input': {
-        padding: '10px 14px',
-        height: 'auto',
-      },
-    },
-  };
+ 
 
   return (
     <Dialog open={true} onClose={() => setIsLogin(false)} maxWidth="xs" fullWidth>
