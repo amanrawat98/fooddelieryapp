@@ -5,7 +5,7 @@ import AppDownload from "../../components/AppDownload.jsx/AppDownload";
 import CategorySection from "../../components/CategorySection";
 import CategoryDetail from "../../components/CategoryDetail";
 import { useDispatch, useSelector } from "react-redux";
-import {setOutletData,setRestaurantData as reduxRetRestaurantData,
+import {setOutletData,setRestaurantData as reduxSetRestaurantData,
 } from "../../slices/restaurantDataSlice";
 import { setCartItems } from "../../slices/cartSlice";
 import { getResturantData } from "../../utility/apiServices";
@@ -46,11 +46,11 @@ const Home = () => {
     const { restaurantOutlets } = result || {};
     setRestaurantOutlets(restaurantOutlets);
 
-    if (sessionId !== null) {
+    if (!sessionId) {
       if (resturantData && restaurantOutlets) {
         console.log("resturantData", resturantData);
 
-        dispatch(reduxRetRestaurantData(resturantData));
+        dispatch(reduxSetRestaurantData(resturantData));
 
         if (restaurantOutlets?.[outletNumber]) {
           dispatch(setOutletData(restaurantOutlets[outletNumber]));
