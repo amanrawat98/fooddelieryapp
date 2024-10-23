@@ -16,6 +16,7 @@ import { setCartItems } from "../../feature/CartSlice";
 import { getResturantData } from "../../utility/apiServices";
 import axios from "axios";
 import { v4 } from "uuid";
+import { Box } from "@mui/material";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -88,7 +89,7 @@ const Home = () => {
   };
 
   return (
-    <div>
+    <Box sx={{px:"1rem"}}>
       <Outlet restaurantOutlets={restaurantOutlets} {...props} />
       <Header data={outletData} />
       <ExploreMenu menuItems={outletData?.menuCategories} />
@@ -107,7 +108,7 @@ const Home = () => {
         }
       })}
      <AppDownload />
-    </div>
+    </Box>
   );
 };
 
