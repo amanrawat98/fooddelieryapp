@@ -77,6 +77,7 @@ const CartItem = ({ item }) => {
 
     dispatch(setCartItems(response?.data?.result));
   };
+  console.log(cartId)
   const handleAddToCartDebounced = useCallback(
     debounce(async (type, item) => {
       await addToCart({

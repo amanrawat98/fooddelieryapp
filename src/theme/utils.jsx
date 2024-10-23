@@ -46,3 +46,15 @@ export const commonCardStyles = (theme) => ({
         },
     },
 });
+export const inputStyles = {
+  // mb: 2,
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderRadius: '4px',
+    },
+    '& input': {
+      padding: '10px 14px',
+      height: 'auto',
+    },
+  },
+};

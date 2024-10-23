@@ -64,8 +64,7 @@ const Navbar = ({ isLogin, setIsLogin = () => { }, isSignUp, setIsSignUp }) => {
   // Handle Logout
   const handleLogout = async () => {
     dispatch(setUserLoginStatus(false));
-    const newSessionId = uuidv4();
-    localStorage.clear("sessionid");
+    localStorage.removeItem("sessionid");
     toast.success("User logout successfully")
     navigate("/");
 

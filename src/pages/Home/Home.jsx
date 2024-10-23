@@ -26,21 +26,14 @@ const Home = () => {
   const isUserLogin = useSelector((state) => state.user.isUserLogin);
 
   const sessionid = localStorage.getItem("sessionid") || null;
-  /*   const data = resturantData?.result?.restaurantOutlets[0];
-   */
 
-  // const {
-  //   data: resturantdata,
-  //   isLoading,
-  //   isError,
-  //   refetch,
-  // } = useQuery("resturant-data", getResturantData);
 
   useEffect(() => {
+
     const fetchResturantData = async () => {
       const response = await getResturantData();
       setResturantData(response);
-      console.log(response);
+      
     };
 
     fetchResturantData();
@@ -50,7 +43,7 @@ const Home = () => {
     const sessionid = localStorage.getItem("sessionid");
     const id = v4();
 
-    if (sessionid === null && isUserLogin === false) {
+    if (!sessionid && !isUserLogin ) {
       localStorage.setItem("sessionid", id);
     } else if (sessionid === "") {
       console.log("user has login");
