@@ -4,6 +4,7 @@ import { buttonStyles, commonCardStyles } from './utils';
 
 
 export const createDynamicTheme = (dynamicColors = {}) => {
+  console.log(dynamicColors,"colorsss")
     const theme = createTheme({
         mode: 'main',
         palette: {

@@ -1,37 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserData, setUserLoginStatus } from "../../feature/userSlice";
-import { setOutletData, setResturantData } from "../../feature/resturantDataSlice";
-import { setCartItems } from "../../feature/CartSlice";
+import { setUserData, setUserLoginStatus } from "../../slices/userSlice";
+import { setOutletData, setRestaurantData } from "../../slices/restaurantDataSlice";
+import { setCartItems } from "../../slices/cartSlice";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import ShowAndHidePassword from "../ShowAndHidePassword";
-import { emailRegex, phoneRegex } from "../../constaints/constaints";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  IconButton,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
+import { emailRegex } from "../../constants";
+import {TextField,Button,Typography,CircularProgress,} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useForm } from "react-hook-form";
 import useCustomToast from "../../hooks/Toast/useToast";
 import { inputStyles } from "../../theme/utils";
+import { closeDialog } from "../../slices/dialogSlice"; 
+import { useToast } from "../../hooks/Toast/ToastContext";
 
-const Login = ({ setIsLogin = () => {} }) => {
+const Login = () => {
   const dispatch = useDispatch();
   const toast = useCustomToast();
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const resturantdata = useSelector((state) => state?.resturant?.resturantdata);
+  const resturantData = useSelector((state) => state?.restaurant?.resturantdata);
 
   let restaurantId;
-  if (resturantdata?.result?.restaurantId) {
-    restaurantId = resturantdata?.result?.restaurantId;
+  if (resturantData?.result?.restaurantId) {
+    restaurantId = resturantData?.result?.restaurantId;
   }
 
   const navigate = useNavigate();
@@ -75,7 +66,7 @@ const Login = ({ setIsLogin = () => {} }) => {
       const { restaurantOutlets } = restaurantData || {};
     
       if (resturantdata && restaurantOutlets) {
-        dispatch(setResturantData(resturantdata));
+        dispatch(setRestaurantData(resturantdata));
         dispatch(setOutletData(restaurantOutlets[0]));
         dispatch(setCartItems(customerCart));
       }
@@ -86,7 +77,7 @@ const Login = ({ setIsLogin = () => {} }) => {
 
       dispatch(setUserData(result));
       // localStorage.removeItem("sessionid");
-      setIsLogin(false);
+      handleCloseDialog()
       navigate("/");
     } catch (error) {
       toast.error(<span>Something went wrong </span>);
@@ -95,7 +86,9 @@ const Login = ({ setIsLogin = () => {} }) => {
       setLoading(false);
     }
   };
-
+const handleCloseDialog=()=>{
+  dispatch(closeDialog())
+}
   const handleSendOtp = async (data) => {
     setOtpLoading(true);
 
@@ -110,12 +103,13 @@ const Login = ({ setIsLogin = () => {} }) => {
       );
 
       const { result } = response?.data;
-
+   
       if (result) {
         setPage("resetPassword");
       }
     } catch (error) {
       console.log(error);
+      toast.error(<div>{error?.response?.data?.detail||"Something went wrong"}</div>)
     } finally {
       setOtpLoading(false);
     }
@@ -124,16 +118,7 @@ const Login = ({ setIsLogin = () => {} }) => {
  
 
   return (
-    <Dialog open={true} onClose={() => setIsLogin(false)} maxWidth="xs" fullWidth>
-      <DialogTitle>
-        <Typography variant="h6" align="center" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {page === "login" ? "Login" : page === "forgotPassword" ? "Forgot Password" : "Reset Password"}
-          <IconButton edge="end" color="inherit" onClick={() => setIsLogin(false)}>
-            <CloseIcon />
-          </IconButton>
-        </Typography>
-      </DialogTitle>
-      <DialogContent sx={{ paddingBottom: "2rem" }}>
+  <>
         {page === "login" && (
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <TextField
@@ -184,7 +169,7 @@ const Login = ({ setIsLogin = () => {} }) => {
               variant="outlined"
               fullWidth
               sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
-              onClick={() => setIsLogin(false)}
+              onClick={handleCloseDialog}
             >
               Cancel
             </Button>
@@ -236,7 +221,7 @@ const Login = ({ setIsLogin = () => {} }) => {
               variant="outlined"
               fullWidth
               sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
-              onClick={() => setIsLogin(false)}
+              onClick={handleCloseDialog}
             >
               Cancel
             </Button>
@@ -306,14 +291,13 @@ const Login = ({ setIsLogin = () => {} }) => {
               variant="outlined"
               fullWidth
               sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
-              onClick={() => setIsLogin(false)}
+              onClick={handleCloseDialog}
             >
               Cancel
             </Button>
           </form>
         )}
-      </DialogContent>
-    </Dialog>
+  </>
   );
 };
 

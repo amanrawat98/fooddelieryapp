@@ -7,16 +7,15 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { assets } from "../assets/assets";
 import axios from "axios";
-import { setCartCount, setCartItems } from "../feature/CartSlice";
+import { setCartCount, setCartItems } from "../slices/cartSlice";
 import { Box, Button, debounce, IconButton, Paper, Typography } from "@mui/material";
 import { handleAddToCart } from "../utility/apiServices";
 import { Add, Fastfood, Grass, Image, LocalDining, Remove, RemoveCircle } from "@mui/icons-material";
 import GoBackButton from "../components/Common/Buttons/GoBackButton";
 
 const ProductDetail = () => {
-  const outletData = useSelector((state) => state?.resturant?.outletData);
-  const resturantdata = useSelector((state) => state?.resturant?.resturantdata);
-  const cartitems = useSelector((state) => state?.cart?.cartItems);
+  const outletData = useSelector((state) => state?.restaurant?.outletData);
+ const cartitems = useSelector((state) => state?.cart?.cartItems);
 
   const dispatch = useDispatch();
 

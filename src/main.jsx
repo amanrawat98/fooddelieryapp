@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
-import StoreContextProvider from "./context/StoreContext.jsx";
 import { Provider } from "react-redux";
 import { store } from "./app/store.jsx";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -21,10 +20,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <PersistGate loading={null} persistor={presistor}>
     <ToastProvider>
         <BrowserRouter>
-          <StoreContextProvider>
             <App />
-          </StoreContextProvider>
-        </BrowserRouter>
+         </BrowserRouter>
         </ToastProvider>
       </PersistGate>
     </QueryClientProvider>

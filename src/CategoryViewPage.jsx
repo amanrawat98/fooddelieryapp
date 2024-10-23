@@ -7,7 +7,7 @@ import { Box, Typography } from "@mui/material";
 import GoBackButton from "./components/Common/Buttons/GoBackButton";
 
 const CategoryViewPage = () => {
-  const outletData = useSelector((state) => state?.resturant?.outletData);
+  const outletData = useSelector((state) => state?.restaurant?.outletData);
 
   const { menuCategories } = outletData;
 

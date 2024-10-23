@@ -6,7 +6,7 @@ const initialState = {
   cartCount:0
 };
 
-const CartSlice = createSlice({
+const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
@@ -23,5 +23,5 @@ const CartSlice = createSlice({
   },
 });
 
-export const { setCartItems, setRefetchFunction, setCartCount } = CartSlice.actions;
-export default CartSlice.reducer;
+export const { setCartItems, setRefetchFunction, setCartCount } = cartSlice.actions;
+export default cartSlice.reducer;

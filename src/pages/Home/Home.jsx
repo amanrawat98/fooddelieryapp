@@ -1,52 +1,41 @@
 import React, { useEffect, useState } from "react";
-import "./Home.css";
 import Header from "../../components/Header/Header";
 import ExploreMenu from "../../components/ExploreMenu";
 import AppDownload from "../../components/AppDownload.jsx/AppDownload";
-import { useQuery } from "react-query";
 import CategorySection from "../../components/CategorySection";
 import CategoryDetail from "../../components/CategoryDetail";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setOutletData,
-  setResturantData as setresturantdata,
-} from "../../feature/resturantDataSlice";
-import Outlet from "../../components/Outlet";
-import { setCartItems } from "../../feature/CartSlice";
+import {setOutletData,setRestaurantData as reduxRetRestaurantData,
+} from "../../slices/restaurantDataSlice";
+import { setCartItems } from "../../slices/cartSlice";
 import { getResturantData } from "../../utility/apiServices";
-import axios from "axios";
-import { v4 } from "uuid";
 import { Box } from "@mui/material";
+import { useSession } from "../../hooks/useSession";
+import OutletContainer from "../../components/OutletContainer";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const outletData = useSelector((state) => state?.resturant?.outletData);
+  const outletData = useSelector((state) => state?.restaurant?.outletData);
   const [outletNumber, setOutletNumber] = useState(0);
-  const [resturantData, setResturantData] = useState({});
+  const [resturantData, setRestaurantData] = useState({});
   const [restaurantOutlets, setRestaurantOutlets] = useState([]);
   const isUserLogin = useSelector((state) => state.user.isUserLogin);
+  const { sessionId, createSession, clearSession } = useSession();
 
-  const sessionid = localStorage.getItem("sessionid") || null;
-
-
-  useEffect(() => {
-
-    const fetchResturantData = async () => {
-      const response = await getResturantData();
-      setResturantData(response);
-      
-    };
-
-    fetchResturantData();
-  }, [sessionid]);
+  const fetchResturantData = async () => {
+    const response = await getResturantData();
+    setRestaurantData(response);
+  };
 
   useEffect(() => {
-    const sessionid = localStorage.getItem("sessionid");
-    const id = v4();
+    if (sessionId)
+      fetchResturantData();
+  }, [sessionId]);
 
-    if (!sessionid && !isUserLogin ) {
-      localStorage.setItem("sessionid", id);
-    } else if (sessionid === "") {
+  useEffect(() => {
+    if (!sessionId && !isUserLogin) {
+      createSession()
+    } else if (!sessionId) {
       console.log("user has login");
     }
   }, []);
@@ -57,11 +46,11 @@ const Home = () => {
     const { restaurantOutlets } = result || {};
     setRestaurantOutlets(restaurantOutlets);
 
-    if (sessionid !== null) {
+    if (sessionId !== null) {
       if (resturantData && restaurantOutlets) {
         console.log("resturantData", resturantData);
 
-        dispatch(setresturantdata(resturantData));
+        dispatch(reduxRetRestaurantData(resturantData));
 
         if (restaurantOutlets?.[outletNumber]) {
           dispatch(setOutletData(restaurantOutlets[outletNumber]));
@@ -76,21 +65,12 @@ const Home = () => {
         dispatch(setOutletData(restaurantOutlets?.[outletNumber]));
       }
     }
-  }, [resturantData, sessionid, dispatch, outletNumber]);
+  }, [resturantData, sessionId, dispatch, outletNumber]);
 
-  // const { result, customerCart } = resturantdata || {};
-  // const { restaurantOutlets } = result || {};
-
-  // useEffect(() => {}, [resturantdata, outletNumber, dispatch]);
-
-  const props = {
-    outletNumber,
-    setOutletNumber,
-  };
 
   return (
-    <Box sx={{px:"1rem"}}>
-      <Outlet restaurantOutlets={restaurantOutlets} {...props} />
+    <Box sx={{ px: "1rem" }}>
+      <OutletContainer {...{ outletNumber, setOutletNumber, restaurantOutlets }} />
       <Header data={outletData} />
       <ExploreMenu menuItems={outletData?.menuCategories} />
       <CategorySection menuItems={outletData?.menuCategories} />
@@ -107,7 +87,7 @@ const Home = () => {
           );
         }
       })}
-     <AppDownload />
+      <AppDownload />
     </Box>
   );
 };
