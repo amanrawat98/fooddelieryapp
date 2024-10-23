@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState,lazy } from "react";
+import React, { Suspense, useEffect, useState, lazy } from "react";
 import Navbar from "./components/Navbar/Navbar";
 import { Outlet, Route, Routes } from "react-router-dom";
 // import Home from "./pages/Home/Home";
@@ -65,7 +65,7 @@ const App = () => {
     const getTheme = async () => {
       // const dynamicColors = await fetchColorsFromAPI(); 
       const dynamicTheme = createDynamicTheme({});
-      console.log(dynamicTheme,"my themeeee")
+      console.log(dynamicTheme, "my themeeee")
       setTheme(dynamicTheme);
     };
 
@@ -83,7 +83,7 @@ const App = () => {
             <Box sx={{
               flex: 1, overflowY: 'auto', display: "flex", flexDirection: "column"
             }}>
-              <Box sx={{ px: "1rem", mb: "1rem", flex: 1 }}>
+              <Box sx={{ flex: 1 }}>
                 <Suspense fallback={<LayoutLoader />}>
                   <Outlet />
                 </Suspense>
@@ -108,29 +108,16 @@ const App = () => {
             }
           >
             <Route
-              path="/profile/orders"
-              element={
-                <ProtectedRoutes>
-                  <Orders />{" "}
-                </ProtectedRoutes>
-              }
-            />
-            <Route
-              path="/profile/orderstatus/:orderid"
-              element={
-                <ProtectedRoutes>
-                  <OrderStatus />{" "}
-                </ProtectedRoutes>
-              }
-            />
-
-            <Route
               index
-              element={
-                <ProtectedRoutes>
-                  <User />
-                </ProtectedRoutes>
-              }
+              element={<User />} 
+            />
+            <Route
+              path="orders"
+              element={<Orders />} 
+            />
+            <Route
+              path="orderstatus/:orderid"
+              element={<OrderStatus />} 
             />
           </Route>
           <Route

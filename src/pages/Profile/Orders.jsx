@@ -4,6 +4,7 @@ import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import OrderCard from "../../components/OrderCard";
 import { handleGetOrders } from "../../utility/apiServices";
+import { Box, CircularProgress, Typography } from "@mui/material";
 
 const Orders = () => {
   const userdata = useSelector((state) => state?.user?.userData);
@@ -16,22 +17,47 @@ const Orders = () => {
 
   return (
     <>
-      {isLoading && (
-        <div className="h-full w-full">
-          <span className="loading loading-dots loading-lg"></span>
-        </div>
-      )}
-      {data && (
-        <div className="px-3 space-y-4 ">
-          {data?.length <= 0 && <p> No Orders Available </p>}
-          {data &&
-            data.length > 0 &&
-            data?.map((item, index) => {
-              return <OrderCard item={item} key={index} />;
-            })}
-        </div>
-      )}
-    </>
+    {isLoading && (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          width: "100%",
+        }}
+      >
+        <CircularProgress size={60} />
+      </Box>
+    )}
+
+    {data && (
+      <Box
+        sx={{
+          px: { xs: 2, sm: 3, md: 5 },
+          py: 3,
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
+      >
+        {data.length === 0 ? (
+          <Typography
+            variant="h6"
+            sx={{
+              textAlign: "center",
+              color: "text.secondary",
+              fontSize: { xs: "16px", sm: "18px" },
+            }}
+          >
+            No Orders Available
+          </Typography>
+        ) : (
+          data.map((item, index) => <OrderCard item={item} key={index} />)
+        )}
+      </Box>
+    )}
+  </>
   );
 };
 
