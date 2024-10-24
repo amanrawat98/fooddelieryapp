@@ -3,7 +3,7 @@ import CategoryHeader from "./CategoryHeader";
 import FoodItem from "./FoodItem/FoodItem";
 import { Box } from "@mui/material";
 
-const CategoryDetail = ({ menuitem, category }) => {
+const CategoryDetail = ({ menuitem,}) => {
   return (
     <Box className="my-6">
     <CategoryHeader value={menuitem} />

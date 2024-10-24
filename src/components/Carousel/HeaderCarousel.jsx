@@ -1,10 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Avatar, Box, Typography } from "@mui/material";
 import CarouselWrapper from "../Common/CarouselWrapper";
 import MenuCard from "../Common/Cards/CategoryCard";
 
-const HeaderCarousel = ({ menuItems, category, setCategory }) => {
+const HeaderCarousel = ({ menuItems }) => {
 
   return (
     <CarouselWrapper>

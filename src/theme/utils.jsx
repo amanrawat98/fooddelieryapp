@@ -40,7 +40,6 @@ export const commonCardStyles = (theme) => ({
     '&:hover': {
         boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.3)',
         color: "var(--primary)" || theme.palette.primary.main,
-        transform: 'scale(1.1)',
         '& .price-color, & .arrow-icon': {
             color: 'green',
         },

@@ -14,7 +14,7 @@ import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { useSession } from "../../hooks/useSession";
 import { openDialog } from "../../slices/dialogSlice";
 
-const Navbar = () => {
+const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const toast = useCustomToast();
@@ -25,50 +25,14 @@ const Navbar = () => {
   const { cartCount } = cartItems || {};
   const { sessionId, createSession, clearSession, } = useSession()
 
-
-
-  // Handle Logout
   const handleLogout = async () => {
     dispatch(setUserLoginStatus(false));
-    clearSession();
+    dispatch(setUserData(null));
+    dispatch(setSelectedAddress(null));
+    createSession();
     toast.success("User logout successfully")
     navigate("/");
-
-    const handleGetResturantData = async () => {
-      const response = await getResturantData();
-      return response;
-    };
-
-    try {
-      const data = await handleGetResturantData();
-      const { result, customerCart } = data || {};
-      const { restaurantOutlets } = result || {};
-
-      if (result) {
-        dispatch(setRestaurantData(result));
-      }
-      if (restaurantOutlets && restaurantOutlets.length > 0) {
-        dispatch(setOutletData(restaurantOutlets[0]));
-      }
-      if (customerCart) {
-        dispatch(setCartItems(customerCart));
-      }
-
-      dispatch(setUserData(null));
-      dispatch(setSelectedAddress(null));
-
-      console.log("API Response after logout:", data);
-    }
-    catch (error) {
-      console.error(
-        "Error fetching restaurant data with new session ID",
-        error
-      );
-    }
-
-  };
-
-
+  }
 
   const handleLoginSignUp = (type) => {
     const dialogComponent = {
@@ -138,4 +102,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Header;

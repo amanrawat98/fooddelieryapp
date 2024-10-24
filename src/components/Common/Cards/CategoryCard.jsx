@@ -29,9 +29,9 @@ const CategoryCard = ({ menuCategoryImageUrl = "", name = "-", description = "" 
                     padding: '2rem 1rem',
                     transition: 'all 0.3s ease',
                     '&:hover': {
-                        boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.5)',
+                        boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.4)',
                         color: 'var(--primary)',
-                        transform: 'scale(1.1)',
+                        transform: 'scale(1.05)',
                         ' & .arrow-icon': {
                             color: 'green',
                           },
@@ -64,9 +64,9 @@ const CategoryCard = ({ menuCategoryImageUrl = "", name = "-", description = "" 
                     >
                         {name}
                     </Typography>
-                    <Typography variant="body1">
+                    {/* <Typography variant="body1">
                         {description ||"Explore"} <ArrowCircleRight className='arrow-icon' sx={{color:"red"}}/>
-                    </Typography>
+                    </Typography> */}
                 </Box>
             </Box>
         </Box>

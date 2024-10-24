@@ -4,15 +4,24 @@ import restaurantReducer from "../slices/restaurantDataSlice";
 import CartReducer from "../slices/cartSlice";
 import themeReducer from "../slices/themeSlice";
 import dialogSlice from "../slices/dialogSlice";
+import outletReducer from "../slices/outletSlice"
 import storage from "redux-persist/lib/storage";
-import { persistReducer } from "redux-persist";  
+import { createTransform, persistReducer } from "redux-persist";  
 
-
+const selectedOutletTransform = createTransform(
+  (inboundState) => ({
+    selectedOutlet: inboundState.selectedOutlet,// only persist selectedOutlet form outlet slice
+    // anotherPersistedState: inboundState.anotherPersistedState,
+  }),
+  (outboundState) => outboundState, 
+  { whitelist: ['outlet'] } 
+);
 const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  whitelist: ["user", "cart", "restaurant"],  // Only persist these slices
+  transforms: [selectedOutletTransform], // for specific state from slice
+  whitelist: ["user","outlet"],  // Only persist these slices
 };
 
 
@@ -22,6 +31,7 @@ const reducer = combineReducers({
   cart: CartReducer,
   dialog: dialogSlice,  
   theme: themeReducer,
+  outlet: outletReducer,
 });
 
 

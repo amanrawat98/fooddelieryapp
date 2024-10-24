@@ -1,16 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { resturantData } from "../demoData/resturantdata";
 import { useParams } from "react-router-dom";
-import nonvegimg from "../assets/non_veg.png";
-import vegimg from "../assets/veg.png";
 import { useDispatch, useSelector } from "react-redux";
-
-import { assets } from "../assets/assets";
-import axios from "axios";
 import { setCartCount, setCartItems } from "../slices/cartSlice";
-import { Box, Button, debounce, IconButton, Paper, Typography } from "@mui/material";
+import { Box, Button, debounce, IconButton,  Typography } from "@mui/material";
 import { handleAddToCart } from "../utility/apiServices";
-import { Add, Fastfood, Grass, Image, LocalDining, Remove, RemoveCircle } from "@mui/icons-material";
+import { Add, Fastfood, Grass,  Remove, } from "@mui/icons-material";
 import GoBackButton from "../components/Common/Buttons/GoBackButton";
 
 const ProductDetail = () => {
@@ -33,7 +27,7 @@ const ProductDetail = () => {
   }, [outletData]);
 
   const filteredbyproductid = useMemo(() => {
-    const filteredbyproductid = filteredbycategoryid[0]?.menuItems?.filter(
+    const filteredbyproductid = filteredbycategoryid?.[0]?.menuItems?.filter(
       (item) => {
         return item?.menuItemId?.toString() === productid?.toString();
       }
