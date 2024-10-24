@@ -20,10 +20,10 @@ export const useSession = () => {
   };
 
   useEffect(() => {
-    if (sessionId) {
-      localStorage.setItem('sessionid', sessionId);
+    if (!sessionId) {
+      createSession()
     }
-  }, [sessionId]);
+  }, []);
 
   return {
     sessionId,

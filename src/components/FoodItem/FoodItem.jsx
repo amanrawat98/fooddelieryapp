@@ -92,6 +92,10 @@ const FoodItem = ({ item, categoryid }) => {
           sx={{
             height: '50%',
             objectFit: 'cover',
+            transition: "transform 0.3s ease-in-out",
+                "&:hover": {
+                  transform: "scale(1.1)", 
+                },
           }}
           image={item?.menuItemImageUrl}
           alt={item?.name}

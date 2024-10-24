@@ -6,20 +6,21 @@ import { setCartItems } from "../../slices/cartSlice";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { emailRegex } from "../../constants";
-import {TextField,Button,Typography,CircularProgress,} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { TextField, Button, Typography, CircularProgress, } from "@mui/material";
 import { useForm } from "react-hook-form";
 import useCustomToast from "../../hooks/Toast/useToast";
 import { inputStyles } from "../../theme/utils";
-import { closeDialog } from "../../slices/dialogSlice"; 
-import { useToast } from "../../hooks/Toast/ToastContext";
+import { closeDialog } from "../../slices/dialogSlice";
+import { useSession } from "../../hooks/useSession";
+import { handleUserLogin } from "../../utility/apiServices";
 
 const Login = () => {
   const dispatch = useDispatch();
   const toast = useCustomToast();
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const outletState = useSelector((state) => state.outlet);
   const resturantData = useSelector((state) => state?.restaurant?.resturantdata);
-
+  const { clearSession, } = useSession()
   let restaurantId;
   if (resturantData?.result?.restaurantId) {
     restaurantId = resturantData?.result?.restaurantId;
@@ -30,25 +31,17 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
 
-  const { register, handleSubmit, setValue,getValues, formState: { errors } } = useForm({
-    mode: 'onBlur', 
+  const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    mode: 'onBlur',
     defaultValues: {
       email: '',
       phone: '',
       password: '',
-      comformPassword: '', 
+      comformPassword: '',
     },
   });
 
-  const handleUserLogin = async (payload) => {
-    const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/login`,
-      payload
-    );
-    return response.data;
-  };
-
-  const onSubmit = async (data) => {
+ const onSubmit = async (data) => {
     setLoading(true);
 
     const payload = {
@@ -64,10 +57,10 @@ const Login = () => {
       const resturantdata = await handleUserLogin(payload);
       const { result, customerCart, restaurantData } = resturantdata || {};
       const { restaurantOutlets } = restaurantData || {};
-    
+
       if (resturantdata && restaurantOutlets) {
         dispatch(setRestaurantData(resturantdata));
-        dispatch(setOutletData(restaurantOutlets[0]));
+        dispatch(setOutletData(restaurantOutlets[outletState?.selectedOutlet || 0]));
         dispatch(setCartItems(customerCart));
       }
       if (resturantdata.detail) {
@@ -76,7 +69,7 @@ const Login = () => {
       }
 
       dispatch(setUserData(result));
-      // localStorage.removeItem("sessionid");
+      clearSession()
       handleCloseDialog()
       navigate("/");
     } catch (error) {
@@ -86,9 +79,9 @@ const Login = () => {
       setLoading(false);
     }
   };
-const handleCloseDialog=()=>{
-  dispatch(closeDialog())
-}
+  const handleCloseDialog = () => {
+    dispatch(closeDialog())
+  }
   const handleSendOtp = async (data) => {
     setOtpLoading(true);
 
@@ -103,201 +96,201 @@ const handleCloseDialog=()=>{
       );
 
       const { result } = response?.data;
-   
+
       if (result) {
         setPage("resetPassword");
       }
     } catch (error) {
       console.log(error);
-      toast.error(<div>{error?.response?.data?.detail||"Something went wrong"}</div>)
+      toast.error(<div>{error?.response?.data?.detail || "Something went wrong"}</div>)
     } finally {
       setOtpLoading(false);
     }
   };
 
- 
+
 
   return (
-  <>
-        {page === "login" && (
-          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-            <TextField
-              type="text"
-              placeholder="Your email or Phone no"
-           
-              fullWidth
-              variant="outlined"
-              {...register("email", {
-                required: "Email or phone number is required",
-                pattern: {
-                  value: emailRegex,
-                  message: "Invalid email format",
-                },
-              })}
-              error={!!errors.email}
-              helperText={errors.email ? errors.email.message : ''}
-              sx={inputStyles}
-            />
-            <TextField
-              type="password"
-              placeholder="Password"
-          
-              {...register("password", {
-                required: "Password is required",
-              })}
-              error={!!errors.password}
-              helperText={errors.password ? errors.password.message : ''}
-              fullWidth
-              variant="outlined"
-              sx={inputStyles}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              disabled={loading}
-              sx={{
-                backgroundColor: "#ff6347",
-                "&:hover": { backgroundColor: "#e5533d" },
-                mb: 2,
-              }}
-            >
-              {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
-            </Button>
-            <Button
-              type="button"
-              variant="outlined"
-              fullWidth
-              sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
-              onClick={handleCloseDialog}
-            >
-              Cancel
-            </Button>
-            <Typography
-              variant="body2"
-              align="center"
-              sx={{ cursor: "pointer", color: "#676767" }}
-              onClick={() => setPage("forgotPassword")}
-            >
-              Forgot Your password?
-            </Typography>
-          </form>
-        )}
+    <>
+      {page === "login" && (
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+          <TextField
+            type="text"
+            placeholder="Your email or Phone no"
 
-        {page === "forgotPassword" && (
-          <form className="space-y-4" onSubmit={handleSubmit(handleSendOtp)}>
-            <TextField
-              type="text"
-              placeholder="Your email or Phone no"
-         
-              fullWidth
-              variant="outlined"
-              {...register("email", {
-                required: "Email or phone number is required",
-                pattern: {
-                  value: emailRegex,
-                  message: "Invalid email format",
-                },
-              })}
-              error={!!errors.email}
-              helperText={errors.email ? errors.email.message : ''}
-              sx={inputStyles}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              disabled={otpLoading}
-              sx={{
-                backgroundColor: "#ff6347",
-                "&:hover": { backgroundColor: "#e5533d" },
-                mb: 2,
-              }}
-            >
-              {otpLoading ? <CircularProgress size={24} color="inherit" /> : "Get OTP"}
-            </Button>
-            <Button
-              type="button"
-              variant="outlined"
-              fullWidth
-              sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
-              onClick={handleCloseDialog}
-            >
-              Cancel
-            </Button>
-          </form>
-        )}
+            fullWidth
+            variant="outlined"
+            {...register("email", {
+              required: "Email or phone number is required",
+              pattern: {
+                value: emailRegex,
+                message: "Invalid email format",
+              },
+            })}
+            error={!!errors.email}
+            helperText={errors.email ? errors.email.message : ''}
+            sx={inputStyles}
+          />
+          <TextField
+            type="password"
+            placeholder="Password"
 
-        {page === "resetPassword" && (
-          <form className="space-y-4" onSubmit={handleSubmit(handleSendOtp)}>
-            <TextField
-              type="text"
-              placeholder="OTP"
-              name="otp"
-             
-              fullWidth
-              variant="outlined"
-              {...register("otp", {
-                required: "OTP is required",
-              })}
-              error={!!errors.otp}
-              helperText={errors.otp ? errors.otp.message : ''}
-              sx={inputStyles}
-            />
-            <TextField
-              type="password"
-              placeholder="New Password"
-              name="password"
-           
-              fullWidth
-              variant="outlined"
-              {...register("password", {
-                required: "New password is required",
-              })}
-              error={!!errors.password}
-              helperText={errors.password ? errors.password.message : ''}
-              sx={inputStyles}
-            />
-            <TextField
-              type="password"
-              placeholder="Confirm Password"
-              name="comformPassword"
-            
-              fullWidth
-              variant="outlined"
-              {...register("comformPassword", {
-                required: "Confirm password is required",
-                validate: value => value === getValues("password") || "Passwords do not match",
-              })}
-              error={!!errors.comformPassword}
-              helperText={errors.comformPassword ? errors.comformPassword.message : ''}
-              sx={inputStyles}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              disabled={loading}
-              sx={{
-                backgroundColor: "#ff6347",
-                "&:hover": { backgroundColor: "#e5533d" },
-                mb: 2,
-              }}
-            >
-              {loading ? <CircularProgress size={24} color="inherit" /> : "Reset Password"}
-            </Button>
-            <Button
-              type="button"
-              variant="outlined"
-              fullWidth
-              sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
-              onClick={handleCloseDialog}
-            >
-              Cancel
-            </Button>
-          </form>
-        )}
-  </>
+            {...register("password", {
+              required: "Password is required",
+            })}
+            error={!!errors.password}
+            helperText={errors.password ? errors.password.message : ''}
+            fullWidth
+            variant="outlined"
+            sx={inputStyles}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            disabled={loading}
+            sx={{
+              backgroundColor: "#ff6347",
+              "&:hover": { backgroundColor: "#e5533d" },
+              mb: 2,
+            }}
+          >
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
+          </Button>
+          <Button
+            type="button"
+            variant="outlined"
+            fullWidth
+            sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
+            onClick={handleCloseDialog}
+          >
+            Cancel
+          </Button>
+          <Typography
+            variant="body2"
+            align="center"
+            sx={{ cursor: "pointer", color: "#676767" }}
+            onClick={() => setPage("forgotPassword")}
+          >
+            Forgot Your password?
+          </Typography>
+        </form>
+      )}
+
+      {page === "forgotPassword" && (
+        <form className="space-y-4" onSubmit={handleSubmit(handleSendOtp)}>
+          <TextField
+            type="text"
+            placeholder="Your email or Phone no"
+
+            fullWidth
+            variant="outlined"
+            {...register("email", {
+              required: "Email or phone number is required",
+              pattern: {
+                value: emailRegex,
+                message: "Invalid email format",
+              },
+            })}
+            error={!!errors.email}
+            helperText={errors.email ? errors.email.message : ''}
+            sx={inputStyles}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            disabled={otpLoading}
+            sx={{
+              backgroundColor: "#ff6347",
+              "&:hover": { backgroundColor: "#e5533d" },
+              mb: 2,
+            }}
+          >
+            {otpLoading ? <CircularProgress size={24} color="inherit" /> : "Get OTP"}
+          </Button>
+          <Button
+            type="button"
+            variant="outlined"
+            fullWidth
+            sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
+            onClick={handleCloseDialog}
+          >
+            Cancel
+          </Button>
+        </form>
+      )}
+
+      {page === "resetPassword" && (
+        <form className="space-y-4" onSubmit={handleSubmit(handleSendOtp)}>
+          <TextField
+            type="text"
+            placeholder="OTP"
+            name="otp"
+
+            fullWidth
+            variant="outlined"
+            {...register("otp", {
+              required: "OTP is required",
+            })}
+            error={!!errors.otp}
+            helperText={errors.otp ? errors.otp.message : ''}
+            sx={inputStyles}
+          />
+          <TextField
+            type="password"
+            placeholder="New Password"
+            name="password"
+
+            fullWidth
+            variant="outlined"
+            {...register("password", {
+              required: "New password is required",
+            })}
+            error={!!errors.password}
+            helperText={errors.password ? errors.password.message : ''}
+            sx={inputStyles}
+          />
+          <TextField
+            type="password"
+            placeholder="Confirm Password"
+            name="comformPassword"
+
+            fullWidth
+            variant="outlined"
+            {...register("comformPassword", {
+              required: "Confirm password is required",
+              validate: value => value === getValues("password") || "Passwords do not match",
+            })}
+            error={!!errors.comformPassword}
+            helperText={errors.comformPassword ? errors.comformPassword.message : ''}
+            sx={inputStyles}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            disabled={loading}
+            sx={{
+              backgroundColor: "#ff6347",
+              "&:hover": { backgroundColor: "#e5533d" },
+              mb: 2,
+            }}
+          >
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Reset Password"}
+          </Button>
+          <Button
+            type="button"
+            variant="outlined"
+            fullWidth
+            sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
+            onClick={handleCloseDialog}
+          >
+            Cancel
+          </Button>
+        </form>
+      )}
+    </>
   );
 };
 
