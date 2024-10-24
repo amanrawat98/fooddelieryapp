@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Accordion, AccordionSummary, AccordionDetails, MenuList, MenuItem, Typography } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-const Outlet = ({ restaurantOutlets = [], outletNumber, setOutletNumber }) => {
+
+const OutletContainer = ({ restaurantOutlets = [], outletNumber, setOutletNumber }) => {
   const [expanded, setExpanded] = useState(false);
   const selectedOutlet = restaurantOutlets[outletNumber] || {};
   const { street } = selectedOutlet;
@@ -93,4 +93,4 @@ const Outlet = ({ restaurantOutlets = [], outletNumber, setOutletNumber }) => {
   );
 };
 
-export default Outlet;
+export default OutletContainer;

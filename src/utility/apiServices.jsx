@@ -1,11 +1,20 @@
 import axios from "axios";
-import { useQuery } from "react-query";
 
-// Get Resturant Data
+export const getThemeData = async () => {
+  const response = await axios.get(
+    `${import.meta.env.VITE_BASE_URL}/theme-data`,
+    {
+      params: {
+        restaurantId: 5,
+      },
+    }
+  );
 
-const sessionid = localStorage.getItem("sessionid") || null;
+  return response?.data?.result;
+};
 
 export const getResturantData = async () => {
+  const sessionid = localStorage.getItem("sessionid") || null;
   const response = await axios.get(
     `${import.meta.env.VITE_BASE_URL}/restaurant-data/`,
     {

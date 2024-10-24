@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { TextField, Button, IconButton, Avatar, Box, MenuItem, Typography, CircularProgress } from "@mui/material";
 import { MdModeEdit } from "react-icons/md";
 import axios from "axios";
-import { setUserData } from "../../feature/userSlice";
+import { setUserData } from "../../slices/userSlice";
 
 const User = () => {
   const userData = useSelector((state) => state.user.userData);

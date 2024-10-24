@@ -1,70 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setSelectedAddress,
-  setUserData,
-  setUserLoginStatus,
-} from "../../feature/userSlice";
-import {
-  setResturantData,
-  setOutletData,
-} from "../../feature/resturantDataSlice";
-import { setCartItems } from "../../feature/CartSlice";
+import { setSelectedAddress, setUserData, setUserLoginStatus, } from "../../slices/userSlice";
+import { setRestaurantData, setOutletData, } from "../../slices/restaurantDataSlice";
+import { setCartItems } from "../../slices/cartSlice";
 import SignUp from "../SignUpPage/SignUpPage";
-import Login from "../LoginPopup/LoginPopup";
-import { assets } from "../../assets/assets";
+import Login from "../Login";
 import userFallBackImg from "../../../src/assets/user.png";
 import { getResturantData } from "../../utility/apiServices";
 import useCustomToast from "../../hooks/Toast/useToast";
-import {
-  Toolbar, IconButton, Badge, Button, Avatar, Box, Stack,
-} from '@mui/material';
+import { Toolbar, IconButton, Badge, Button, Avatar, Box, Stack, } from '@mui/material';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
+import { useSession } from "../../hooks/useSession";
+import { openDialog } from "../../slices/dialogSlice";
 
-const Navbar = ({ isLogin, setIsLogin = () => { }, isSignUp, setIsSignUp }) => {
+const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const toast = useCustomToast();
-  const cartitems = useSelector((state) => state?.cart?.cartItems);
+  const cartItems = useSelector((state) => state?.cart?.cartItems);
   const isUserLogin = useSelector((state) => state?.user?.isUserLogin);
-  const theme = useSelector((state) => state?.resturant?.resturantTheme);
+  const theme = useSelector((state) => state.theme.theme);
   const userData = useSelector((state) => state.user.userData);
-  const [menu, setMenu] = useState("home");
+  const { cartCount } = cartItems || {};
+  const { sessionId, createSession, clearSession, } = useSession()
 
-  const { cartCount } = cartitems || {};
 
-  /*   console.log(cartitems);
-
-  let cartCount;
-
-  if(cartitems && cartitems !== undefined) {
-   cartCount = cartitems.cartCount;
-  }
-
-  console.log(cartCount); */
-
-  useEffect(() => {
-    if (isLogin || isSignUp) {
-      // Disable scroll
-      document.body.style.overflow = "hidden";
-    } else {
-      // Enable scroll
-      document.body.style.overflow = "auto";
-    }
-
-    // Clean up function to reset scroll when component unmounts or modal closes
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isLogin, isSignUp]);
 
   // Handle Logout
   const handleLogout = async () => {
     dispatch(setUserLoginStatus(false));
-    localStorage.removeItem("sessionid");
+    clearSession();
     toast.success("User logout successfully")
     navigate("/");
 
@@ -79,7 +45,7 @@ const Navbar = ({ isLogin, setIsLogin = () => { }, isSignUp, setIsSignUp }) => {
       const { restaurantOutlets } = result || {};
 
       if (result) {
-        dispatch(setResturantData(result));
+        dispatch(setRestaurantData(result));
       }
       if (restaurantOutlets && restaurantOutlets.length > 0) {
         dispatch(setOutletData(restaurantOutlets[0]));
@@ -102,7 +68,15 @@ const Navbar = ({ isLogin, setIsLogin = () => { }, isSignUp, setIsSignUp }) => {
 
   };
 
-  const props = { isLogin, setIsLogin, isSignUp, setIsSignUp };
+
+
+  const handleLoginSignUp = (type) => {
+    const dialogComponent = {
+      login: { content: <Login />, title: "Login" },
+      signup: { content: <SignUp />, title: "Sign Up" }
+    }
+    dispatch(openDialog({ ...dialogComponent?.[type] }))
+  }
 
   return (
     <Box sx={{ backgroundColor: '#090b15', py: "10px" }}>
@@ -127,15 +101,15 @@ const Navbar = ({ isLogin, setIsLogin = () => { }, isSignUp, setIsSignUp }) => {
                 <>
                   <Button
                     variant="contained"
-                    onClick={() => setIsLogin(true)}
+                    onClick={() => handleLoginSignUp("login")}
                   >
                     Login
                   </Button>
                   <Button
                     variant="outlined"
-                    onClick={() => setIsSignUp(true)}
+                    onClick={() => handleLoginSignUp("signup")}
                   >
-                    Signup
+                    Sign up
                   </Button>
                 </>
               ) : (
@@ -156,14 +130,9 @@ const Navbar = ({ isLogin, setIsLogin = () => { }, isSignUp, setIsSignUp }) => {
                 </>
               )}
             </Stack>
-
-
           </Stack>
         </Toolbar>
       </Box>
-
-      {isLogin && <Login {...props} />}
-      {isSignUp && <SignUp setIsSignUp={setIsSignUp} />}
     </Box>
 
   );

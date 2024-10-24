@@ -12,16 +12,18 @@ import AddOrSelectAddress from "../../components/Address.jsx/AddOrSelectAddress"
 import CartItem from "../../components/Cart/CartItem";
 import { Box, Button, Container, Divider, FormControlLabel, IconButton, Paper, Radio, RadioGroup, TextField, Tooltip, Typography } from "@mui/material";
 import GoBackButton from "../../components/Common/Buttons/GoBackButton";
+import { openDialog } from "../../slices/dialogSlice"; 
+import Login from "../../components/Login";
 
 export const deliveryFee = 2;
 
-const Cart = ({ showLoginPage = () => { } }) => {
+const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartitems = useSelector((state) => state?.cart?.cartItems);
   const userData = useSelector((state) => state?.user?.userData);
   const isUserLogin = useSelector((state) => state.user.isUserLogin);
-  
+
   const [selectedAddress, setSelectedAddress] = useState({});
   const [deliveryType, setDeliveryType] = useState("takeaway");
   const [clientSecret, setClientSecret] = useState("");
@@ -31,12 +33,12 @@ const Cart = ({ showLoginPage = () => { } }) => {
   const customerId = cartitems?.customerId || null;
   const { cartItems, cartId } = cartitems || {};
   const address = userData?.addresses || [];
-  
+
   const handleNotLogin = () => {
-    showLoginPage();
+    dispatch(openDialog({ content: <Login />, title: "Login" }))
     navigate("/");
   };
-  
+
   const handleCreatePaymentIntent = async (payload) => {
     try {
       const response = await handleCreateIntentId(payload);
@@ -45,18 +47,18 @@ const Cart = ({ showLoginPage = () => { } }) => {
       console.error("Error creating payment intent:", error);
     }
   };
-  
+
   const handleCheckout = async () => {
     try {
       if (!cartItems?.length) {
         return toast.error("No Item in Cart!");
       }
-  
+
       if (!isUserLogin) {
         handleNotLogin();
         return;
       }
-  
+
       const payload = { outletId, cartId };
       const { clientSecret, paymentIntentId } = await handleCreatePaymentIntent(payload);
       setClientSecret(clientSecret);
@@ -65,14 +67,14 @@ const Cart = ({ showLoginPage = () => { } }) => {
       console.error("Checkout error:", error);
     }
   };
-  
+
   useEffect(() => {
     document.body.style.overflow = isAddressDialog ? "hidden" : "auto";
     return () => {
       document.body.style.overflow = "auto";
     };
   }, [isAddressDialog]);
-  const handleCancelAddressDialog=()=>{
+  const handleCancelAddressDialog = () => {
     setIsAddressDialog((prev) => !prev);
   }
   const handleAddAddress = () => {
@@ -80,16 +82,21 @@ const Cart = ({ showLoginPage = () => { } }) => {
       handleNotLogin();
       return;
     }
-    handleCancelAddressDialog()
+    const dialogContent={content:<AddOrSelectAddress {...{
+      selectedAddressId: selectedAddress?.addressId,
+      address,
+    }} />}
+    dispatch(openDialog(dialogContent))
+    
   };
-  
+
   useEffect(() => {
     const defaultAddress = address.find((item) => item?.isDefault);
     if (defaultAddress) {
       setSelectedAddress(defaultAddress);
     }
   }, [address]);
-  
+
 
   return (
     <>
@@ -203,46 +210,46 @@ const Cart = ({ showLoginPage = () => { } }) => {
             </Button>
 
             {deliveryType === "delivery" && (
-             <Box sx={{ flex: 1, width: '100%' }}>
-             <Box
-               sx={{
-                 display: 'flex',
-                 flexDirection: 'column',
-                 justifyContent: 'center',
-                 backgroundColor: '#fff8e1',
-                 border: address?.length ? '2px solid #ffb74d' : '2px solid #ff6f61',
-                 borderRadius: '12px',
-                 p: 3,
-                 boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-                 width: address?.length ? '80%' : 'max-content', 
-                 my: 2,
-               }}
-             >
-               <Box display="flex" justifyContent="space-between">
-                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: '#ff6f61' }}>
-                   Delivery Address
-                 </Typography>
-                 <IconButton onClick={handleAddAddress}>
-                   <MdEdit size={24} />
-                 </IconButton>
-               </Box>
-               {address?.length ? (
-                 <>
-                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                     <CiLocationOn size={24} color="#ff6f61" />
-                     <Typography sx={{ color: '#4f4f4f', fontSize: '1rem' }}>
-                       {`${selectedAddress?.floor} ${selectedAddress?.houseNo}, ${selectedAddress?.building}, ${selectedAddress?.areaLocality}`}
-                     </Typography>
-                   </Box>
-                 </>
-               ) : (
-                 <Typography variant="body2" sx={{ color: '#757575', mb: 2 }}>
-                   No address available. Add a New One...
-                 </Typography>
-               )}
-             </Box>
-           </Box>
-           
+              <Box sx={{ flex: 1, width: '100%' }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    backgroundColor: '#fff8e1',
+                    border: address?.length ? '2px solid #ffb74d' : '2px solid #ff6f61',
+                    borderRadius: '12px',
+                    p: 3,
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                    width: address?.length ? '80%' : 'max-content',
+                    my: 2,
+                  }}
+                >
+                  <Box display="flex" justifyContent="space-between">
+                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: '#ff6f61' }}>
+                      Delivery Address
+                    </Typography>
+                    <IconButton onClick={handleAddAddress}>
+                      <MdEdit size={24} />
+                    </IconButton>
+                  </Box>
+                  {address?.length ? (
+                    <>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <CiLocationOn size={24} color="#ff6f61" />
+                        <Typography sx={{ color: '#4f4f4f', fontSize: '1rem' }}>
+                          {`${selectedAddress?.floor} ${selectedAddress?.houseNo}, ${selectedAddress?.building}, ${selectedAddress?.areaLocality}`}
+                        </Typography>
+                      </Box>
+                    </>
+                  ) : (
+                    <Typography variant="body2" sx={{ color: '#757575', mb: 2 }}>
+                      No address available. Add a New One...
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+
             )}
           </Box>
         </Box>
@@ -261,7 +268,7 @@ const Cart = ({ showLoginPage = () => { } }) => {
         {isAddressDialog && isUserLogin ? <AddOrSelectAddress {...{
           handleCancelAddressDialog,
           isAddressDialog,
-          selectedAddressId:selectedAddress?.addressId,
+          selectedAddressId: selectedAddress?.addressId,
           address,
         }} /> : null}
       </Box>

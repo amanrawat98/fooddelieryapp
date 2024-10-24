@@ -4,19 +4,19 @@ import { IoHomeOutline } from "react-icons/io5";
 import { SiTicktick } from "react-icons/si";
 import SearchLocationInput from "../mapApi.jsx/SearchLocationInput";
 import { useDispatch, useSelector } from "react-redux";
-import { setSelectedAddress, setUserData } from "../../feature/userSlice";
+import { setSelectedAddress, setUserData } from "../../slices/userSlice";
 import axios from "axios";
 import { Box, Button, Typography, TextField, Dialog, DialogTitle, DialogContent, IconButton } from "@mui/material";
 import { Close as CloseIcon, Delete, TaskAlt } from '@mui/icons-material';
 import { useForm } from "react-hook-form";
 import { inputStyles } from "../../theme/utils";
 import useCustomToast from "../../hooks/Toast/useToast";
+import { closeDialog } from "../../slices/dialogSlice";
 
 const AddOrSelectAddress = ({
-  handleCancelAddressDialog,
-  isAddressDialog,
   selectedAddressId,
   address,
+ 
 }) => {
   const userData = useSelector((state) => state?.user?.userData);
   const cartitems = useSelector((state) => state?.cart?.cartItems);
@@ -79,8 +79,9 @@ const AddOrSelectAddress = ({
         addresses: updatedAddresses,
       })
     );
-    handleCancelAddressDialog(false)
+   dispatch(closeDialog())
   };
+ 
 
   useEffect(() => {
     if (userData) {
@@ -100,26 +101,8 @@ const AddOrSelectAddress = ({
   }, [userData, reset]);
 
   return (
-    <div>
-      {/* Dialog Wrapper for Address Form */}
-      <Dialog
-        open={isAddressDialog}
-        onClose={() => handleCancelAddressDialog(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          {page === "selectAddress" ? "Select Address" : "Add New Address"}
-          <IconButton
-            edge="end"
-            color="inherit"
-            onClick={() => handleCancelAddressDialog(false)}
-            aria-label="close"
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
+      <>
+            <Typography variant="h5" sx={{marginBottom:"1rem"}}>{page === "selectAddress" ? "Select Address" : "Add New Address"}</Typography>
           {page === "selectAddress" ? (
             <Box
               sx={{
@@ -173,7 +156,7 @@ const AddOrSelectAddress = ({
               </Button>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 2, gap: 4 }}>
                 <Button variant="outlined" sx={{ flex: 1 }}
-                  onClick={() => handleCancelAddressDialog(false)}
+                  onClick={()=> dispatch(closeDialog())}
                 >
                   Cancel
                 </Button>
@@ -254,9 +237,8 @@ const AddOrSelectAddress = ({
               </form>
             </>
           )}
-        </DialogContent>
-      </Dialog>
-    </div>
+          </>
+   
   );
 };
 

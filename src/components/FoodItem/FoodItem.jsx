@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { setCartItems } from "../../feature/CartSlice";
+import { setCartItems } from "../../slices/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Box, Card, CardContent, CardMedia, debounce, IconButton, Rating, styled, Typography, useTheme } from "@mui/material";
 import { Add, ArrowCircleRight, Fastfood, Grass, Remove } from "@mui/icons-material";

@@ -7,7 +7,7 @@ import {
   handleAddToCart,
 } from "../../utility/apiServices";
 import { useDispatch, useSelector } from "react-redux";
-import { setCartItems } from "../../feature/CartSlice";
+import { setCartItems } from "../../slices/cartSlice";
 import axios from "axios";
 import { debounce } from "lodash";
 import { Box, IconButton, Typography } from "@mui/material";

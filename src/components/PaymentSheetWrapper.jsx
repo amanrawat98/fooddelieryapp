@@ -8,7 +8,7 @@ import {
 } from "@stripe/react-stripe-js";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setCartItems } from "../feature/CartSlice";
+import { setCartItems } from "../slices/cartSlice";
 import {
   Dialog,
   DialogTitle,
