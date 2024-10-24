@@ -46,7 +46,7 @@ const Home = () => {
     const { restaurantOutlets } = result || {};
     setRestaurantOutlets(restaurantOutlets);
 
-    if (!sessionId) {
+    if (sessionId) {
       if (resturantData && restaurantOutlets) {
         console.log("resturantData", resturantData);
 
