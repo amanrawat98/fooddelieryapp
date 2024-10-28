@@ -5,7 +5,7 @@ import "react-multi-carousel/lib/styles.css";
 import { bannerBreakpoint } from "./data";
 import BannerImage from "./BannerImage";
 
-const BannerContainer = ({ data }) => {
+const BannerContainer = ({ bannerData }) => {
 
   return (
     <Box  sx={{
@@ -19,7 +19,7 @@ const BannerContainer = ({ data }) => {
         bgcolor:"primary.main"
       }
     }}>
-      { data?.bannerImages?.length  ? (
+      { bannerData?.length  ? (
         <Carousel
           responsive={bannerBreakpoint}
           autoPlaySpeed={2000}
@@ -32,7 +32,7 @@ const BannerContainer = ({ data }) => {
           infinite={true}
           itemClass="carousel-item"
         >
-          {data?.bannerImages?.map(({bannerImageUrl="",title=""}, index) => {
+          {bannerData?.map(({bannerImageUrl="",title=""}, index) => {
             return (
              <BannerImage key={"banner_image_container"+index} {...{bannerImageUrl,title}}/>
             );

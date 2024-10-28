@@ -8,7 +8,7 @@ export const CustomArrow = ({ onClick, direction }) => {
     <IconButton
       onClick={onClick}
       sx={{
-        backgroundColor:  'primary.main',
+        backgroundColor:  'secondary.main',
         color: 'primary.light',
         position: 'absolute',
         top: '50%',

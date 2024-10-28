@@ -7,13 +7,14 @@ const initialState = {
     className: '',
     style: {},
     sx: {},
+    isNoContentPadding: false
 }
 const dialogSlice = createSlice({
     name: 'dialog',
     initialState,
     reducers: {
         openDialog: (state, action) => {
-            const { title, content, actions, className, style, sx } = action.payload;
+            const { title, content, actions, className, style, sx, isNoContentPadding } = action.payload;
             state.open = true;
             state.title = title;
             state.content = content;
@@ -21,6 +22,7 @@ const dialogSlice = createSlice({
             state.className = className || '';
             state.style = style || {};
             state.sx = sx || {};
+            state.isNoContentPadding = isNoContentPadding || false
         },
         closeDialog: (state) => {
             state.open = false;
@@ -30,6 +32,7 @@ const dialogSlice = createSlice({
             state.className = '';
             state.style = {};
             state.sx = {};
+            state.isNoContentPadding=false;
         },
     },
 });

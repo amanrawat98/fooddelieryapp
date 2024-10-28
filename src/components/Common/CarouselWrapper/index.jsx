@@ -14,7 +14,7 @@ const CarouselWrapper = ({ children, responsiveConfig, ...props }) => {
         },
       }}>
     <Carousel
-      responsive={responsiveConfig || defaultResponsive}
+      responsive={{...defaultResponsive,...responsiveConfig}}
       autoPlaySpeed={2000}
       transitionDuration={500}
       containerClass="container"
@@ -23,6 +23,7 @@ const CarouselWrapper = ({ children, responsiveConfig, ...props }) => {
       itemClass="carousel-item-padding"
       dotListClass="relative"
       infinite={false}
+      autoPlay={false}
       customLeftArrow={<CustomArrow direction="left" />}
       customRightArrow={<CustomArrow direction="right" />}
       {...props}

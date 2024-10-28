@@ -6,12 +6,14 @@ import { setCartItems } from "../../slices/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Box, Card, CardContent, CardMedia, debounce, IconButton, Rating, styled, Typography, useTheme } from "@mui/material";
 import { Add, ArrowCircleRight, Fastfood, Grass, Remove } from "@mui/icons-material";
+import { handleAddToCart } from "../../utility/apiServices";
 
 const FoodItem = ({ item, categoryid }) => {
   const [productQuantity, setProductQuantity] = useState(0);
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const { cartId, cartItems: cartItem } = cartItems || {};
+  console.log(cartItems,"cart iteeeemsss")
   const theme = useTheme();
   const { menuItemId } = item;
 
@@ -32,11 +34,7 @@ const FoodItem = ({ item, categoryid }) => {
   const debouncedAddToCart = useCallback(
     debounce(async (payload) => {
       try {
-        console.log("payload", payload);
-        const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/cart/`,
-          payload
-        );
+        const response = await handleAddToCart(payload);
         dispatch(setCartItems(response?.data?.result));
       } catch (error) {
         console.error("Error adding to cart:", error);
@@ -45,7 +43,7 @@ const FoodItem = ({ item, categoryid }) => {
     []
   );
 
-  const handleAddToCart = async (type) => {
+  const handleAddToCartData = async (type) => {
     const currentQuantity = typeof quantity === 'number' ? quantity : 0; 
     const newQuantity = type === "increment" ? currentQuantity + 1 : Math.max(currentQuantity - 1, 0);
     
@@ -163,7 +161,7 @@ const FoodItem = ({ item, categoryid }) => {
             >
               {quantity === 0 || quantity === undefined ? (
                 <IconButton
-                  onClick={() => handleAddToCart("increment")}
+                  onClick={() => handleAddToCartData("increment")}
                  
                 >
                   <Add sx={{ color: 'white' }} />
@@ -171,7 +169,7 @@ const FoodItem = ({ item, categoryid }) => {
               ) : (
                 <>
                   <IconButton
-                    onClick={() => handleAddToCart("decrement")}
+                    onClick={() => handleAddToCartData("decrement")}
                    
                   >
                     <Remove sx={{ color: 'white' }} />
@@ -180,7 +178,7 @@ const FoodItem = ({ item, categoryid }) => {
                     {quantity}
                   </Typography>
                   <IconButton
-                    onClick={() => handleAddToCart("increment")}
+                    onClick={() => handleAddToCartData("increment")}
                    
                   >
                     <Add sx={{ color: 'white' }} />

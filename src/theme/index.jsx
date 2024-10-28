@@ -49,6 +49,7 @@ export const createDynamicTheme = (dynamicColors = {}) => {
                     },
                     text: {
                         color: backendValue.primaryColor,
+                        fontWeight:600,
                         '&:hover': {
                             backgroundColor: 'rgba(25, 118, 210, 0.1)',
                         },
@@ -82,11 +83,11 @@ export const createDynamicTheme = (dynamicColors = {}) => {
                 styleOverrides: {
                     root: {
                         borderRadius: '50%',
-                        backgroundColor: backendValue.primaryColor,
+                        backgroundColor: backendValue.secondaryColor,
                         transition: "background-color 0.3s, transform 0.3s, box-shadow 0.3s",
                         color: backendValue.backgroundColor,
                         '&:hover': {
-                            backgroundColor: backendValue.secondaryColor,
+                            backgroundColor: backendValue.primaryColor,
                             transform: "scale(1.05)",
 
                         },

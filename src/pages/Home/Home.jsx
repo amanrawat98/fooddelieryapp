@@ -10,11 +10,12 @@ import OutletContainer from "../../components/OutletContainer";
 
 const Home = () => {
   const outletData = useSelector((state) => state?.restaurant?.outletData);
+  console.log(outletData,"my outlet dataaaa")
   return (
     <Box position="relative">
       <OutletContainer />
       <Box sx={{ px: "0.7rem" }}>
-        <BannerContainer data={outletData} />
+        <BannerContainer bannerData={outletData?.bannerImages} />
         <ExploreMenu menuItems={outletData?.menuCategories} />
         <CategorySection menuItems={outletData?.menuCategories} />
         {outletData?.menuCategories?.slice(1, 4)?.map((item, index) => {
