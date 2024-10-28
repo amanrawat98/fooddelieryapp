@@ -13,7 +13,7 @@ const FoodItem = ({ item, categoryid }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const { cartId, cartItems: cartItem } = cartItems || {};
-  console.log(cartItems,"cart iteeeemsss")
+  
   const theme = useTheme();
   const { menuItemId } = item;
 

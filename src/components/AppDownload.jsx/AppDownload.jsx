@@ -8,7 +8,7 @@ const AppDownload = () => {
     <Box
       id="app-download"
       sx={{
-        backgroundColor: "#f8f8f8",
+        backgroundColor: "primary.light",
         borderRadius: 2,
         padding: 4,
         textAlign: "center",
@@ -16,10 +16,10 @@ const AppDownload = () => {
         margin: 2,
       }}
     >
-      <Typography variant="h4" sx={{ color: "var(--primary)", marginBottom: 1 }}>
+      <Typography variant="h4" sx={{ color: "primary.main", marginBottom: 1 }}>
         Download the Baba Chicken App
       </Typography>
-      <Typography variant="body1" sx={{ color: "var(--primary)", marginBottom: 3 }}>
+      <Typography variant="body1" sx={{ color: "primary.main", marginBottom: 3 }}>
         For a better experience, download the app now!
       </Typography>
       <Box

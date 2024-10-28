@@ -30,7 +30,7 @@ return (
                     //   to={`/product/${value?.menuCategoryId}/${item?.menuItemId}`}
                     //   key={index}
                     // >
-                      <MenuCard key={item.id} item={item} menuCategoryId={value?.menuCategoryId}/>
+                      <MenuCard  item={item} menuCategoryId={value?.menuCategoryId} key={value?.menuCategoryId+index}/>
 
 
                     // </Link>
