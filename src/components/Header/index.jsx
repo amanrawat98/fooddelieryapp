@@ -2,12 +2,9 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedAddress, setUserData, setUserLoginStatus, } from "../../slices/userSlice";
-import { setRestaurantData, setOutletData, } from "../../slices/restaurantDataSlice";
-import { setCartItems } from "../../slices/cartSlice";
 import SignUp from "../SignUpPage/SignUpPage";
 import Login from "../Login";
 import userFallBackImg from "../../../src/assets/user.png";
-import { getResturantData } from "../../utility/apiServices";
 import useCustomToast from "../../hooks/Toast/useToast";
 import { Toolbar, IconButton, Badge, Button, Avatar, Box, Stack, } from '@mui/material';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
@@ -20,7 +17,7 @@ const Header = () => {
   const toast = useCustomToast();
   const cartItems = useSelector((state) => state?.cart?.cartItems);
   const isUserLogin = useSelector((state) => state?.user?.isUserLogin);
-  const theme = useSelector((state) => state.theme.theme);
+  const theme = useSelector((state) => state.theme.themeData);
   const userData = useSelector((state) => state.user.userData);
   const { cartCount } = cartItems || {};
   const { sessionId, createSession, clearSession, } = useSession()
@@ -43,7 +40,7 @@ const Header = () => {
   }
 
   return (
-    <Box sx={{ backgroundColor: '#090b15', py: "10px" }}>
+    <Box sx={{ backgroundColor:"primary.dark", py: "10px" }}>
       <Box sx={{ px: 4 }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Link to="/">
@@ -55,9 +52,9 @@ const Header = () => {
           </Link>
 
           <Stack direction="row" alignItems="center" spacing={4}>
-            <IconButton component={Link} to="/cart" sx={{ color: 'white' }}>
+            <IconButton component={Link} to="/cart">
               <Badge badgeContent={cartCount || "0"} color="error">
-                <ShoppingBasketIcon sx={{ color: 'white' }} />
+                <ShoppingBasketIcon sx={{ color: 'primary.light' }} />
               </Badge>
             </IconButton>
             <Stack direction="row" spacing={3}>

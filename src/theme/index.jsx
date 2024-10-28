@@ -1,98 +1,100 @@
-
 import { createTheme } from '@mui/material/styles';
-import { buttonStyles, commonCardStyles } from './utils';
-
+import { commonCardStyles } from './utils';
 
 export const createDynamicTheme = (dynamicColors = {}) => {
-  console.log(dynamicColors,"colorsss")
+    const backendValue = {
+        appBarBackgroundColor: dynamicColors?.appBarBackgroundColor || "#FFFFFF",
+        appBarForegroundColor: dynamicColors?.appBarForegroundColor || "#000000",
+        backgroundColor: dynamicColors?.backgroundColor || "#FFFFFF",
+        primaryColor: dynamicColors?.primaryColor || "#FF8F3A",
+        secondaryColor: dynamicColors?.secondaryColor || "#414244",
+        headerTextColor: dynamicColors?.headerTextColor || "#000000",
+        bodyTextColor: dynamicColors?.bodyTextColor || "#979797",
+    };
+
     const theme = createTheme({
-        mode: 'main',
         palette: {
-            // primary: {
-            //     main: dynamicColors.primaryColor,
-            //     light: dynamicColors.primaryColor,
-            //     dark: dynamicColors.primaryColor,
-            //     contrastText: '#ffffff',
-            // },
+            primary: {
+                main: backendValue.primaryColor, // orange
+                dark: backendValue.headerTextColor,
+                light: backendValue.backgroundColor,
+            },
+            secondary: {
+                main: backendValue.secondaryColor, // gray
+            },
+            background: {
+                default: backendValue.backgroundColor, // white
+            },
+            text: {
+                primary: backendValue.headerTextColor, // black
+                secondary: backendValue.bodyTextColor, // gray
+            },
         },
         components: {
             MuiButton: {
-              styleOverrides: {
-              
-                contained: {
-                  backgroundColor: 'var(--primary)',
-                  color: 'white',
-                  padding: '8px 16px',
-                  transition: "background-color 0.3s, transform 0.3s, box-shadow 0.3s",
-                  '&:hover': {
-                    backgroundColor: 'var(--secondary)',
-                    transform: "scale(1.05)", 
-                  },
+                styleOverrides: {
+                    contained: {
+                        backgroundColor: backendValue.primaryColor,
+                        color: backendValue.backgroundColor,
+                        transition: "background-color 0.3s, transform 0.3s, box-shadow 0.3s",
+                        '&:hover': {
+                         transform: "scale(1.05)",
+                        },
+                    },
+                    outlined: {
+                        transition: "border-color 0.3s, transform 0.3s",
+                        '&:hover': {
+                            transform: "scale(1.05)",
+                        },
+                    },
+                    text: {
+                        color: backendValue.primaryColor,
+                        '&:hover': {
+                            backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                        },
+                    },
                 },
-                
-                outlined: {
-                  borderColor: 'var(--primary)', 
-                  color: 'var(--primary)', 
-                  padding: '8px 16px',
-                  transition: "border-color 0.3s, transform 0.3s",
-                  '&:hover': {
-                    borderColor: 'var(--secondary)', 
-                    transform: "scale(1.05)", 
-                  },
-                },
-               
-                text: {
-                  color: 'var(--primary)', 
-                  padding: '8px 16px',
-                  '&:hover': {
-                    backgroundColor: 'rgba(25, 118, 210, 0.1)', 
-                  },
-                },
-              },
             },
             MuiOutlinedInput: {
                 styleOverrides: {
-                  root: {
-                    '& fieldset': {
-                      borderRadius: '4px',
+                    root: {
+                        '& fieldset': {
+                            borderRadius: '4px',
+                        },
+                        '& input': {
+                            padding: '10px 14px',
+                            height: 'auto',
+                        },
                     },
-                    '& input': {
-                      padding: '10px 14px',
-                      height: 'auto',
-                    },
-                  },
                 },
-              },
-              MuiRadio: {
+            },
+            MuiRadio: {
                 styleOverrides: {
-                  root: {
-                    color: 'var(--primary)',
-                    '&.Mui-checked': {
-                      color: 'var(--primary)',
+                    root: {
+                        color: backendValue.primaryColor,
+                        '&.Mui-checked': {
+                            color: backendValue.primaryColor,
+                        },
                     },
-                  },
-                }
-              },
-              
+                },
+            },
             MuiIconButton: {
                 styleOverrides: {
-                  root: {
-                    borderRadius: '50%',
-                    backgroundColor: 'var(--primary)',
-                    transition: 'transform 0.2s ease-in-out',
-                    color: 'white', 
-                    '&:hover': {
-                      transform: 'scale(1.1)',
-                      backgroundColor: 'var(--secondary)',
-                    },
-                  },
-                },
-              },
-          },
-        
-     
-        });
+                    root: {
+                        borderRadius: '50%',
+                        backgroundColor: backendValue.primaryColor,
+                        transition: "background-color 0.3s, transform 0.3s, box-shadow 0.3s",
+                        color: backendValue.backgroundColor,
+                        '&:hover': {
+                            backgroundColor: backendValue.secondaryColor,
+                            transform: "scale(1.05)",
 
+                        },
+                    },
+                },
+            },
+        },
+    });
 
     return {
         ...theme,

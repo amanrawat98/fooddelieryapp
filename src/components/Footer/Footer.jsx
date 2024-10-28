@@ -7,14 +7,14 @@ import { productLinks, resourceLinks, socialLinks } from "./data";
 import { useSelector } from "react-redux";
 
 const Footer = () => {
-  const theme = useSelector((state) => state.theme.theme);
+  const theme = useSelector((state) => state.theme.themeData);
   const navigate = useNavigate();
   return (
     <Box
       component="footer"
       sx={{
-        backgroundColor: "#090b15",
-        color: "#fff",
+        backgroundColor: "primary.dark",
+        color: "primary.light",
         padding: { xs: "10px", md: "20px" },
         textAlign: "center",
       }}

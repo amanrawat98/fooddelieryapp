@@ -8,23 +8,19 @@ export const CustomArrow = ({ onClick, direction }) => {
     <IconButton
       onClick={onClick}
       sx={{
-        backgroundColor:  'var(--primary)',
-        color: 'white',
-        '&:hover': {
-          backgroundColor:  'var(--primary)',
-        },
+        backgroundColor:  'primary.main',
+        color: 'primary.light',
         position: 'absolute',
         top: '50%',
-        transform: 'translateY(-50%)',
         zIndex: 1,
         left: isLeft ? '10px' : 'auto',
         right: !isLeft ? '10px' : 'auto',
       }}
     >
       {isLeft ? (
-        <ArrowCircleLeft sx={{ color: 'white' }} />
+        <ArrowCircleLeft sx={{ color: 'primary.light' }} />
       ) : (
-        <ArrowCircleRight sx={{ color: 'white' }} />
+        <ArrowCircleRight sx={{ color: 'primary.light' }} />
       )}
     </IconButton>
   );

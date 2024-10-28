@@ -14,9 +14,8 @@ const useApp = () => {
   const { selectedOutlet } = useSelector((state) => state?.outlet);
   const { sessionId, createSession, clearSession } = useSession();
   const dispatch = useDispatch();
-  const { data: themeData, isLoading: isThemeLoading } = useQuery("theme-data", getThemeData, {
+  const { data: themeData, isLoading: isThemeLoading } = useQuery(["theme-data"], getThemeData, {
     refetchOnMount: true,
-    refetchOnWindowFocus: false,
     staleTime: 5000,
   });
   const updateThemeData = useCallback(() => {
@@ -29,7 +28,7 @@ const useApp = () => {
 
   const { data: fetchResturantData, isLoading: isRestaurantLoading } = useQuery("restaurant-data", async () => {
     if (!isUserLogin || !sessionId) {
-      await createSession()
+       createSession()
     }
     return getResturantData(userData?.customerId, sessionId)
   },
@@ -41,7 +40,6 @@ const useApp = () => {
     });
   const updateRestaurantData = useCallback(() => {
     if (fetchResturantData && !isRestaurantLoading) {
-      console.log(fetchResturantData,"my dataaaa")
       const { result = {}, customerCart } = fetchResturantData || {};
       dispatch(setRestaurantData(fetchResturantData || {}))
       dispatch(setRestaurantOutlets(result?.restaurantOutlets || []));
@@ -57,7 +55,7 @@ const useApp = () => {
   useEffect(() => {
     updateThemeData();
   }, [updateThemeData]);
-
+console.log("refetch")
   const isLoading = isThemeLoading || isRestaurantLoading;
   return { theme, isLoading  };
 };

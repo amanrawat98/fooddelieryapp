@@ -13,10 +13,10 @@ const BannerContainer = ({ data }) => {
         pr: "0.3rem",
       },
       ".react-multi-carousel-dot button":{
-        borderColor:"var(--primary)"
+        borderColor:"primary.main"
       },
       ".react-multi-carousel-dot--active button":{
-        bgcolor:"var(--primary)"
+        bgcolor:"primary.main"
       }
     }}>
       { data?.bannerImages?.length  ? (
