@@ -13,13 +13,14 @@ export const getThemeData = async () => {
   return response?.data?.result;
 };
 
-export const getResturantData = async () => {
-  const sessionid = localStorage.getItem("sessionid") || null;
+export const getResturantData = async (customerId,sessionKey) => {
+  
   const response = await axios.get(
     `${import.meta.env.VITE_BASE_URL}/restaurant-data/`,
     {
       params: {
-        sessionKey: sessionid,
+        sessionKey,
+        customerId,
         restaurantId: 5,
       },
     }
@@ -27,6 +28,13 @@ export const getResturantData = async () => {
   return response.data;
 };
 
+export const handleUserLogin = async (payload) => {
+  const response = await axios.post(
+    `${import.meta.env.VITE_BASE_URL}/login`,
+    payload
+  );
+  return response.data;
+};
 // Delete item from Cart
 
 export const deleteCartItem = async (payload) => {

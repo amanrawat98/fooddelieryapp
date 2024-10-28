@@ -23,15 +23,9 @@ body {
   background-color: #f1f1f1;
 }
 
-
-
 a {
   text-decoration: none;
   color: inherit;
-}
-
-.carousel-item-padding {
-  padding:1rem;
 }
 
 .shadow-all-sides {
