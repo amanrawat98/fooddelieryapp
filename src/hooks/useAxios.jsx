@@ -2,83 +2,76 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 import { SERVER_TYPE } from "../constants";
 
-
 const BASE_URLS = {
     [SERVER_TYPE.DEFAULT]: `${import.meta.env.VITE_BASE_URL}`,
-    // [SERVER_TYPE.PLANS]: `${import.meta.env.VITE_plans}/api`,        
 };
 
-const createAxiosConfig = (contentType = "", withCredentials = false) => {
-    const config = {};
+axios.defaults.baseURL = BASE_URLS[SERVER_TYPE.DEFAULT];
+axios.defaults.withCredentials = true;
 
-    if (withCredentials) {
-        config.withCredentials = true;
+axios.interceptors.response.use(
+    response => response,
+    error => {
+        const errorMsg = error?.response?.data?.message ||
+            (error.message.includes("Network Error") ? "Network or CORS error occurred" : "An error occurred");
+        return Promise.reject(new Error(errorMsg));
     }
-
-    if (contentType) {
-        config.headers = {
-            "Content-Type": contentType || "application/json"
-        };
-    }
-
-    return config;
-};
+);
 
 const useAxios = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const normalizeUrl = (url) => {
-        return url?.startsWith("/") ? url : `/${url}`;
-    };
-
     const sendRequest = useCallback(
         async ({
             method,
             url,
-            data = undefined,
-            params = {},
-            contentType = "",
+            data,
+            params,
+            headers = {},
             withCredentials = true,
             baseURLKey = SERVER_TYPE.DEFAULT,
         }) => {
-            setLoading(true);
-            setError(null);
+            const controller = new AbortController();
+            const { signal } = controller;
+
+            const defaultHeaders = { "Content-Type": "application/json", ...headers };
 
             const baseURL = BASE_URLS?.[baseURLKey] || BASE_URLS[SERVER_TYPE.DEFAULT];
-            const normalizedUrl = normalizeUrl(url);
-            const config = createAxiosConfig(contentType, withCredentials);
+            axios.defaults.baseURL = baseURL;
+
+            setLoading(true);
+            setError(null);
 
             try {
                 const response = await axios({
                     method,
-                    url: `${baseURL}${normalizedUrl}`,
+                    url,
                     data,
                     params,
-                    ...config
-
+                    headers: defaultHeaders,
+                    withCredentials,
+                    signal,
                 });
-               return response;
+                return response;
             } catch (err) {
-                const errorMsg = err?.response?.data?.message || "An error occurred";
-                setError(errorMsg);
-                 throw err;
-            }
-            finally {
-                setLoading(false)
+                setError(err.message);
+                throw err;
+            } finally {
+                setLoading(false);
             }
         },
         []
     );
 
     const request = useCallback(
-        (method) => ({ url, data, params, contentType, withCredentials, baseURLKey }) =>
+        (method) => ({ url, data, params, headers, withCredentials, baseURLKey }) =>
             sendRequest({
                 method,
                 url,
                 data,
                 params,
-                contentType,
+                headers,
                 withCredentials,
                 baseURLKey,
             }),

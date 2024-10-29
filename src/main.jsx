@@ -12,7 +12,14 @@ import { ToastProvider } from "./hooks/Toast/ToastContext.jsx";
 
 let presistor = persistStore(store);
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, 
+    },
+  },
+}
+);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>

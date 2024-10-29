@@ -42,7 +42,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],  // Ignore redux-persist actions for serializability check
+        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE","dialog/openDialog"],  // Ignore redux-persist actions for serializability check
+        ignoredPaths: ["dialog.content"]
       },
       
     }),

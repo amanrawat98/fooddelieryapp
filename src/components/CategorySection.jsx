@@ -7,32 +7,33 @@ import CarouselWrapper from "./Common/CarouselWrapper";
 import MenuCard from "./Common/Cards/MenuCard";
 
 const CategorySection = ({ menuItems }) => {
-  
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
-  return (
+return (
     <div className="mb-9 mt-3">
-      {menuItems?.slice(0, 8)?.map((value, index) => {
+      {menuItems?.map((value, index) => {
         if (value?.menuItems?.length <= 0) {
           return;
         } else {
           return (
             <div className="my-3" key={index}>
-              <CategoryHeader value={value} />
+              <CategoryHeader  {...{
+                name: value?.name,
+                textButton: "Explore More",
+                path: `/category/${value?.menuCategoryId}`
+              }}
+              />
 
               <CarouselWrapper >
                 {value?.menuItems?.map((item, index) => {
                   return (
-                    <Link
-                      to={`/product/${value?.menuCategoryId}/${item?.menuItemId}`}
-                      key={index}
-                    >
-                      <MenuCard key={item.id} item={item} />
+                    // <Link
+                    //   to={`/product/${value?.menuCategoryId}/${item?.menuItemId}`}
+                    //   key={index}
+                    // >
+                      <MenuCard  item={item} menuCategoryId={value?.menuCategoryId} key={value?.menuCategoryId+index}/>
 
 
-                    </Link>
+                    // </Link>
                   );
                 })}
               </CarouselWrapper>

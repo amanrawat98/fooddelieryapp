@@ -31,10 +31,10 @@ const OutletContainer = () => {
         aria-controls="panel1a-content"
         id="panel1a-header"
         sx={{
-          backgroundColor: 'var(--background)',
+        
           borderRadius: '2px 2px 0 0',
          
-         color: 'var(--primary)',
+         color: 'primary.main',
           '& .MuiAccordionSummary-content': {
             margin: 0,
           },
@@ -42,7 +42,7 @@ const OutletContainer = () => {
         expandIcon={
           <ArrowDownwardIcon
             sx={{
-              color: 'var(--primary)',
+              color: 'primary.main',
               ml: "5px",
               transition: 'color 0.3s',
             }}
@@ -65,10 +65,10 @@ const OutletContainer = () => {
         }}
       >
         <MenuList sx={{ px: 1 ,paddingBlockStart: 0 }}>
-          {restaurantOutlets.map((item, index) => {
+          {restaurantOutlets?.map((item, index) => {
             const isActive = selectedOutlet === index;
-            const backgroundColor = isActive ? 'var(--primary)' : 'white';
-            const color = isActive ? 'white' : 'var(--primary)';
+            const backgroundColor = isActive ? 'primary.main' : 'primary.light';
+            const color = isActive ? 'primary.light' : 'primary.main';
 
             return (
               <MenuItem

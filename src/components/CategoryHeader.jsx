@@ -1,9 +1,9 @@
 import { ArrowForward } from "@mui/icons-material";
-import { Box, Button, Divider, Grow, Typography } from "@mui/material";
+import { Box, Button, Divider, Typography } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const CategoryHeader = ({ value }) => {
+const CategoryHeader = ({ name = "", textButton = "Explore More", path = "/" }) => {
   const navigate = useNavigate();
   return (
     <>
@@ -14,24 +14,23 @@ const CategoryHeader = ({ value }) => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '1rem',
+          // padding: '1rem',
 
         }}
       >
-
-        <Typography variant="h6" component="h6" fontWeight={500} color={"var(--primary)"}>
-          {value?.name}
-        </Typography>
+        <Box fontWeight={600} color={"primary.dark"} sx={{ fontSize: "1.2rem" }}>
+          {name}
+        </Box>
 
         <Button
-          variant="contained"
+          variant="text"
           endIcon={<ArrowForward />}
-      
+          size="small"
           onClick={() => {
-            navigate(`/category/${value?.menuCategoryId}`);
+            navigate(path);
           }}
         >
-          Explore All
+          {textButton.toLowerCase()}
         </Button>
 
       </Box>
