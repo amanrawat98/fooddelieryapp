@@ -61,7 +61,7 @@ a {
   text-transform: none;
   letter-spacing: normal;
   word-wrap: normal;
-  white-space: nowrap;
+  primary.light-space: nowrap;
   direction: ltr;
 
   /* Support for all WebKit browsers. */

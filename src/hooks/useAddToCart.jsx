@@ -1,25 +1,26 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMutation, useQueryClient } from 'react-query';
-import {debounce} from 'lodash';
+import { debounce } from 'lodash';
 import { setCartItems } from '../slices/cartSlice';
-import { handleAddToCart } from '../utility/apiServices';
+import { deleteCartItem, handleAddToCart } from '../utility/apiServices';
 import useCustomToast from './Toast/useToast';
 
 export const useAddToCart = () => {
     const toast = useCustomToast();
     const dispatch = useDispatch();
-    const queryClient = useQueryClient();
     const cartItems = useSelector((state) => state?.cart?.cartItems);
-    const { mutate: addToCart, isLoading, isError } = useMutation(
-        ({ menuItemId, quantity, successFunction }) => 
+    const queryClient = useQueryClient();
+    const { mutate: addToCart, isLoading: isAdding, isError: addError } = useMutation(
+        ({ menuItemId, quantity, successFunction }) =>
             handleAddToCart({ cartId: cartItems?.cartId, menuItemId, quantity }),
         {
             onSuccess: (data, variables) => {
                 toast.success(<span>Item successfully added to your cart!</span>);
                 dispatch(setCartItems(data?.data?.result));
-                queryClient.invalidateQueries("restaurant-data"); // remove in future when single card api done
-
+                // if (variables?.restaurantData) {
+                    queryClient.invalidateQueries("restaurant-data"); // remove this after
+                // }
                 if (variables?.successFunction) {
                     variables.successFunction(data?.data?.result);
                 }
@@ -30,15 +31,39 @@ export const useAddToCart = () => {
             },
         }
     );
-    
+
+    const { mutate: deleteFromCart, isLoading: isDeleting, isError: deleteError } = useMutation(
+        ({ cartItemId, successFunction }) =>
+            deleteCartItem({ cartId: cartItems?.cartId, cartItemId }),
+        {
+            onSuccess: (data, variables) => {
+                toast.success(<span>Item successfully removed from your cart!</span>);
+                queryClient.invalidateQueries("restaurant-data");
+                if (variables?.successFunction) {
+                    variables.successFunction(data);
+                }
+            },
+            onError: (error) => {
+                console.error('Error updating cart:', error);
+                toast.error(<span>Failed to remove item from cart. Please try again.</span>);
+            },
+        }
+    );
+
     const debouncedAddToCart = useCallback(
-        debounce(( {menuItemId, quantity}) => {
-            if (quantity > 0) {
-                addToCart({  menuItemId, quantity });
+        debounce(({ menuItemId, quantity }) => {
+            if (quantity >= 0) {
+                addToCart({ menuItemId, quantity });
             }
         }, 300),
         [addToCart]
     );
 
-    return { addToCart, debouncedAddToCart, isLoading, isError };
+    return {
+        addToCart,
+        deleteFromCart,
+        debouncedAddToCart,
+        isLoading: isAdding || isDeleting,
+        isError: addError || deleteError,
+    };
 };

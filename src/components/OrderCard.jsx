@@ -6,7 +6,7 @@ const OrderCard = ({ item }) => {
   return (
     <div
       className="bg-gray-300 p-3 rounded-xl space-y-2 cursor-pointer"
-      onClick={() => navigate(`/profile/orderstatus/${item.orderId}`)}
+      onClick={() => navigate(`/profile/orderStatus/${item.orderId}`)}
     >
       <div className="flex gap-3">
         <img

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import CarouselWrapper from "../Common/CarouselWrapper";
-import MenuCard from "../Common/Cards/CategoryCard";
+import CategoryCard from "../Common/Cards/CategoryCard";
 
 const HeaderCarousel = ({ menuItems }) => {
 
@@ -21,7 +21,7 @@ const HeaderCarousel = ({ menuItems }) => {
       
         return (
           <Link key={menuCategoryId} to={`/category/${menuCategoryId}`}>
-            <MenuCard {...{ menuCategoryImageUrl, name, description }}  />
+            <CategoryCard {...{ menuCategoryImageUrl, name, description }}  />
           </Link>
         );
       })}

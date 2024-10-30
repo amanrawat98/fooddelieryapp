@@ -1,29 +1,45 @@
-import React, { Suspense, lazy, useEffect, } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { Outlet, Route, Routes } from "react-router-dom";
-import Cart from "./pages/Cart/Cart";
-import Footer from "./components/Footer/Footer";
-import ProductDetail from "./pages/ProductDetail";
-import CategoryViewPage from "./CategoryViewPage";
-import Profile from "./pages/Profile/Profile";
-import Orders from "./pages/Profile/Orders";
-import User from "./pages/Profile/User";
-import OrderStatus from "./pages/Profile/OrderStatus";
-import ProtectedRoutes from "./components/Routes/ProtectedRoutes";
 import { Box, ThemeProvider } from "@mui/material";
-import NotFoundPage from "./components/NotFoundPage";
 import LayoutLoader from "./components/Loading/LayoutLoader";
 import CommonDialog from "./components/Common/CommonDialog";
 import useApp from "./hooks/useApp";
+import ProtectedRoutes from "./components/Routes/ProtectedRoutes";
 import Header from "./components/Header";
+import Footer from "./components/Footer/Footer";
+import NotFoundPage from "./components/NotFoundPage";
+import CategoryContainer from "./pages/CategoryContainer";
 
 const Home = lazy(() => import('./pages/Home/Home'));
+const Cart = lazy(() => import('./pages/Cart/Cart'));
+const Profile = lazy(() => import('./pages/Profile/Profile'));
+const User = lazy(() => import('./pages/Profile/User'));
+const Orders = lazy(() => import('./pages/Profile/Orders'));
+const OrderStatus = lazy(() => import('./pages/Profile/OrderStatus'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const CategoryViewPage = lazy(() => import('./CategoryViewPage'));
 
 const App = () => {
   const { theme, isLoading } = useApp();
- 
+
   if (isLoading) {
     return <LayoutLoader />;
   }
+
+  
+  const normalRoutes = [
+    { path: "/", element: <Home /> },
+    { path: "/cart", element: <Cart /> },
+    { path: "/category", element: <CategoryContainer /> },
+    { path: "/category/:menuCategoryId", element: <CategoryViewPage /> },
+    { path: "/product/:menuCategoryId/:menuItemId", element: <ProductDetail /> },
+  ];
+
+  const protectedRoutes = [
+    { path: "orders", element: <Orders /> },
+    { path: "orderStatus/:orderId", element: <OrderStatus /> },
+  ];
+
   return (
     <ThemeProvider theme={theme}>
       <CommonDialog />
@@ -43,39 +59,23 @@ const App = () => {
             </Box>
           </Box>
         }>
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/cart"
-            element={
-              <Cart />
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoutes>
-                <Profile />
-              </ProtectedRoutes>
-            }
-          >
-            <Route
-              index
-              element={<User />}
-            />
-            <Route
-              path="orders"
-              element={<Orders />}
-            />
-            <Route
-              path="orderstatus/:orderid"
-              element={<OrderStatus />}
-            />
+         
+          {normalRoutes.map(route => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+
+          
+          <Route path="/profile" element={
+            <ProtectedRoutes>
+              <Profile />
+            </ProtectedRoutes>
+          }>
+            <Route index element={<User />} />
+            {protectedRoutes.map(route => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
           </Route>
-          <Route
-            path="/product/:menuid/:productid"
-            element={<ProductDetail />}
-          />
-          <Route path="/category/:categoryId" element={<CategoryViewPage />} />
+
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

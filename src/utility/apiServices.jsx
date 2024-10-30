@@ -38,7 +38,7 @@ export const handleUserLogin = async (payload) => {
 // Delete item from Cart
 
 export const deleteCartItem = async (payload) => {
-  const deleteresponse = await axios.delete(
+  const response = await axios.delete(
     `${import.meta.env.VITE_BASE_URL}/cart`,
     {
       headers: {
@@ -47,6 +47,7 @@ export const deleteCartItem = async (payload) => {
       data: payload,
     }
   );
+  return response
 };
 
 // Get Cart Items
@@ -72,12 +73,12 @@ export const handleCreateIntentId = async (payload) => {
 
 // fetch order details
 
-export const handleFetchOrderDetails = async (orderid) => {
+export const handleFetchOrderDetails = async (orderId) => {
   const response = await axios.get(
     ` ${import.meta.env.VITE_BASE_URL}/order-detail`,
     {
       params: {
-        orderId: orderid,
+        orderId: orderId,
       },
     }
   );
