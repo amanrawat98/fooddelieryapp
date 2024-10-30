@@ -1,7 +1,6 @@
 import React from "react";
 import BannerContainer from "../../components/BannerContainer";
 import ExploreMenu from "../../components/ExploreMenu";
-import AppDownload from "../../components/AppDownload.jsx/AppDownload";
 import CategorySection from "../../components/CategorySection";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
@@ -17,7 +16,6 @@ const Home = () => {
         <BannerContainer bannerData={outletData?.bannerImages} />
         <ExploreMenu menuItems={filteredMenuCategories} />
         <CategorySection menuItems={filteredMenuCategories} />
-        <AppDownload />
       </Box>
     </Box>
   );
