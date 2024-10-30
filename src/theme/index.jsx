@@ -23,7 +23,7 @@ export const createDynamicTheme = (dynamicColors = {}) => {
                 main: backendValue.secondaryColor, // gray
             },
             background: {
-                default: backendValue.backgroundColor, // white
+                default: backendValue.backgroundColor, // primary.light
             },
             text: {
                 primary: backendValue.headerTextColor, // black

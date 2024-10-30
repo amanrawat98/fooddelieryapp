@@ -6,10 +6,10 @@ import { useParams } from "react-router-dom";
 import { handleFetchOrderDetails } from "../../utility/apiServices";
 
 const OrderStatus = () => {
-  const { orderid } = useParams();
+  const { orderId } = useParams();
 
   const fetchOrderData = async () => {
-    const response = await handleFetchOrderDetails(orderid);
+    const response = await handleFetchOrderDetails(orderId);
     return response.data.result;
   };
 

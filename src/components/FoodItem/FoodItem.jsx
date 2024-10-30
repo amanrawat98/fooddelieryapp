@@ -1,75 +1,22 @@
-import React, { useCallback, useEffect, useState } from "react";
-
+import React, {  useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { setCartItems } from "../../slices/cartSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { Box, Card, CardContent, CardMedia, debounce, IconButton, Rating, styled, Typography, useTheme } from "@mui/material";
-import { Add, ArrowCircleRight, Fastfood, Grass, Remove } from "@mui/icons-material";
-import { handleAddToCart } from "../../utility/apiServices";
+import { Box, Card, CardContent, CardMedia,  Rating, styled, Typography, useTheme } from "@mui/material";
+import { ArrowCircleRight, Fastfood, Grass} from "@mui/icons-material";
+import { useAddToCart } from "../../hooks/useAddToCart";
+import QuantityControl from "../Common/QuantityControl";
 
-const FoodItem = ({ item, categoryid }) => {
-  const [productQuantity, setProductQuantity] = useState(0);
-  const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.cartItems);
-  const { cartId, cartItems: cartItem } = cartItems || {};
+const FoodItem = ({ item, menuCategoryId }) => {
   
-  const theme = useTheme();
-  const { menuItemId } = item;
-
-  // Ensure both cartMenuItemId and menuItemId are defined, trimmed, and of the same type
-  const filterCartItem = cartItem?.find((cartItem) => {
-    return (
-      cartItem.cartMenuItemId &&
-      menuItemId &&
-      String(cartItem.cartMenuItemId).trim() === String(menuItemId).trim()
-    );
-  });
-
-  let quantity;
-  if (filterCartItem) {
-    quantity = filterCartItem?.quantity;
-  }
-
-  const debouncedAddToCart = useCallback(
-    debounce(async (payload) => {
-      try {
-        const response = await handleAddToCart(payload);
-        dispatch(setCartItems(response?.data?.result));
-      } catch (error) {
-        console.error("Error adding to cart:", error);
-      }
-    }, 100),
-    []
-  );
-
-  const handleAddToCartData = async (type) => {
-    const currentQuantity = typeof quantity === 'number' ? quantity : 0; 
-    const newQuantity = type === "increment" ? currentQuantity + 1 : Math.max(currentQuantity - 1, 0);
-    
-    console.log("newQuantity", newQuantity);
-    
-    if (newQuantity >= 0) {
-      setProductQuantity(newQuantity);
-  
-      try {
-        await debouncedAddToCart({
-          cartId: cartId,
-          menuItemId: item.menuItemId,
-          quantity: newQuantity,
-        });
-      } catch (error) {
-        console.error("Error updating cart:", error);
-        setProductQuantity(currentQuantity);
-      }
-    }
+  const { isLoading, isError, debouncedAddToCart } = useAddToCart()
+  const addToCart = async (quantity, menuItemId) => {
+    debouncedAddToCart({ quantity, menuItemId })
   };
-  
   const [ratingValue, setRatingValue] = useState(4);
 
   const handleRatingChange = (event, newValue) => {
     setRatingValue(newValue);
   };
+  const theme = useTheme();
   const StyledRating = styled(Rating)(({ theme }) => ({
     '&.MuiRating-root': {
       color: 'red',
@@ -91,17 +38,17 @@ const FoodItem = ({ item, categoryid }) => {
             height: '50%',
             objectFit: 'cover',
             transition: "transform 0.3s ease-in-out",
-                "&:hover": {
-                  transform: "scale(1.1)", 
-                },
+            "&:hover": {
+              transform: "scale(1.1)",
+            },
           }}
           image={item?.menuItemImageUrl}
           alt={item?.name}
         />
         <CardContent sx={{ flexGrow: 1 }}>
-        <Typography variant="body" sx={{ fontWeight: '600' }}>
-          {item?.name}
-        </Typography>
+          <Typography variant="body" sx={{ fontWeight: '600' }}>
+            {item?.name}
+          </Typography>
           <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ marginBlock: "1rem" }}>
             <StyledRating
               name="rating"
@@ -136,7 +83,7 @@ const FoodItem = ({ item, categoryid }) => {
               alignItems: 'center',
             }}
           >
-            <Link to={`/product/${categoryid}/${item.menuItemId}`}>
+            <Link to={`/product/${menuCategoryId}/${item.menuItemId}`}>
               {item?.price && (
                 <Box
                   sx={{
@@ -156,37 +103,7 @@ const FoodItem = ({ item, categoryid }) => {
                 </Box>
               )}
             </Link>
-            <Box
-              sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}
-            >
-              {quantity === 0 || quantity === undefined ? (
-                <IconButton
-                  onClick={() => handleAddToCartData("increment")}
-                 
-                >
-                  <Add sx={{ color: 'white' }} />
-                </IconButton>
-              ) : (
-                <>
-                  <IconButton
-                    onClick={() => handleAddToCartData("decrement")}
-                   
-                  >
-                    <Remove sx={{ color: 'white' }} />
-                  </IconButton>
-                  <Typography variant="body2" sx={{ mx: 1, fontWeight: "600", color: "green" }}>
-                    {quantity}
-                  </Typography>
-                  <IconButton
-                    onClick={() => handleAddToCartData("increment")}
-                   
-                  >
-                    <Add sx={{ color: 'white' }} />
-                  </IconButton>
-                </>
-              )}
-            </Box>
-
+            <QuantityControl {...{ quantity: item?.cartQuantity, isLoading, updateQuantity: (quantity) => { addToCart(quantity, item?.menuItemId) } }} />
           </Box>
         </CardContent>
       </Card>

@@ -4,25 +4,26 @@ import FoodItem from "./components/FoodItem/FoodItem";
 import { useSelector } from "react-redux";
 import { Box, Typography } from "@mui/material";
 import GoBackButton from "./components/Common/Buttons/GoBackButton";
+import MenuCard from "./components/Common/Cards/MenuCard";
 
 const CategoryViewPage = () => {
   const outletData = useSelector((state) => state?.restaurant?.outletData);
   const { menuCategories } = outletData;
-  const { categoryId } = useParams();
+  const { menuCategoryId } = useParams();
 
 
   const categoryIdData = useMemo(() => {
-    if (!menuCategories || !categoryId) return ""
+    if (!menuCategories || !menuCategoryId) return ""
     const categoryIdData = menuCategories?.find((item) => {
-      return item?.menuCategoryId?.toString() === categoryId?.toString();
+      return item?.menuCategoryId?.toString() === menuCategoryId?.toString();
     });
 
     return categoryIdData;
-  }, [categoryId, menuCategories]);
+  }, [menuCategoryId, menuCategories]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
   return (
     <>
@@ -39,15 +40,11 @@ const CategoryViewPage = () => {
             md: 'repeat(4, 1fr)',
           },
           gap: 5,
-          px: 2,
+          padding: 2,
         }}
       >
-        {categoryIdData?.menuItems?.map((item) => (
-          <FoodItem
-            item={item}
-            key={item?.menuItemId}
-            categoryid={categoryId}
-          />
+        {categoryIdData?.menuItems?.map((item, index) => (
+          <MenuCard item={item} menuCategoryId={menuCategoryId} key={"menu_list" + index} />
         ))}
       </Box>
     </>

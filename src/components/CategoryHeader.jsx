@@ -3,7 +3,7 @@ import { Box, Button, Divider, Typography } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const CategoryHeader = ({ name = "", textButton = "Explore More", path = "/" }) => {
+const CategoryHeader = ({ name = "", textButton = "", path = "/" }) => {
   const navigate = useNavigate();
   return (
     <>
@@ -22,7 +22,7 @@ const CategoryHeader = ({ name = "", textButton = "Explore More", path = "/" }) 
           {name}
         </Box>
 
-        <Button
+        {textButton ? <Button
           variant="text"
           endIcon={<ArrowForward />}
           size="small"
@@ -31,7 +31,7 @@ const CategoryHeader = ({ name = "", textButton = "Explore More", path = "/" }) 
           }}
         >
           {textButton.toLowerCase()}
-        </Button>
+        </Button> : null}
 
       </Box>
     </>

@@ -19,42 +19,40 @@ const Profile = () => {
       gridTemplateColumns={{ xs: "1fr", md: "1fr 4fr" }}
       minHeight={"100vh"}
     >
-      <Box sx={{ bgcolor: "white", borderRight: "1px solid gray" }}>
-        <List sx={{padding:0}}>
+      <Box sx={{ bgcolor: "primary.light", borderRight: "1px solid gray" }}>
+        <List sx={{ padding: 0 }}>
           {navItems.map((item) => (
-       <NavLink
-       key={item.path}
-       to={item.path}
-       end={item.path === ""}
-      //  style={({ isActive }) => ({
-      //    textDecoration: "none",
-      //  })}
-     >
-       {({ isActive }) => (
-         <ListItemButton
-           sx={{
-             gap: 2,
-             bgcolor: isActive ? "var(--primary)" : "transparent", 
-             color: isActive ? "white" : "black",
-             "&:hover": {
-               bgcolor: "var(--primary)", 
-               color: "white", 
-             },
-           }}
-         >
-           <IconButton size="large">
-             {item.icon}
-           </IconButton>
-           <Typography variant="h6">{item.label}</Typography>
-         </ListItemButton>
-       )}
-     </NavLink>
-     
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === ""}
+            //  style={({ isActive }) => ({
+            //    textDecoration: "none",
+            //  })}
+            >
+              {({ isActive }) => (
+                <ListItemButton
+                  sx={{
+                    gap: 2,
+                    bgcolor: isActive ? "primary.main" : "transparent",
+                    color: isActive ? "primary.light" : "primary.dark",
+                    "&:hover": {
+                      bgcolor: "",
+                      color: "text.secondary",
+                    },
+                  }}
+                >
+                  {item.icon}
+                  <Typography variant="h6">{item.label}</Typography>
+                </ListItemButton>
+              )}
+            </NavLink>
+
           ))}
         </List>
       </Box>
 
-      <Box sx={{ p: 2, bgcolor: "white" }}>
+      <Box sx={{ p: 2, bgcolor: "primary.light" }}>
         <Outlet />
       </Box>
     </Box>

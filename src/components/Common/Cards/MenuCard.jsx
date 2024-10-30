@@ -1,14 +1,15 @@
 // MenuCard.js
 import React from 'react';
-import { Card, CardMedia, CardContent, Box, IconButton } from '@mui/material';
+import { Card, CardMedia, CardContent, Box, IconButton, Typography, Chip, Rating } from '@mui/material';
 import { AddShoppingCart, Fastfood, FavoriteBorder, Grass, RemoveRedEye } from '@mui/icons-material';
 import useCardModal from './useCardModal';
 
 const MenuCard = ({ item, menuCategoryId }) => {
   const { handleAddToCartModal } = useCardModal()
+ 
   return (
     <Card sx={{
-      height: "14rem", position: "relative",
+      height: "18rem", position: "relative",
       borderRadius: "0.5rem",
       "&:hover .icon-hover": {
         opacity: 1,
@@ -25,24 +26,65 @@ const MenuCard = ({ item, menuCategoryId }) => {
           alignItems: "center",
           justifyContent: "center",
           transition: "transform 0.3s ease-in-out",
-          "&:hover": {
+          "&:hover .img-container": {
             transform: "scale(1.1)",
           },
 
         }}
       >
-
-        <CardMedia
-          component="img"
-          image={item?.menuItemImageUrl}
-          alt={item?.name}
+<Card sx={{ position: "relative", width: "100%", height: "100%" }}>
+  <CardMedia
+    component="img"
+    className='img-container'
+    
+    image={item?.menuItemImageUrl}
+    alt={item?.name}
+    sx={{
+      transition: "transform 0.3s ease-in-out",
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      borderRadius: "0.5rem"
+    }}
+  />
+ 
+  <Box
+    sx={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      // backgroundColor: "rgba(0, 0, 0, 0.5)", 
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "flex-end",
+      paddingBottom:"10px"
+      }}
+  >
+   <Box sx={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+      <Chip
+        label="10% OFF"
+        size="small"
+        sx={{
+          backgroundColor: "primary.main", 
+          color: "primary.light",
+           borderRadius:"5px",
+          fontWeight: "semibold"
+        }}
+      />
+      <Chip
+        label="30-40 min"
+        size="small"
           sx={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            borderRadius: "0.5rem"
-          }}
-        />
+          backgroundColor: "rgba(0, 0, 0, 0.7)", 
+          color: "primary.light",
+          borderRadius:"5px"
+        }}
+      />
+    </Box>
+</Box>
+</Card>
 
 
         <Box
@@ -61,35 +103,36 @@ const MenuCard = ({ item, menuCategoryId }) => {
 
           }}
         >
-          <IconButton
-
-            onClick={() => console.log("Share icon clicked!")}
-          >
+          <IconButton onClick={() => handleAddToCartModal(item, menuCategoryId)}>
             <RemoveRedEye />
           </IconButton>
-          <IconButton
-
-            onClick={() => console.log("Wishlist icon clicked!")}
-          >
+          <IconButton onClick={() => console.log("Wishlist icon clicked!")} >
             <FavoriteBorder />
           </IconButton>
 
-          <IconButton
-
-            onClick={() => handleAddToCartModal(item,menuCategoryId)}
-          >
+          {!item?.cartQuantity ? <IconButton onClick={() => handleAddToCartModal(item, menuCategoryId)} >
             <AddShoppingCart />
-          </IconButton>
-
-
+          </IconButton> : null}
         </Box>
       </Box>
 
 
-      <CardContent sx={{ padding: "0 0.7rem", }}>
-        <Box sx={{ color: "secondary.main", fontSize: "1rem", mb: "0.3rem" }}>
+      <CardContent sx={{ padding: "0 0.7rem", display:'flex',flexDirection:"column",gap:"4px"}}>
+        <Box sx={{ color: "secondary.main", fontSize: "1rem" }}>
           <span style={{ marginRight: "4px" }}>{item?.name}</span>
           {item?.mealType === "non-veg" ? <Fastfood sx={{ color: 'primary.main' }} /> : <Grass sx={{ color: 'green' }} />}
+        </Box>
+        <Box sx={{ color: "secondary.main", fontSize:".8rem" ,display:"flex",alignItems:"center"}}>
+          <span>(3)</span>
+        <Rating
+        value={4.5} 
+        precision={0.5}
+        readOnly
+        sx={{
+          color: "primary.main", 
+          fontSize: "1rem"
+        }}
+      />
         </Box>
 
         {item?.price && (

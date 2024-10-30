@@ -4,18 +4,32 @@ import React, { useEffect, useState } from 'react'
 import { useAddToCart } from '../../../hooks/useAddToCart'
 import { useDispatch } from 'react-redux'
 import { closeDialog } from '../../../slices/dialogSlice'
+import { useQueryClient } from 'react-query'
+import QuantityControl from '../QuantityControl'
 
 export default function CardModal({ cardData }) {
-
+    console.log(cardData, "dataaaaa")
     const [quantity, setQuantity] = useState(cardData?.cartQuantity || 0)
     const { addToCart, isLoading, isError } = useAddToCart()
+    const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const handleCloseDialog = () => {
         dispatch(closeDialog())
     }
+    const [showMore, setShowMore] = useState(false);
+    const characterLimit = 130;
+    const toggleShowMore = () => setShowMore(!showMore);
     const handleAddToCardData = () => {
-        console.log("click")
-        addToCart({ menuItemId: cardData?.menuItemId, quantity, successFunction: () => handleCloseDialog() });
+
+        addToCart({
+            menuItemId: cardData?.menuItemId, quantity, successFunction: () => {
+                // queryClient.invalidateQueries("restaurant-data");
+                handleCloseDialog()
+            }
+        });
+    }
+    const updateQuantity = (quantity) => {
+        setQuantity(quantity)
     }
     return (
         <Box sx={{
@@ -54,6 +68,28 @@ export default function CardModal({ cardData }) {
                         {cardData?.mealType === "non-veg" ? <Fastfood sx={{ color: 'primary.main' }} /> : <Grass sx={{ color: 'green' }} />}
                     </Box>
 
+                    {cardData?.description ? (
+                        <Typography variant="body2" color="secondary.main">
+                            {showMore || cardData.description.length <= characterLimit
+                                ? cardData.description
+                                : `${cardData.description.slice(0, characterLimit)}...`}
+                            {cardData.description.length > characterLimit && (
+                                <span
+                                    onClick={toggleShowMore}
+                                    style={{
+                                        color: 'var(--primary)',
+                                        cursor: 'pointer',
+                                        fontSize: '0.8rem',
+                                        marginLeft: '4px',
+                                    }}
+                                >
+                                    {showMore ? 'Show Less' : 'Show More'}
+                                </span>
+                            )}
+                        </Typography>
+                    ) : null}
+
+
                     {cardData?.price && (
                         <Box
                             sx={{
@@ -69,8 +105,8 @@ export default function CardModal({ cardData }) {
                             <Box color="primary.main" fontWeight={600}>
                                 Start Price: ${cardData?.price || "N/A"}
                             </Box>
-
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <QuantityControl {...{ quantity, updateQuantity }} />
+                            {/* <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 {quantity > 0 ? <IconButton onClick={() => { setQuantity((prev) => prev - 1) }}>
                                     {quantity === 1 ? <DeleteOutline /> : <Remove />}
                                 </IconButton> : null}
@@ -87,7 +123,7 @@ export default function CardModal({ cardData }) {
                                 <IconButton onClick={() => { setQuantity((prev) => prev + 1) }}>
                                     <Add />
                                 </IconButton>
-                            </Box>
+                            </Box> */}
 
                         </Box>
                     )}

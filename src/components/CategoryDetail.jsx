@@ -18,7 +18,7 @@ const CategoryDetail = ({ menuitem, }) => {
         gap={6}
       >
         {menuitem?.menuItems?.map((item, index) => (
-          <FoodItem item={item} key={index} categoryid={menuitem?.menuCategoryId} />
+          <FoodItem item={item} key={index} menuCategoryId={menuitem?.menuCategoryId} />
         ))}
       </Box>
     </Box>

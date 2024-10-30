@@ -25,7 +25,7 @@ const CategoryCard = ({ menuCategoryImageUrl = "", name = "-", description = "" 
                     borderRadius: '1rem',
                     minWidth: "10rem",
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
-                    background: 'white',
+                    background: 'primary.light',
                     padding: '2rem 1rem',
                     transition: 'all 0.3s ease',
                     '&:hover': {

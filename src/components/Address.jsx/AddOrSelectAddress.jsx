@@ -120,9 +120,9 @@ const AddOrSelectAddress = ({
                       border: "2px solid var(--primary)",
                       borderRadius: 2,
                       padding: 2,
-                      color:item?.addressId === activeAddress?"white":"black",
+                      color:item?.addressId === activeAddress?"primary.light":"black",
                       cursor: "pointer",
-                      bgcolor: item?.addressId === activeAddress?"var(--primary)":"white",
+                      bgcolor: item?.addressId === activeAddress?"var(--primary)":"primary.light",
                       "&:hover": { borderColor: "darkorange" },
                     }}
                     onClick={() =>
@@ -132,14 +132,14 @@ const AddOrSelectAddress = ({
                     <Box display={"flex"} justifyContent={"space-between"}>
                     <Typography variant="h6">Delivery Address</Typography>
                   
-                        <Delete sx={{ color:item?.addressId === activeAddress?"white":"var(--primary)"}} onClick={() => handleDeleteAddress(item?.addressId)}/>
+                        <Delete sx={{ color:item?.addressId === activeAddress?"primary.light":"var(--primary)"}} onClick={() => handleDeleteAddress(item?.addressId)}/>
                      
                     </Box>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                       <IoHomeOutline size={24} />
                       <Typography>{`${item.floor} ${item.houseNo} ${item.building} ${item.areaLocality}`}</Typography>
                       {item?.addressId === activeAddress &&
-                        <TaskAlt sx={{ color:item?.addressId === activeAddress?"white":"black"}}
+                        <TaskAlt sx={{ color:item?.addressId === activeAddress?"primary.light":"black"}}
                         />
                       }
                      

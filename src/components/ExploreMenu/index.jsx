@@ -5,11 +5,15 @@ import CategoryHeader from "../CategoryHeader";
 
 const ExploreMenu = ({ menuItems }) => {
   return (
-    <Box sx={{my:3}}>
+    <Box sx={{ my: 3 }}>
       {menuItems?.length ? (
         <>
           <Box>
-           <CategoryHeader {...{name:"Explore Our Delicious Menu"}}/>
+            <CategoryHeader {...{
+              name: "Explore Our Delicious Menu",
+              textButton: menuItems?.length > 5 ? "Explore More" : "",
+              path: `/category`
+            }} />
           </Box>
           <Box sx={{ px: "5%" }}>
             <HeaderCarousel
