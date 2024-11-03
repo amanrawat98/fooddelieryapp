@@ -1,6 +1,6 @@
 import React from "react";
-import HeaderCarousel from "../Carousel/HeaderCarousel";
-import { Box, Container, Paper, Typography } from "@mui/material";
+import HeaderCarousel from "../HeaderCarousel";
+import { Box } from "@mui/material";
 import CategoryHeader from "../CategoryHeader";
 
 const ExploreMenu = ({ menuItems }) => {

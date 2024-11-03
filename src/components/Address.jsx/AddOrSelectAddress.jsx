@@ -28,7 +28,7 @@ const AddOrSelectAddress = ({
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     mode: "onBlur", // Validation will trigger on blur
   });
-  console.log(userData,"dataaaa of addresss")
+
   const handleAddNewAddress = async (data) => {
 
     try {

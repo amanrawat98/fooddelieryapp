@@ -94,6 +94,18 @@ export const createDynamicTheme = (dynamicColors = {}) => {
                     },
                 },
             },
+            MuiTooltip: {
+                styleOverrides: {
+                  tooltip: {
+                    backgroundColor: backendValue.primaryColor,
+                    color: backendValue.backgroundColor,
+                    fontSize: '0.875rem',
+                  },
+                  arrow: {
+                    color: backendValue.primaryColor,
+                  },
+                },
+            }
         },
     });
 

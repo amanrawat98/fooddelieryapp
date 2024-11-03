@@ -37,7 +37,7 @@ const Login = () => {
       email: '',
       phone: '',
       password: '',
-      comformPassword: '',
+      conformPassword: '',
     },
   });
 
@@ -254,16 +254,16 @@ const Login = () => {
           <TextField
             type="password"
             placeholder="Confirm Password"
-            name="comformPassword"
+            name="conformPassword"
 
             fullWidth
             variant="outlined"
-            {...register("comformPassword", {
+            {...register("conformPassword", {
               required: "Confirm password is required",
               validate: value => value === getValues("password") || "Passwords do not match",
             })}
-            error={!!errors.comformPassword}
-            helperText={errors.comformPassword ? errors.comformPassword.message : ''}
+            error={!!errors.conformPassword}
+            helperText={errors.conformPassword ? errors.conformPassword.message : ''}
             sx={inputStyles}
           />
           <Button
