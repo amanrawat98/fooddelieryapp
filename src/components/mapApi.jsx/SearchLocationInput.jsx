@@ -13,7 +13,7 @@ const SearchLocationInput = () => {
       if (query) {
         try {
           const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${query}&key=${import.meta.env.VITE_GOOGLE_PLACE}`
+            `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(query)}&key=${import.meta.env.VITE_GOOGLE_PLACE}`
           );
 
           if (response.data && response.data.predictions) {
@@ -38,6 +38,11 @@ const SearchLocationInput = () => {
       debouncedFetchSuggestions.cancel();
     };
   }, [handleQueryValue, debouncedFetchSuggestions]);
+
+  const handleSuggestionClick = (suggestion) => {
+    setHandleQueryValue(suggestion);
+    setSuggestions([]); // Clear suggestions after selection
+  };
 
   return (
     <div>
@@ -66,7 +71,7 @@ const SearchLocationInput = () => {
         <Paper elevation={3} sx={{ maxHeight: 200, overflow: 'auto' }}>
           <List>
             {suggestions.map((suggestion, index) => (
-              <ListItem button key={index}>
+              <ListItem button key={index} onClick={() => handleSuggestionClick(suggestion)}>
                 <ListItemText primary={suggestion} />
               </ListItem>
             ))}

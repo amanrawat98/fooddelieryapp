@@ -1,17 +1,14 @@
-import { Add, DeleteOutline, Fastfood, Grass, Remove } from '@mui/icons-material'
+import {  Fastfood, Grass, Remove } from '@mui/icons-material'
 import { Box, Button, CardMedia, CircularProgress, IconButton, Stack, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useAddToCart } from '../../../hooks/useAddToCart'
 import { useDispatch } from 'react-redux'
 import { closeDialog } from '../../../slices/dialogSlice'
-import { useQueryClient } from 'react-query'
 import QuantityControl from '../QuantityControl'
 
 export default function CardModal({ cardData }) {
-    console.log(cardData, "dataaaaa")
     const [quantity, setQuantity] = useState(cardData?.cartQuantity || 0)
     const { addToCart, isLoading, isError } = useAddToCart()
-    const queryClient = useQueryClient();
     const dispatch = useDispatch();
     const handleCloseDialog = () => {
         dispatch(closeDialog())
@@ -23,7 +20,6 @@ export default function CardModal({ cardData }) {
 
         addToCart({
             menuItemId: cardData?.menuItemId, quantity, successFunction: () => {
-                // queryClient.invalidateQueries("restaurant-data");
                 handleCloseDialog()
             }
         });

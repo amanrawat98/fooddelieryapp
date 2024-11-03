@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  resturantdata: {},
+  restaurantData: {},
   outletData: {},
   customerCart: {},
  };
@@ -12,7 +12,7 @@ const restaurantSlice = createSlice({
 
   reducers: {
     setRestaurantData: (state, action) => {
-      state.resturantdata = action.payload;
+      state.restaurantData = action.payload;
     },
 
     setOutletData: (state, action) => {

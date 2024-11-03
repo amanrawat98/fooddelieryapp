@@ -12,7 +12,7 @@ import useCustomToast from "./Toast/useToast";
 
 const useApp = () => {
   const toast=useCustomToast()
-  const { isUserLogin, userData } = useSelector((state) => state.user);
+  const {  userData } = useSelector((state) => state.user);
   const { selectedOutlet } = useSelector((state) => state.outlet);
   const { sessionId, createSession } = useSession();
   const dispatch = useDispatch();
@@ -39,8 +39,8 @@ const useApp = () => {
     data: fetchRestaurantData,
     isLoading: isRestaurantLoading,
     isError: isRestaurantError,
-  } = useQuery("restaurant-data", async () => {
-    if (!isUserLogin || !sessionId) {
+  } = useQuery(["restaurant-data", userData?.customerId, sessionId], async () => {
+    if (!userData?.customerId || !sessionId) {
       await createSession(); 
     }
     return getResturantData(userData?.customerId, sessionId);
@@ -48,6 +48,7 @@ const useApp = () => {
     enabled: !!userData?.customerId || !!sessionId,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
+    keepPreviousData: true,
     staleTime: 5000,
     onSuccess: (data) => {
       const { result = {}, customerCart } = data || {};

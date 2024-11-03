@@ -12,7 +12,7 @@ const SignUp = () => {
   const dispatch=useDispatch()
   const [loading, setLoading] = useState(false);
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const resturantdata = useSelector((state) => state.restaurant.resturantdata);
+  const restaurantData = useSelector((state) => state.restaurant.restaurantData);
   const toast = useCustomToast();
   let restaurantId;
   let cartId;
@@ -21,8 +21,8 @@ const SignUp = () => {
     cartId = cartItems?.cartId;
   }
 
-  if (resturantdata?.result?.restaurantId) {
-    restaurantId = resturantdata?.result?.restaurantId;
+  if (restaurantData?.result?.restaurantId) {
+    restaurantId = restaurantData?.result?.restaurantId;
   }
 
   const {
