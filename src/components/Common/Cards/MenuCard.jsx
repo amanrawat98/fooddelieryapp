@@ -62,7 +62,7 @@ const MenuCard = ({ item, menuCategoryId }) => {
               paddingBottom: "10px"
             }}
           >
-            <Box sx={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+           {false? <Box sx={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
               <Chip
                 label="10% OFF"
                 size="small"
@@ -82,7 +82,7 @@ const MenuCard = ({ item, menuCategoryId }) => {
                   borderRadius: "5px"
                 }}
               />
-            </Box>
+            </Box>:null}
           </Box>
         </Card>
 
@@ -156,9 +156,9 @@ const MenuCard = ({ item, menuCategoryId }) => {
             <Box color="primary.main" fontWeight={600}>
               ${item?.price}
             </Box>
-            <Box color="secondary.main" sx={{ textDecoration: 'line-through', fontWeight: 400 }}>
+            {/* <Box color="secondary.main" sx={{ textDecoration: 'line-through', fontWeight: 400 }}>
               ${item?.price ? (item.price * 1.1).toFixed(2) : 'N/A'}
-            </Box>
+            </Box> */}
           </Box>
         )}
       </CardContent>

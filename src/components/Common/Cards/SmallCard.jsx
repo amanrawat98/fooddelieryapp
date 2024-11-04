@@ -41,7 +41,7 @@ const SmallCard = ({ item, menuCategoryId }) => {
                         }}
                     />
 
-                    <Box
+                   {false? <Box
                         sx={{
                             position: "absolute",
                             top: 0,
@@ -74,7 +74,7 @@ const SmallCard = ({ item, menuCategoryId }) => {
                                 width:"fit-content"
                             }}
                         />
-                    </Box>
+                    </Box>:null}
                 </Card>
             </Box>
             <Box sx={{ display: 'flex', height: "100%", flex: 1, padding: "1rem", justifyContent: "space-between", gap: 2 }}>
@@ -113,9 +113,9 @@ const SmallCard = ({ item, menuCategoryId }) => {
                             <Box color="primary.main" fontWeight={600}>
                                 ${item?.price}
                             </Box>
-                            <Box color="secondary.main" sx={{ textDecoration: 'line-through', fontWeight: 400 }}>
+                            {/* <Box color="secondary.main" sx={{ textDecoration: 'line-through', fontWeight: 400 }}>
                                 ${item?.price ? (item.price * 1.1).toFixed(2) : 'N/A'}
-                            </Box>
+                            </Box> */}
                         </Box>
                     )}
                 </Box>

@@ -1,11 +1,12 @@
 import { IconButton, Typography, Box } from '@mui/material';
 import { DeleteOutline, Remove, Add } from '@mui/icons-material';
 
-const QuantityControl = ({ quantity, updateQuantity, size = 'medium', sx = {},isLoading=false }) => {
+const QuantityControl = ({ quantity, updateQuantity, size = 'medium', sx = {}, isLoading = false, onlyIcon = false }) => {
+  const commonSx = onlyIcon ? { padding: "2px" } : {}
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ...sx }}>
       {quantity > 0 && (
-        <IconButton onClick={() => updateQuantity(quantity-1)} size={size} disabled={isLoading}>
+        <IconButton onClick={() => updateQuantity(quantity - 1)} size={size} disabled={isLoading} sx={{ ...commonSx }}>
           {quantity === 1 ? <DeleteOutline /> : <Remove />}
         </IconButton>
       )}
@@ -14,14 +15,14 @@ const QuantityControl = ({ quantity, updateQuantity, size = 'medium', sx = {},is
           variant="body2"
           sx={{
             fontWeight: '600',
-            color: 'text.primary',
+            color: !onlyIcon ? 'text.primary' : "green",
             fontSize: '1rem',
           }}
         >
           {quantity}
         </Typography>
       )}
-      <IconButton onClick={() => updateQuantity(quantity+1)} size={size} disabled={isLoading}>
+      <IconButton onClick={() => updateQuantity(quantity + 1)} size={size} disabled={isLoading} sx={{ ...commonSx }}>
         <Add />
       </IconButton>
     </Box>

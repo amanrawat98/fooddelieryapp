@@ -3,39 +3,37 @@ import "./Cart.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import PaymentSheetWrapper from "../../components/PaymentSheetWrapper";
-import { MdEdit } from "react-icons/md";
 import { CiLocationOn } from "react-icons/ci";
 import { handleCreateIntentId } from "../../utility/apiServices";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AddOrSelectAddress from "../../components/Address.jsx/AddOrSelectAddress";
 import CartItem from "../../components/Cart/CartItem";
-import { Box, Button, Container, Divider, FormControlLabel, IconButton, Paper, Radio, RadioGroup, TextField, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Container, Divider, FormControlLabel, IconButton, Paper, Radio, RadioGroup, Tooltip, Typography } from "@mui/material";
 import GoBackButton from "../../components/Common/Buttons/GoBackButton";
-import { openDialog } from "../../slices/dialogSlice"; 
+import { openDialog } from "../../slices/dialogSlice";
 import Login from "../../components/Login";
+import { Edit } from "@mui/icons-material";
 
 export const deliveryFee = 2;
 
-const Cart = () => {
+const Cart = ({toggleDrawer}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartitems = useSelector((state) => state?.cart?.cartItems);
-  const userData = useSelector((state) => state?.user?.userData);
-  const isUserLogin = useSelector((state) => state.user.isUserLogin);
+  const {userData,isUserLogin} = useSelector((state) => state?.user);
   const address = userData?.addresses || [];
 
-  const [selectedAddress, setSelectedAddress] = useState({...address?.[0]});
+  const [selectedAddress, setSelectedAddress] = useState({ ...address?.[0] });
   const [deliveryType, setDeliveryType] = useState("takeaway");
   const [clientSecret, setClientSecret] = useState("");
   const [paymentIntentId, setPaymentIntentId] = useState("");
-  const [isAddressDialog, setIsAddressDialog] = useState(false);
   const outletId = cartitems?.outletId || null;
   const { cartItems, cartId } = cartitems || {};
 
   const handleNotLogin = () => {
     dispatch(openDialog({ content: <Login />, title: "Login" }))
-    navigate("/");
+    // navigate("/");
   };
 
   const handleCreatePaymentIntent = async (payload) => {
@@ -66,27 +64,19 @@ const Cart = () => {
       console.error("Checkout error:", error);
     }
   };
-
-  useEffect(() => {
-    document.body.style.overflow = isAddressDialog ? "hidden" : "auto";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isAddressDialog]);
-  const handleCancelAddressDialog = () => {
-    setIsAddressDialog((prev) => !prev);
-  }
+ 
   const handleAddAddress = () => {
     if (!isUserLogin) {
       handleNotLogin();
       return;
     }
-    const dialogContent={content:<AddOrSelectAddress {...{
-      selectedAddressId: selectedAddress?.addressId,
-      address,
-    }} />}
+    const dialogContent = {
+      content: <AddOrSelectAddress {...{
+        selectedAddressId: selectedAddress?.addressId,
+      }} />
+    }
     dispatch(openDialog(dialogContent))
-    
+
   };
 
   useEffect(() => {
@@ -99,38 +89,18 @@ const Cart = () => {
 
   return (
     <>
-      <GoBackButton />
+      {/* <GoBackButton /> */}
       <Box sx={{ position: 'relative', p: 3 }}>
         <ToastContainer position="top-center" />
 
         <Box sx={{ mb: 3 }}>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "repeat(6, 1fr)",
-              mb: 2,
-            }}
-          >
-            {["Title", "Price", "Quantity", "Total", "Remove"].map((item, index) => (
-              <Typography
-                key={index}
-                sx={{
-                  gridColumn: item === "Title" ? "span 2" : "span 1",
-                  fontSize: "1.25rem",
-                  fontWeight: "bold",
-                }}
-              >
-                {item}
-              </Typography>
-            ))}
-          </Box>
-
+      
           {!cartItems?.length ? (
             <Container maxWidth="md" sx={{ marginTop: "2rem", textAlign: 'center' }}>
-              <Paper elevation={3} sx={{ padding: '1rem', borderRadius: '1rem' }}>
-                <Typography variant="h6" component="h6" color={"var(--primary)"}>
+              <Paper elevation={2} sx={{ padding: '1rem', borderRadius: '1rem' }}>
+                <Box fontSize={"1.25rem"} color={"primary.main"}>
                   No Items in cart
-                </Typography>
+                </Box>
               </Paper>
             </Container>
           ) : (
@@ -140,37 +110,52 @@ const Cart = () => {
           )}
         </Box>
 
-        <Box sx={{ mt: 3, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
-          <Typography variant="h6">Cart Total</Typography>
+        <Box sx={{ mt: 3, color:"secondary.main" }}>
           <Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
-              <Typography>Subtotal</Typography>
-              <Typography>${cartitems?.cartSubTotal}</Typography>
+              <Box fontSize={"1.25rem"}>Subtotal</Box>
+              <Typography variant="body1">${cartitems?.cartSubTotal}</Typography>
             </Box>
-            <Divider />
             <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
-              <Typography>Delivery Fee</Typography>
+              <Box fontSize={"1.25rem"}>Delivery Fee</Box>
               <Typography>${cartitems?.cartTax}</Typography>
             </Box>
             <Divider />
             <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
-              <Typography variant="h6">Total</Typography>
+              <Box fontSize={"1.25rem"}>Total</Box>
               <Typography>${cartitems?.cartTotal}</Typography>
             </Box>
           </Box>
         </Box>
+        {deliveryType === "delivery" && (
+            <Box  sx={{ marginTop: "2rem", textAlign: 'center' }}>
+              <Paper elevation={2} sx={{ padding: '1rem', borderRadius: '1rem' }}>
+                  <Box display="flex" justifyContent="space-between" sx={{color: 'primary.main'}}>
+                    <Typography variant="body1" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
+                      Delivery Address
+                    </Typography>
+                    <Tooltip title="Edit address" placement="top" arrow>
+                      <Edit onClick={handleAddAddress}/>
+                      </Tooltip>
+                  </Box>
+                  {address?.length ? (
+                    <>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <CiLocationOn size={24}/>
+                        <Typography sx={{  fontSize: '1rem' }}>
+                          {`${selectedAddress?.floor} ${selectedAddress?.houseNo}, ${selectedAddress?.building}, ${selectedAddress?.areaLocality}`}
+                        </Typography>
+                      </Box>
+                    </>
+                  ) : (
+                    <Typography variant="body1" sx={{  mb: 2 }}>
+                      No address available. Add a New One...
+                    </Typography>
+                  )}
+                </Paper>
+              </Box>
 
-        <Box sx={{ mt: 3 }}>
-          <Typography>If you have a promo code, enter it here</Typography>
-          <Box sx={{ display: "flex", gap: 2, mt: 1 }}>
-            <TextField
-              type="text"
-              placeholder="Enter promo code"
-              variant="outlined"
-            />
-            <Button variant="contained" >Submit</Button>
-          </Box>
-        </Box>
+            )}
         <Box sx={{ mt: 3, px: 2 }}>
           <RadioGroup
             row
@@ -208,48 +193,7 @@ const Cart = () => {
               Checkout
             </Button>
 
-            {deliveryType === "delivery" && (
-              <Box sx={{ flex: 1, width: '100%' }}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    backgroundColor: '#fff8e1',
-                    border: address?.length ? '2px solid #ffb74d' : '2px solid #ff6f61',
-                    borderRadius: '12px',
-                    p: 3,
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-                    width: address?.length ? '80%' : 'max-content',
-                    my: 2,
-                  }}
-                >
-                  <Box display="flex" justifyContent="space-between">
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: '#ff6f61' }}>
-                      Delivery Address
-                    </Typography>
-                    <IconButton onClick={handleAddAddress}>
-                      <MdEdit size={24} />
-                    </IconButton>
-                  </Box>
-                  {address?.length ? (
-                    <>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <CiLocationOn size={24} color="#ff6f61" />
-                        <Typography sx={{ color: '#4f4f4f', fontSize: '1rem' }}>
-                          {`${selectedAddress?.floor} ${selectedAddress?.houseNo}, ${selectedAddress?.building}, ${selectedAddress?.areaLocality}`}
-                        </Typography>
-                      </Box>
-                    </>
-                  ) : (
-                    <Typography variant="body2" sx={{ color: '#757575', mb: 2 }}>
-                      No address available. Add a New One...
-                    </Typography>
-                  )}
-                </Box>
-              </Box>
-
-            )}
+          
           </Box>
         </Box>
 
@@ -264,12 +208,6 @@ const Cart = () => {
           }} />
         )}
 
-        {isAddressDialog && isUserLogin ? <AddOrSelectAddress {...{
-          handleCancelAddressDialog,
-          isAddressDialog,
-          selectedAddressId: selectedAddress?.addressId,
-          address,
-        }} /> : null}
       </Box>
     </>
   );

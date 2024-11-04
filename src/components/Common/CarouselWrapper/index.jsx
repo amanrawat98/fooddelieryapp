@@ -9,6 +9,8 @@ const CarouselWrapper = ({ children, responsiveConfig, ...props }) => {
   
   return (
     <Box   sx={{
+      display:"flex",
+      justifyContent:"center",
         ".carousel-item-padding": {
           padding: "0.5rem",
         },
