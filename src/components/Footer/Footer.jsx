@@ -1,13 +1,15 @@
 import React from "react";
-import { Box, Typography, List, ListItem, Divider, IconButton, Avatar } from "@mui/material";
+import { Box, Typography, List, ListItem, Divider, IconButton, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { MdPhone, MdEmail, MdLocationOn } from "react-icons/md";
-import { assets } from "../../assets/assets";
+
 import { productLinks, resourceLinks, socialLinks } from "./data";
 import { useSelector } from "react-redux";
+import useRestaurantInfo from "./useRestaurantInfo";
+import { AccessTime, Apple, Call, Google, LocationOn, Mail } from "@mui/icons-material";
 
 const Footer = () => {
-  const theme = useSelector((state) => state.theme.themeData);
+  const { address, availableTime, theme, personalInfo } = useRestaurantInfo()
+
   const navigate = useNavigate();
   return (
     <Box
@@ -19,6 +21,19 @@ const Footer = () => {
         textAlign: "center",
       }}
     >
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, my: 3 }}>
+        {socialLinks.map(({ name, icon, url }) => (
+          <IconButton
+            key={name}
+            component="a"
+            href={url}
+            aria-label={name.toLowerCase()}
+            size="small"
+          >
+            {icon}
+          </IconButton>
+        ))}
+      </Box>
       <Box
         sx={{
           display: { xs: "block", md: "flex" },
@@ -27,32 +42,43 @@ const Footer = () => {
           padding: "10px",
         }}
       >
-        <Box sx={{ flex: "1", textAlign: "left", mb: { xs: "10px", md: 0 } }}>
+        <Box sx={{ flex: "1", textAlign: "left",mr:4, mb: { xs: "10px", md: 0 } }}>
           <Box sx={{ mb: 1 }}>
-          <img
+            <img
               src={theme?.appLogoImageUrl}
               alt="logo"
-              style={{ width: '64px', borderRadius: '50%' }}
+              style={{ width: '4rem', borderRadius: '50%' }}
             />
-            <Typography variant="body2" sx={{ mt: 3 }}>
-              Welcome to Tomato, your favorite restaurant! Enjoy delicious meals made from fresh ingredients, served with love. Join us for a delightful dining experience.
+            <Typography variant="body1" sx={{ my: 3 }}>
+              Bringing flavors you love right to your door. Freshly made, swiftly delivered.
             </Typography>
-          </Box>
-          <Typography variant="body2" sx={{ mb: 1 }}>
-            Follow us on:
-          </Typography>
-          <Box sx={{ display: "flex", gap: "8px" }}>
-            {socialLinks.map(({ name, icon, url }) => (
-              <IconButton
-                key={name}
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+              }}
+            >
+              <Button
                 component="a"
-                href={url}
-                aria-label={name.toLowerCase()}
-
+                variant="contained"
+                href="https://play.google.com/store"
+                target="_blank"
+                sx={{ padding: 2, backgroundColor: "secondary.main" }}
               >
-                {icon}
-              </IconButton>
-            ))}
+                <Google />
+                Google Play
+              </Button>
+              <Button
+                component="a"
+                variant="contained"
+                href="https://apps.apple.com/app"
+                target="_blank"
+                sx={{ padding: 2 , backgroundColor: "secondary.main"}}
+              >
+                <Apple />
+                App Store
+              </Button>
+            </Box>
           </Box>
         </Box>
 
@@ -95,17 +121,22 @@ const Footer = () => {
             GET IN TOUCH
           </Typography>
           <List>
-            <ListItem sx={{ display: "flex", alignItems: "center" }}>
-              <MdPhone size={20} style={{ marginRight: "8px" }} />
-              +1-123-456-7890
+            <ListItem sx={{ display: "flex", }}>
+              <Call sx={{ marginRight: "8px" }} />
+              {personalInfo?.phone}
             </ListItem>
-            <ListItem sx={{ display: "flex", alignItems: "center" }}>
-              <MdEmail size={20} style={{ marginRight: "8px" }} />
-              contact@tomato.com
+            <ListItem sx={{ display: "flex", }}>
+              <Mail sx={{ marginRight: "8px" }} />
+              {personalInfo?.email}
             </ListItem>
-            <ListItem sx={{ display: "flex", alignItems: "center" }}>
-              <MdLocationOn size={20} style={{ marginRight: "8px" }} />
-              123 Tomato Lane, Flavor Town, USA
+            <ListItem sx={{ display: "flex", }}>
+              <LocationOn sx={{ marginRight: "8px" }} />
+              {address}
+            </ListItem>
+
+            <ListItem sx={{ display: "flex", }}>
+              <AccessTime sx={{ marginRight: "8px" }} />
+              {availableTime}
             </ListItem>
           </List>
         </Box>

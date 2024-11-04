@@ -3,7 +3,7 @@ import { Accordion, AccordionSummary, AccordionDetails, MenuList, MenuItem, Typo
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedOutlet } from '../slices/outletSlice';
-import { Outlet } from '@mui/icons-material';
+import { Outlet, Place, Restaurant } from '@mui/icons-material';
 import { setOutletData } from '../slices/restaurantDataSlice';
 
 const OutletContainer = () => {
@@ -36,7 +36,7 @@ const OutletContainer = () => {
 
           borderRadius: '2px 2px 0 0',
 
-          color: 'primary.main',
+          color: 'secondary.main',
           '& .MuiAccordionSummary-content': {
             margin: 0,
           },
@@ -44,7 +44,7 @@ const OutletContainer = () => {
         expandIcon={
           <ArrowDownwardIcon
             sx={{
-              color: 'primary.main',
+              color: 'secondary.main',
               ml: "5px",
               transition: 'color 0.3s',
             }}
@@ -53,7 +53,8 @@ const OutletContainer = () => {
 
       >
         <Typography variant="body1" noWrap>
-          <Outlet sx={{ mr: 1 }} /> {outletAddress?.street || 'No Outlets'}
+          <Restaurant  sx={{ color:"primary.main",mr:2 }}/>
+          <Place sx={{ color:"primary.main" }} fontSize='0.9rem'/> {outletAddress?.street || 'No Outlets'}
         </Typography>
       </AccordionSummary>
 
@@ -70,7 +71,7 @@ const OutletContainer = () => {
           {restaurantOutlets?.map((item, index) => {
             const isActive = selectedOutlet === index;
             const backgroundColor = isActive ? 'primary.main' : 'primary.light';
-            const color = isActive ? 'primary.light' : 'primary.main';
+            const color = isActive ? 'primary.light' : 'secondary.main';
 
             return (
               <MenuItem

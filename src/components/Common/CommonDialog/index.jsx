@@ -14,7 +14,14 @@ const CommonDialog = () => {
     };
 
     return (
-        <Dialog open={open} onClose={handleClose} className={className} style={style} sx={sx} >
+        <Dialog open={open} onClose={handleClose} className={className} style={style} sx={sx} 
+        PaperProps={{
+            sx: {
+              width: '80%',
+            //   maxWidth: 'none',
+            },
+          }}
+        >
             {title ? <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h6">{title || ""}</Typography>
                 <IconButton aria-label="close" onClick={handleClose} sx={{

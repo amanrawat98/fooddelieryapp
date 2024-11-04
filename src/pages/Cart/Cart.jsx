@@ -23,16 +23,15 @@ const Cart = () => {
   const cartitems = useSelector((state) => state?.cart?.cartItems);
   const userData = useSelector((state) => state?.user?.userData);
   const isUserLogin = useSelector((state) => state.user.isUserLogin);
+  const address = userData?.addresses || [];
 
-  const [selectedAddress, setSelectedAddress] = useState({});
+  const [selectedAddress, setSelectedAddress] = useState({...address?.[0]});
   const [deliveryType, setDeliveryType] = useState("takeaway");
   const [clientSecret, setClientSecret] = useState("");
   const [paymentIntentId, setPaymentIntentId] = useState("");
   const [isAddressDialog, setIsAddressDialog] = useState(false);
   const outletId = cartitems?.outletId || null;
-  const customerId = cartitems?.customerId || null;
   const { cartItems, cartId } = cartitems || {};
-  const address = userData?.addresses || [];
 
   const handleNotLogin = () => {
     dispatch(openDialog({ content: <Login />, title: "Login" }))

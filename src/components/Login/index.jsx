@@ -13,13 +13,14 @@ import { inputStyles } from "../../theme/utils";
 import { closeDialog } from "../../slices/dialogSlice";
 import { useSession } from "../../hooks/useSession";
 import { handleUserLogin } from "../../utility/apiServices";
+import { useMutation } from "react-query";
 
 const Login = () => {
   const dispatch = useDispatch();
   const toast = useCustomToast();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const outletState = useSelector((state) => state.outlet);
-  const resturantData = useSelector((state) => state?.restaurant?.resturantdata);
+  const resturantData = useSelector((state) => state?.restaurant?.restaurantData);
   const { clearSession, } = useSession()
   let restaurantId;
   if (resturantData?.result?.restaurantId) {
@@ -30,21 +31,20 @@ const Login = () => {
   const [page, setPage] = useState("login");
   const [loading, setLoading] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
-
+  const loginMutation = useMutation(handleUserLogin);
   const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onBlur',
     defaultValues: {
       email: '',
       phone: '',
       password: '',
-      comformPassword: '',
+      conformPassword: '',
     },
   });
 
- const onSubmit = async (data) => {
+  const onSubmit = async (data) => {
     setLoading(true);
-
-    const payload = {
+ const payload = {
       ...(data.email ? { email: data.email } : { phone: data.phone }),
       password: data.password,
       loginMethod: data.email ? "email" : "phone",
@@ -53,31 +53,27 @@ const Login = () => {
       temporaryCartId: cartItems?.cartId || null,
     };
 
-    try {
-      const resturantdata = await handleUserLogin(payload);
-      const { result, customerCart, restaurantData } = resturantdata || {};
-      const { restaurantOutlets } = restaurantData || {};
+    loginMutation.mutate(payload, {
+      onSuccess: (restaurantDataVal) => {
+        const { result, customerCart, restaurantData } = restaurantDataVal || {};
 
-      if (resturantdata && restaurantOutlets) {
-        dispatch(setRestaurantData(resturantdata));
-        dispatch(setOutletData(restaurantOutlets[outletState?.selectedOutlet || 0]));
-        dispatch(setCartItems(customerCart));
-      }
-      if (resturantdata.detail) {
-        dispatch(setUserLoginStatus(true));
-        toast.success(<span>Login successfully</span>);
-      }
-
-      dispatch(setUserData(result));
-      clearSession()
-      handleCloseDialog()
-      navigate("/");
-    } catch (error) {
-      toast.error(<span>Something went wrong </span>);
-      console.error("Login failed:", error);
-    } finally {
-      setLoading(false);
-    }
+        if (restaurantDataVal.detail) {
+          dispatch(setUserLoginStatus(true));
+          dispatch(setUserData(result));
+          clearSession();
+          handleCloseDialog();
+          navigate("/");
+          toast.success(<span>Login successfully</span>);
+        }
+      },
+      onError: (error) => {
+        toast.error(<span>Something went wrong</span>);
+        console.error("Login failed:", error);
+      },
+      onSettled: () => {
+        setLoading(false);
+      },
+    });
   };
   const handleCloseDialog = () => {
     dispatch(closeDialog())
@@ -254,16 +250,16 @@ const Login = () => {
           <TextField
             type="password"
             placeholder="Confirm Password"
-            name="comformPassword"
+            name="conformPassword"
 
             fullWidth
             variant="outlined"
-            {...register("comformPassword", {
+            {...register("conformPassword", {
               required: "Confirm password is required",
               validate: value => value === getValues("password") || "Passwords do not match",
             })}
-            error={!!errors.comformPassword}
-            helperText={errors.comformPassword ? errors.comformPassword.message : ''}
+            error={!!errors.conformPassword}
+            helperText={errors.conformPassword ? errors.conformPassword.message : ''}
             sx={inputStyles}
           />
           <Button

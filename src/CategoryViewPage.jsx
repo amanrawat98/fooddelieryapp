@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import FoodItem from "./components/FoodItem/FoodItem";
+import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Box, Typography } from "@mui/material";
 import GoBackButton from "./components/Common/Buttons/GoBackButton";

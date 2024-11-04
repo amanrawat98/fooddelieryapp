@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setSelectedAddress, setUserData, setUserLoginStatus, } from "../../slices/userSlice";
+import { resetUserState } from "../../slices/userSlice";
 import SignUp from "../SignUpPage/SignUpPage";
 import Login from "../Login";
 import userFallBackImg from "../../../src/assets/user.png";
@@ -16,21 +16,16 @@ const Header = () => {
   const dispatch = useDispatch();
   const toast = useCustomToast();
   const cartItems = useSelector((state) => state?.cart?.cartItems);
-  const isUserLogin = useSelector((state) => state?.user?.isUserLogin);
+  const { isUserLogin, userData } = useSelector((state) => state.user);
   const theme = useSelector((state) => state.theme.themeData);
-  const userData = useSelector((state) => state.user.userData);
   const { cartCount } = cartItems || {};
-  const { sessionId, createSession, clearSession, } = useSession()
-
+  const { clearSession } = useSession()
   const handleLogout = async () => {
-    dispatch(setUserLoginStatus(false));
-    dispatch(setUserData(null));
-    dispatch(setSelectedAddress(null));
-    createSession();
-    toast.success("User logout successfully")
+    dispatch(resetUserState());
+    clearSession();
     navigate("/");
+    toast.success("User logout successfully")
   }
-
   const handleLoginSignUp = (type) => {
     const dialogComponent = {
       login: { content: <Login />, title: "Login" },
@@ -40,7 +35,7 @@ const Header = () => {
   }
 
   return (
-    <Box sx={{ backgroundColor:"primary.dark", py: "10px" }}>
+    <Box sx={{ backgroundColor: "primary.dark", py: "10px" }}>
       <Box sx={{ px: 4 }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Link to="/">

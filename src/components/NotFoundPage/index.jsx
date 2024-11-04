@@ -28,19 +28,19 @@ const NotFoundPage = () => {
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        bgcolor: "#f5f5f5", // Light background
+        bgcolor: "primary.light", // Light background
         p: 4,
       }}
     >
-      <Typography variant="h1" sx={{ fontWeight: "bold", color: "#ff6f61" }}>
+      <Typography variant="h1" sx={{ fontWeight: "bold", color: "primary.main" }}>
         404
       </Typography>
-      <Typography variant="h5" sx={{ mb: 2, color: "#333" }}>
+      <Typography variant="h5" sx={{ mb: 2, color: "secondary.main" }}>
         Oops! The page you're looking for doesn't exist.
       </Typography>
       <Typography variant="body1" sx={{ mb: 4 }}>
         You will be redirected to the homepage in
-        <Box component="span" sx={{ color: "#ff6f61", fontWeight: 'bold',px:"8px" }}>
+        <Box component="span" sx={{ color: "primary.main", fontWeight: 'bold',px:"8px" }}>
           {seconds}
         </Box>
         seconds.

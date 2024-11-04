@@ -13,14 +13,14 @@ export const getThemeData = async () => {
   return response?.data?.result;
 };
 
-export const getResturantData = async (customerId,sessionKey) => {
-  
+export const getResturantData = async (customerId, sessionKey) => {
+
   const response = await axios.get(
     `${import.meta.env.VITE_BASE_URL}/restaurant-data/`,
     {
       params: {
-        sessionKey,
-        customerId,
+        ...(customerId ? { customerId} : { sessionKey }),
+
         restaurantId: 5,
       },
     }
