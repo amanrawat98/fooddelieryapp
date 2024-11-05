@@ -1,12 +1,13 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Box, Card, CardContent, CardMedia,  Rating, styled, Typography, useTheme } from "@mui/material";
-import { ArrowCircleRight, Fastfood, Grass} from "@mui/icons-material";
+import { Box, Card, CardContent, CardMedia, Rating, styled, Typography, useTheme } from "@mui/material";
+import { ArrowCircleRight,  } from "@mui/icons-material";
 import { useAddToCart } from "../../hooks/useAddToCart";
 import QuantityControl from "../Common/QuantityControl";
-
+import veg from "../../assets/veg.png"
+import nonVeg from "../../assets/non_veg.png"
 const FoodItem = ({ item, menuCategoryId }) => {
-  
+
   const { isLoading, isError, debouncedAddToCart } = useAddToCart()
   const addToCart = async (quantity, menuItemId) => {
     debouncedAddToCart({ quantity, menuItemId })
@@ -57,11 +58,9 @@ const FoodItem = ({ item, menuCategoryId }) => {
               precision={0.5}
             />
             <Box className="size-5">
-              {item.mealType === "non-veg" ? (
-                <Fastfood style={{ fontSize: '2rem', color: 'red' }} />
-              ) : (
-                <Grass style={{ fontSize: '2rem', color: 'green' }} />
-              )}
+              <Box width={"1.5rem"}>
+                <img src={item?.mealType === "non-veg" ? nonVeg : veg} alt="My PNG" />
+              </Box>
             </Box>
           </Box>
           {item?.description ? <Typography

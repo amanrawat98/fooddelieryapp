@@ -1,9 +1,9 @@
-// MenuCard.js
 import React from 'react';
 import { Card, CardMedia, CardContent, Box, IconButton, Typography, Chip, Rating, Tooltip } from '@mui/material';
-import { AddShoppingCart, Fastfood, FavoriteBorder, Grass, RemoveRedEye } from '@mui/icons-material';
+import { AddShoppingCart, FavoriteBorder, RemoveRedEye } from '@mui/icons-material';
 import useCardModal from './useCardModal';
-
+import veg from "../../../assets/veg.png"
+import nonVeg from "../../../assets/non_veg.png"
 const MenuCard = ({ item, menuCategoryId }) => {
   const { handleAddToCartModal } = useCardModal()
 
@@ -62,7 +62,7 @@ const MenuCard = ({ item, menuCategoryId }) => {
               paddingBottom: "10px"
             }}
           >
-            <Box sx={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+            {false ? <Box sx={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
               <Chip
                 label="10% OFF"
                 size="small"
@@ -82,7 +82,7 @@ const MenuCard = ({ item, menuCategoryId }) => {
                   borderRadius: "5px"
                 }}
               />
-            </Box>
+            </Box> : null}
           </Box>
         </Card>
 
@@ -126,9 +126,11 @@ const MenuCard = ({ item, menuCategoryId }) => {
 
 
       <CardContent sx={{ padding: "0 0.7rem", display: 'flex', flexDirection: "column", gap: "4px" }}>
-        <Box sx={{ color: "secondary.main", fontSize: "1rem" }}>
+        <Box sx={{ color: "secondary.main", fontSize: "1rem", display:"flex"}}>
           <span style={{ marginRight: "4px" }}>{item?.name}</span>
-          {item?.mealType === "non-veg" ? <Fastfood sx={{ color: 'primary.main' }} /> : <Grass sx={{ color: 'green' }} />}
+          <Box width={"1.5rem"}>
+            <img src={item?.mealType === "non-veg" ? nonVeg : veg} alt="My PNG"/>
+          </Box>
         </Box>
         <Box sx={{ color: "secondary.main", fontSize: ".8rem", display: "flex", alignItems: "center" }}>
           <span>(3)</span>
@@ -156,9 +158,9 @@ const MenuCard = ({ item, menuCategoryId }) => {
             <Box color="primary.main" fontWeight={600}>
               ${item?.price}
             </Box>
-            <Box color="secondary.main" sx={{ textDecoration: 'line-through', fontWeight: 400 }}>
+            {/* <Box color="secondary.main" sx={{ textDecoration: 'line-through', fontWeight: 400 }}>
               ${item?.price ? (item.price * 1.1).toFixed(2) : 'N/A'}
-            </Box>
+            </Box> */}
           </Box>
         )}
       </CardContent>

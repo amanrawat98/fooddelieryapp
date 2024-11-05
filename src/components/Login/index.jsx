@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserData, setUserLoginStatus } from "../../slices/userSlice";
-import { setOutletData, setRestaurantData } from "../../slices/restaurantDataSlice";
-import { setCartItems } from "../../slices/cartSlice";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { emailRegex } from "../../constants";
@@ -19,7 +17,6 @@ const Login = () => {
   const dispatch = useDispatch();
   const toast = useCustomToast();
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const outletState = useSelector((state) => state.outlet);
   const resturantData = useSelector((state) => state?.restaurant?.restaurantData);
   const { clearSession, } = useSession()
   let restaurantId;

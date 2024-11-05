@@ -1,11 +1,9 @@
 import React, { useMemo, } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Box, Button, Typography } from "@mui/material";
-import { Fastfood, Grass, } from "@mui/icons-material";
+import { Box } from "@mui/material";
 import { useAddToCart } from "../../hooks/useAddToCart";
 import GoBackButton from "../../components/Common/Buttons/GoBackButton";
-import QuantityControl from "../../components/Common/QuantityControl";
 import MenuCard from "../../components/Common/Cards/MenuCard";
 
 const ProductDetail = () => {

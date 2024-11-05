@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { TextField, Button, IconButton, Avatar, Box, MenuItem, Typography, CircularProgress } from "@mui/material";
+import { TextField, Button, IconButton, Avatar, Box, MenuItem, Typography, CircularProgress, Tooltip } from "@mui/material";
 import { MdModeEdit } from "react-icons/md";
 import axios from "axios";
 import { setUserData } from "../../slices/userSlice";
+import { Edit } from "@mui/icons-material";
 
 const User = () => {
   const userData = useSelector((state) => state.user.userData);
   const [isEdit, setIsEdit] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const { register, handleSubmit, reset, formState: { errors }} = useForm();
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
 
   useEffect(() => {
@@ -42,7 +43,7 @@ const User = () => {
         }
       );
       dispatch(setUserData(response?.data?.result));
-      setIsEdit(false); 
+      setIsEdit(false);
     } catch (error) {
       console.error("Error updating user profile:", error);
     } finally {
@@ -52,7 +53,7 @@ const User = () => {
 
   const toggleEditMode = () => {
     setIsEdit((prev) => !prev);
-    reset(); 
+    reset();
   };
 
   return (
@@ -65,16 +66,17 @@ const User = () => {
           alt="User"
         />
         {!isEdit && (
-          <>
-            <Typography variant="h5" gutterBottom>{`Hi there, ${userData?.firstName}`}</Typography>
-            <IconButton color="primary" onClick={toggleEditMode}>
-              <MdModeEdit />
-            </IconButton>
-          </>
+          <Box display={"flex"} alignItems={"center"} gap={2} sx={{fontWeight: 'bold', color: 'primary.main' }}>
+            <Typography variant="h5" color="secondary.main">{`Hi there, ${userData?.firstName}`}</Typography>
+
+            <Tooltip title="Edit Profile" placement="top" arrow>
+              <Edit onClick={toggleEditMode} />
+            </Tooltip>
+          </Box>
         )}
       </Box>
 
-    
+
       <Box component="form" onSubmit={handleSubmit(handleUserEdit)} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {isEdit ? (
           <>
@@ -129,25 +131,25 @@ const User = () => {
               <MenuItem value="Other">Other</MenuItem>
             </TextField>
 
-          
+
             <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}>
-            <Button
+              <Button
                 variant="outlined"
                 size="small"
-                 onClick={() => setIsEdit(false)} 
+                onClick={() => setIsEdit(false)}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 variant="contained"
-                 size="small"
+                size="small"
                 disabled={loading}
                 startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
               >
                 {loading ? "Saving..." : "Save"}
               </Button>
-             
+
             </Box>
           </>
         ) : (
