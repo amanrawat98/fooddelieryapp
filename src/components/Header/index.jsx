@@ -118,7 +118,7 @@ const Header = () => {
         PaperProps={{
           sx: {
             backgroundColor: "primary.light",
-
+            minWidth: "30%"
           },
         }}
       >

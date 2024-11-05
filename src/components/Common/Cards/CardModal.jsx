@@ -1,11 +1,11 @@
-import {  Fastfood, Grass, Remove } from '@mui/icons-material'
 import { Box, Button, CardMedia, CircularProgress, IconButton, Stack, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useAddToCart } from '../../../hooks/useAddToCart'
 import { useDispatch } from 'react-redux'
 import { closeDialog } from '../../../slices/dialogSlice'
 import QuantityControl from '../QuantityControl'
-
+import veg from "../../../assets/veg.png"
+import nonVeg from "../../../assets/non_veg.png"
 export default function CardModal({ cardData }) {
     const [quantity, setQuantity] = useState(cardData?.cartQuantity || 0)
     const { addToCart, isLoading, isError } = useAddToCart()
@@ -59,9 +59,12 @@ export default function CardModal({ cardData }) {
             </Box>
             <Stack sx={{ padding: "0 0.7rem", my: 3 }}>
                 <Box sx={{ flex: 1 }}>
-                    <Box sx={{ color: "secondary.main", fontSize: "1rem", mb: "0.3rem" }}>
+                    <Box sx={{ color: "secondary.main", fontSize: "1rem", mb: "0.3rem" ,display:"flex"}}>
                         <span style={{ marginRight: "4px" }}>{cardData?.name}</span>
-                        {cardData?.mealType === "non-veg" ? <Fastfood sx={{ color: 'primary.main' }} /> : <Grass sx={{ color: 'green' }} />}
+                        
+                        <Box width={"1.5rem"}>
+                            <img src={cardData?.mealType === "non-veg"?nonVeg:veg} alt="My PNG" />
+                        </Box>
                     </Box>
 
                     {cardData?.description ? (
