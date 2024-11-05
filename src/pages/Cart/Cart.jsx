@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./Cart.css";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import PaymentSheetWrapper from "../../components/PaymentSheetWrapper";

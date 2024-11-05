@@ -1,4 +1,3 @@
-import axios from "axios";
 import React from "react";
 import { useQuery } from "react-query";
 import { useSelector } from "react-redux";
@@ -7,10 +6,10 @@ import { handleGetOrders } from "../../utility/apiServices";
 import { Box, CircularProgress, Typography } from "@mui/material";
 
 const Orders = () => {
-  const userdata = useSelector((state) => state?.user?.userData);
-  const { customerId } = userdata;
+  const userData = useSelector((state) => state?.user?.userData);
+  const { customerId } = userData;
 
-  const { data, isLoading, isError, refetch } = useQuery(
+  const { data, isLoading,  } = useQuery(
     ["order-data", customerId],
     () => handleGetOrders(customerId)
   );
@@ -53,7 +52,7 @@ const Orders = () => {
             No Orders Available
           </Typography>
         ) : (
-          data.map((item, index) => <OrderCard item={item} key={index} />)
+          data?.map((item, index) => <OrderCard item={item} key={index} />)
         )}
       </Box>
     )}

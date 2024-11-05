@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { TextField, Button, Box, CircularProgress, } from "@mui/material";
+import { TextField, Button, Box, CircularProgress, Typography, } from "@mui/material";
 
 import { emailRegex, phoneRegex } from "../../constants";
 import useCustomToast from "../../hooks/Toast/useToast";
-import { closeDialog } from "../../slices/dialogSlice"; 
+import { closeDialog, openDialog } from "../../slices/dialogSlice";
+import Login from "../Login";
 
 const SignUp = () => {
-  const dispatch=useDispatch()
+  const dispatch = useDispatch()
   const [loading, setLoading] = useState(false);
   const cartItems = useSelector((state) => state.cart.cartItems);
   const restaurantData = useSelector((state) => state.restaurant.restaurantData);
@@ -60,7 +61,7 @@ const SignUp = () => {
 
   const handleClose = () => {
     dispatch(closeDialog());
-};
+  };
   const onSubmit = async (data) => {
     const signUpDetails = { ...initialSignUpData, ...data };
     await handleUserSignUp(signUpDetails);
@@ -147,6 +148,16 @@ const SignUp = () => {
           variant="outlined"
           sx={inputStyles}
         />
+        <Typography
+          variant="body2"
+          align="center"
+          sx={{ cursor: "pointer", color: "#676767" }}
+          onClick={() =>dispatch(openDialog({ content: <Login />, title: "Login" }))
+        }
+        >
+          Already have an account? <span style={{color:"var(--primary)"}}>Log in</span>
+        </Typography>
+
         <Box
           sx={{
             display: "flex",

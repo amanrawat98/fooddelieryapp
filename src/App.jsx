@@ -37,7 +37,7 @@ const App = () => {
 
   const protectedRoutes = [
     { path: "orders", element: <Orders /> },
-    { path: "orderStatus/:orderId", element: <OrderStatus /> },
+    { path: "orders/:orderId", element: <OrderStatus /> },
   ];
 
   return (

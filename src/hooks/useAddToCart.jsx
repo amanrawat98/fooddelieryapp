@@ -16,7 +16,7 @@ export const useAddToCart = () => {
             handleAddToCart({ cartId: cartItems?.cartId, menuItemId, quantity }),
         {
             onSuccess: (data, variables) => {
-                toast.success(<span>Item successfully added to your cart!</span>);
+                // toast.success(<span>Item successfully added to your cart!</span>);
                 dispatch(setCartItems(data?.data?.result));
                 // if (variables?.restaurantData) {
                     queryClient.invalidateQueries("restaurant-data"); // remove this after

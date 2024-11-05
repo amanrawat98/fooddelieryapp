@@ -1,35 +1,67 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Box, Typography, Card, CardMedia, CardContent } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const OrderCard = ({ item }) => {
   const navigate = useNavigate();
+
   return (
-    <div
-      className="bg-gray-300 p-3 rounded-xl space-y-2 cursor-pointer"
-      onClick={() => navigate(`/profile/orderStatus/${item.orderId}`)}
+    <Card
+      sx={{
+        backgroundColor: 'secondary.main',
+        padding: 2,
+        borderRadius: 2,
+        color:'primary.light',
+        cursor: 'pointer',
+        '&:hover': {
+          boxShadow: 3,
+        },
+      }}
+      onClick={() => navigate(`/profile/orders/${item.orderId}`)}
     >
-      <div className="flex gap-3">
-        <img
-          src={item?.outlet?.imageUrl}
-          className="size-16 my-auto"
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <CardMedia
+          component="img"
+          image={item?.outlet?.imageUrl}
           alt="baba chicken"
+          sx={{
+            width: 64,
+            height: 64,
+            objectFit: 'cover',
+            borderRadius: 1,
+          }}
         />
 
-        <div>
-          <h2 className="font-light">{item?.orderRef}</h2>
-          <h3 className="font-light">{item?.orderDate}</h3>
-          <p className="font-semibold">{item?.outlet?.name}</p>
-        </div>
-      </div>
+        <CardContent sx={{ padding: 0 }}>
+          <Typography variant="h6" sx={{ fontWeight: 'light' }}>
+            {item?.orderRef}
+          </Typography>
+          <Typography variant="body2" sx={{ fontWeight: 'light' }}>
+            {item?.orderDate}
+          </Typography>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+            {item?.outlet?.name}
+          </Typography>
+        </CardContent>
+      </Box>
 
-      <div>
-        <h2 className="font-semibold">{`Status: ${item?.orderStatus}`}</h2>
-      </div>
+      <Box mt={2}>
+        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+          {`Status: ${item?.orderStatus}`}
+        </Typography>
+      </Box>
 
-      <div>
-        <h2 className="font-semibold">{`Total Price: $${item?.orderSubTotal} `}</h2>
-      </div>
-    </div>
+      <Box mt={1}>
+  <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+    Total Price:{' '}
+    <Typography
+      component="span"
+      sx={{ color: 'primary.main', fontWeight: 'bold' }}
+    >
+      ${item?.orderSubTotal}
+    </Typography>
+  </Typography>
+</Box>
+    </Card>
   );
 };
 
