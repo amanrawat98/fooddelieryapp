@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { inputStyles } from "../../theme/utils";
 import useCustomToast from "../../hooks/Toast/useToast";
 import { closeDialog } from "../../slices/dialogSlice";
+import { useQueryClient } from "react-query";
 
 const AddOrSelectAddress = ({
   selectedAddressId,
@@ -21,6 +22,7 @@ const AddOrSelectAddress = ({
   const toast = useCustomToast()
   const [page, setPage] = useState("selectAddress");
   const address = userData?.addresses
+  const queryClient = useQueryClient();
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     defaultValues:{
       houseNo: "",
@@ -47,8 +49,7 @@ const AddOrSelectAddress = ({
           isDefault: true,
         }
       );
-
-      dispatch(setUserData(response?.data?.result));
+      queryClient.invalidateQueries("user-data"); 
       setPage("selectAddress");
     } catch (error) {
       console.log(error);
@@ -59,7 +60,7 @@ const AddOrSelectAddress = ({
       const response = await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/customer-profile?addressId=${addressId}`
       );
-      // dispatch(setUserData(response?.data?.result));
+       queryClient.invalidateQueries("user-data"); 
       toast.success(<span>Address deleted successfully</span>)
     } catch (error) {
       toast.error(<span>Error deleting address</span>)
@@ -131,12 +132,12 @@ reset({
                 <Box display={"flex"} justifyContent={"space-between"}>
                   <Typography variant="h6">Delivery Address</Typography>
 
-                  <Delete sx={{ color: item?.addressId === activeAddress ? "primary.light" : "var(--primary)" }} onClick={() => handleDeleteAddress(item?.addressId)} />
+                 { item?.addressId === activeAddress? <Delete sx={{ color: item?.addressId === activeAddress ? "primary.light" : "var(--primary)" }} onClick={() => handleDeleteAddress(item?.addressId)} />:null}
 
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <IoHomeOutline size={24} />
-                  <Typography>{`${item.floor} ${item.houseNo} ${item.building} ${item.areaLocality}`}</Typography>
+                  <Typography>{`${item.floor} ${item.houseNo} ${item.building} ${item.areaLocality} ${item.landmark}`}</Typography>
                   {item?.addressId === activeAddress &&
                     <TaskAlt sx={{ color: item?.addressId === activeAddress ? "primary.light" : "black" }}
                     />

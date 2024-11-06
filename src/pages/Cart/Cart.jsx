@@ -2,17 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import PaymentSheetWrapper from "../../components/PaymentSheetWrapper";
-import { CiLocationOn } from "react-icons/ci";
 import { handleCreateIntentId } from "../../utility/apiServices";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AddOrSelectAddress from "../../components/Address.jsx/AddOrSelectAddress";
 import CartItem from "../../components/Cart/CartItem";
-import { Box, Button, Container, Divider, FormControlLabel, IconButton, Paper, Radio, RadioGroup, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Container, Divider, FormControlLabel,Paper, Radio, RadioGroup,  Tooltip, Typography } from "@mui/material";
 import GoBackButton from "../../components/Common/Buttons/GoBackButton";
 import { openDialog } from "../../slices/dialogSlice";
 import Login from "../../components/Login";
-import { Edit } from "@mui/icons-material";
+import { Edit, LocationOn } from "@mui/icons-material";
 
 export const deliveryFee = 2;
 
@@ -127,8 +126,8 @@ const Cart = ({toggleDrawer}) => {
           </Box>
         </Box>
         {deliveryType === "delivery" && (
-            <Box  sx={{ marginTop: "2rem", textAlign: 'center' }}>
-              <Paper elevation={2} sx={{ padding: '1rem', borderRadius: '1rem' }}>
+            <Box  sx={{ marginTop: "2rem"}}>
+              <Paper elevation={2} sx={{ padding: '1rem', borderRadius: '1rem',maxWidth:"25rem" }}>
                   <Box display="flex" justifyContent="space-between" sx={{color: 'primary.main'}}>
                     <Typography variant="body1" sx={{ mb: 2, fontWeight: 'bold', color: 'primary.main' }}>
                       Delivery Address
@@ -140,9 +139,9 @@ const Cart = ({toggleDrawer}) => {
                   {address?.length ? (
                     <>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <CiLocationOn size={24}/>
+                        <LocationOn  sx={{color:"primary.main"}}/>
                         <Typography sx={{  fontSize: '1rem' }}>
-                          {`${selectedAddress?.floor} ${selectedAddress?.houseNo}, ${selectedAddress?.building}, ${selectedAddress?.areaLocality}`}
+                          {`${selectedAddress?.floor} ${selectedAddress?.houseNo}, ${selectedAddress?.building}, ${selectedAddress?.areaLocality}, ${selectedAddress?.landmark}`}
                         </Typography>
                       </Box>
                     </>

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { TextField, Button, IconButton, Avatar, Box, MenuItem, Typography, CircularProgress, Tooltip } from "@mui/material";
-import { MdModeEdit } from "react-icons/md";
 import axios from "axios";
 import { setUserData } from "../../slices/userSlice";
 import { Edit } from "@mui/icons-material";
