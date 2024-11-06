@@ -22,7 +22,15 @@ const AddOrSelectAddress = ({
   const [page, setPage] = useState("selectAddress");
   const address = userData?.addresses
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    defaultValues:{
+      houseNo: "",
+        floor: "",
+        building: "",
+        landmark: "",
+        areaLocality: "",
+    },
     mode: "onBlur", // Validation will trigger on blur
+    
   });
 
   const handleAddNewAddress = async (data) => {
@@ -79,22 +87,17 @@ const AddOrSelectAddress = ({
   };
 
 
-  useEffect(() => {
-    if (userData) {
-      reset({
-        houseNo: "7722",
-        floor: "1rd Floor",
-        building: "PAU",
-        landmark: "Near PAU Gate no. 1",
-        areaLocality: "Ludhiana",
-        customerId: userData?.customerId,
-        receiverName: userData?.firstName,
-        receiverPhone: userData?.phone,
-        addressType: "home",
-        isDefault: true,
-      });
-    }
-  }, [userData, reset]);
+ 
+  const handleLocationAddress=(address)=>{
+reset({
+  houseNo: "",
+  floor: "",
+  building: "",
+  landmark: address?.name+" "+ address?.vicinity,
+  areaLocality:address?.city,
+
+});
+  }
 
   return (
     <>
@@ -164,7 +167,7 @@ const AddOrSelectAddress = ({
       ) : (
         <>
 
-          <SearchLocationInput />
+          <SearchLocationInput handleLocationAddress={handleLocationAddress}/>
           <form onSubmit={handleSubmit(handleAddNewAddress)}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <TextField
@@ -178,6 +181,7 @@ const AddOrSelectAddress = ({
               />
               <TextField
                 label="Floor"
+                name="floor"
                 {...register("floor", { required: "Floor is required" })}
                 error={!!errors.floor}
                 helperText={errors.floor?.message}
@@ -187,6 +191,7 @@ const AddOrSelectAddress = ({
               />
               <TextField
                 label="Building"
+                 name="building"
                 {...register("building", { required: "Building is required" })}
                 error={!!errors.building}
                 helperText={errors.building?.message}
@@ -201,13 +206,15 @@ const AddOrSelectAddress = ({
                 helperText={errors.areaLocality?.message}
                 sx={inputStyles}
                 fullWidth
+                name="areaLocality"
                 variant="outlined"
               />
               <TextField
                 fullWidth
                 sx={inputStyles}
                 variant="outlined"
-                label="Landmark*"
+                label="Landmark"
+                name="landmark"
                 {...register("landmark", { required: "Landmark is required" })}
                 error={!!errors.landmark}
                 helperText={errors.landmark?.message}
