@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserData, setUserLoginStatus } from "../../slices/userSlice";
+import { setUserLoginStatus } from "../../slices/userSlice";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { emailRegex } from "../../constants";
@@ -55,8 +55,8 @@ const Login = () => {
         const { result, customerCart, restaurantData } = restaurantDataVal || {};
 
         if (restaurantDataVal.detail) {
-          dispatch(setUserLoginStatus(true));
-          dispatch(setUserData(result));
+          dispatch(setUserLoginStatus(result?.customerId));
+          // queryClient.invalidateQueries("user-data"); 
           clearSession();
           handleCloseDialog();
           navigate("/");

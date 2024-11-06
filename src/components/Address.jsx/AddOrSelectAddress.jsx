@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { inputStyles } from "../../theme/utils";
 import useCustomToast from "../../hooks/Toast/useToast";
 import { closeDialog } from "../../slices/dialogSlice";
+import { useQueryClient } from "react-query";
 
 const AddOrSelectAddress = ({
   selectedAddressId,
@@ -21,8 +22,17 @@ const AddOrSelectAddress = ({
   const toast = useCustomToast()
   const [page, setPage] = useState("selectAddress");
   const address = userData?.addresses
+  const queryClient = useQueryClient();
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    defaultValues:{
+      houseNo: "",
+        floor: "",
+        building: "",
+        landmark: "",
+        areaLocality: "",
+    },
     mode: "onBlur", // Validation will trigger on blur
+    
   });
 
   const handleAddNewAddress = async (data) => {
@@ -39,8 +49,7 @@ const AddOrSelectAddress = ({
           isDefault: true,
         }
       );
-
-      dispatch(setUserData(response?.data?.result));
+      queryClient.invalidateQueries("user-data"); 
       setPage("selectAddress");
     } catch (error) {
       console.log(error);
@@ -51,7 +60,7 @@ const AddOrSelectAddress = ({
       const response = await axios.delete(
         `${import.meta.env.VITE_BASE_URL}/customer-profile?addressId=${addressId}`
       );
-      // dispatch(setUserData(response?.data?.result));
+       queryClient.invalidateQueries("user-data"); 
       toast.success(<span>Address deleted successfully</span>)
     } catch (error) {
       toast.error(<span>Error deleting address</span>)
@@ -79,22 +88,17 @@ const AddOrSelectAddress = ({
   };
 
 
-  useEffect(() => {
-    if (userData) {
-      reset({
-        houseNo: "7722",
-        floor: "1rd Floor",
-        building: "PAU",
-        landmark: "Near PAU Gate no. 1",
-        areaLocality: "Ludhiana",
-        customerId: userData?.customerId,
-        receiverName: userData?.firstName,
-        receiverPhone: userData?.phone,
-        addressType: "home",
-        isDefault: true,
-      });
-    }
-  }, [userData, reset]);
+ 
+  const handleLocationAddress=(address)=>{
+reset({
+  houseNo: "",
+  floor: "",
+  building: "",
+  landmark: address?.name+" "+ address?.vicinity,
+  areaLocality:address?.city,
+
+});
+  }
 
   return (
     <>
@@ -128,12 +132,12 @@ const AddOrSelectAddress = ({
                 <Box display={"flex"} justifyContent={"space-between"}>
                   <Typography variant="h6">Delivery Address</Typography>
 
-                  <Delete sx={{ color: item?.addressId === activeAddress ? "primary.light" : "var(--primary)" }} onClick={() => handleDeleteAddress(item?.addressId)} />
+                 { item?.addressId === activeAddress? <Delete sx={{ color: item?.addressId === activeAddress ? "primary.light" : "var(--primary)" }} onClick={() => handleDeleteAddress(item?.addressId)} />:null}
 
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <IoHomeOutline size={24} />
-                  <Typography>{`${item.floor} ${item.houseNo} ${item.building} ${item.areaLocality}`}</Typography>
+                  <Typography>{`${item.floor} ${item.houseNo} ${item.building} ${item.areaLocality} ${item.landmark}`}</Typography>
                   {item?.addressId === activeAddress &&
                     <TaskAlt sx={{ color: item?.addressId === activeAddress ? "primary.light" : "black" }}
                     />
@@ -164,7 +168,7 @@ const AddOrSelectAddress = ({
       ) : (
         <>
 
-          <SearchLocationInput />
+          <SearchLocationInput handleLocationAddress={handleLocationAddress}/>
           <form onSubmit={handleSubmit(handleAddNewAddress)}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <TextField
@@ -178,6 +182,7 @@ const AddOrSelectAddress = ({
               />
               <TextField
                 label="Floor"
+                name="floor"
                 {...register("floor", { required: "Floor is required" })}
                 error={!!errors.floor}
                 helperText={errors.floor?.message}
@@ -187,6 +192,7 @@ const AddOrSelectAddress = ({
               />
               <TextField
                 label="Building"
+                 name="building"
                 {...register("building", { required: "Building is required" })}
                 error={!!errors.building}
                 helperText={errors.building?.message}
@@ -201,13 +207,15 @@ const AddOrSelectAddress = ({
                 helperText={errors.areaLocality?.message}
                 sx={inputStyles}
                 fullWidth
+                name="areaLocality"
                 variant="outlined"
               />
               <TextField
                 fullWidth
                 sx={inputStyles}
                 variant="outlined"
-                label="Landmark*"
+                label="Landmark"
+                name="landmark"
                 {...register("landmark", { required: "Landmark is required" })}
                 error={!!errors.landmark}
                 helperText={errors.landmark?.message}

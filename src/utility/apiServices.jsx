@@ -27,6 +27,16 @@ export const getResturantData = async (customerId, sessionKey) => {
   );
   return response.data;
 };
+export const getUserData = async (customerId) => {
+
+  const response = await axios.get(
+    `${import.meta.env.VITE_BASE_URL}/customer-profile`,
+    {
+      params: {customerId },
+    }
+  );
+  return response.data;
+};
 
 export const handleUserLogin = async (payload) => {
   const response = await axios.post(
