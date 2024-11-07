@@ -69,20 +69,6 @@ const SignUp = () => {
   };
 
 
-  const inputStyles = {
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderRadius: '4px',
-      },
-      '& input': {
-        padding: '10px 14px',
-        height: 'auto',
-        fontSize: '16px',
-      },
-    },
-    mb: 2,
-  };
-
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -94,7 +80,7 @@ const SignUp = () => {
           helperText={errors.firstName ? errors.firstName.message : ""}
           fullWidth
           variant="outlined"
-          sx={inputStyles}
+          sx={{mb: 2}}
         />
         <TextField
           type="text"
@@ -104,8 +90,7 @@ const SignUp = () => {
           helperText={errors.lastName ? errors.lastName.message : ""}
           fullWidth
           variant="outlined"
-          sx={inputStyles}
-        />
+          sx={{mb: 2}}        />
         <TextField
           type="email"
           placeholder="Email"
@@ -120,8 +105,7 @@ const SignUp = () => {
           helperText={errors.email ? errors.email.message : ""}
           fullWidth
           variant="outlined"
-          sx={inputStyles}
-        />
+          sx={{mb: 2}}        />
         <TextField
           type="password"
           placeholder="Password"
@@ -130,8 +114,7 @@ const SignUp = () => {
           helperText={errors.password ? errors.password.message : ""}
           fullWidth
           variant="outlined"
-          sx={inputStyles}
-        />
+          sx={{mb: 2}}        />
         <TextField
           type="tel"
           placeholder="Phone"
@@ -146,16 +129,15 @@ const SignUp = () => {
           helperText={errors.phone ? errors.phone.message : ""}
           fullWidth
           variant="outlined"
-          sx={inputStyles}
-        />
+          sx={{mb: 2}}        />
         <Typography
           variant="body2"
           align="center"
-          sx={{ cursor: "pointer", color: "#676767" }}
+          sx={{ cursor: "pointer", color: "secondary.main" }}
           onClick={() =>dispatch(openDialog({ content: <Login />, title: "Login" }))
         }
         >
-          Already have an account? <span style={{color:"var(--primary)"}}>Log in</span>
+          Already have an account? <Box component={"span"} sx={{color:"primary.main"}}>Log in</Box>
         </Typography>
 
         <Box
@@ -171,8 +153,7 @@ const SignUp = () => {
             type="button"
             variant="outlined"
             sx={{
-              borderColor: "#ff6347",
-              color: "#ff6347",
+            
               width: "45%",
             }}
             onClick={handleClose}
@@ -186,8 +167,7 @@ const SignUp = () => {
             fullWidth
             disabled={loading}
             sx={{
-              backgroundColor: "#ff6347",
-              "&:hover": { backgroundColor: "#e5533d" },
+             
               width: "45%",
             }}
           >

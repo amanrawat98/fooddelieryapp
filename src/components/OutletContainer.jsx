@@ -2,19 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { Accordion, AccordionSummary, AccordionDetails, MenuList, MenuItem, Typography } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedOutlet } from '../slices/outletSlice';
-import { Outlet, Place, Restaurant } from '@mui/icons-material';
-import { setOutletData } from '../slices/restaurantDataSlice';
+import { setSelectedOutlet, setSelectedOutletData } from '../slices/outletSlice';
+import {  Place, Restaurant } from '@mui/icons-material';
+import { handleActiveOutletData } from '../utility/functions';
 
 const OutletContainer = () => {
-  const { selectedOutlet, restaurantOutlets } = useSelector((state) => state?.outlet);
+  const { selectedOutlet, restaurantOutlets, selectedOutletData} = useSelector((state) => state?.outlet);
   const [expanded, setExpanded] = useState(false);
   const dispatch = useDispatch()
-  const outletAddress = restaurantOutlets?.[selectedOutlet] || {};
   
-  const handleSelect = (outletIndex) => {
-    dispatch(setSelectedOutlet(outletIndex));
-    dispatch(setOutletData(restaurantOutlets?.[outletIndex]));
+  const handleSelect = (outletId) => {
+    const outletData=handleActiveOutletData(restaurantOutlets,outletId)
+    dispatch(setSelectedOutlet(outletId));
+    dispatch(setSelectedOutletData(outletData));
     setExpanded(!expanded);
   };
  
@@ -54,7 +54,7 @@ const OutletContainer = () => {
       >
         <Typography variant="body1" noWrap>
           <Restaurant  sx={{ color:"primary.main",mr:2 }}/>
-          <Place sx={{ color:"primary.main" }} fontSize='0.9rem'/> {outletAddress?.street || 'No Outlets'}
+          <Place sx={{ color:"primary.main" }} fontSize='0.9rem'/> {selectedOutletData?.street || 'No Outlets'}
         </Typography>
       </AccordionSummary>
 
@@ -69,14 +69,13 @@ const OutletContainer = () => {
       >
         <MenuList sx={{ px: 1, paddingBlockStart: 0 }}>
           {restaurantOutlets?.map((item, index) => {
-            const isActive = selectedOutlet === index;
+            const isActive = selectedOutlet === item?.restaurantOutletId;
             const backgroundColor = isActive ? 'primary.main' : 'primary.light';
             const color = isActive ? 'primary.light' : 'secondary.main';
-
             return (
               <MenuItem
-                key={index}
-                onClick={() => handleSelect(index)}
+                key={index+"outlet_menu_container"}
+                onClick={() => handleSelect(item?.restaurantOutletId)}
                 sx={{
                   backgroundColor,
                   color,

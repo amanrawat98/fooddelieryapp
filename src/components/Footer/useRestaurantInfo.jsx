@@ -3,32 +3,31 @@ import { useSelector } from 'react-redux';
 
 function useRestaurantInfo() {
     const theme = useSelector((state) => state.theme.themeData);
-    const { selectedOutlet, restaurantOutlets } = useSelector((state) => state.outlet);
+    const { selectedOutletData={} } = useSelector((state) => state.outlet);
 
-    const outletData = restaurantOutlets?.[selectedOutlet] || {};
 
     const personalInfo = useMemo(() => ({
-        phone: outletData?.phone,
-        email: outletData?.email
-    }), [outletData?.phone, outletData?.email]);
+        phone: selectedOutletData?.phone,
+        email: selectedOutletData?.email
+    }), [selectedOutletData?.phone, selectedOutletData?.email]);
 
     const address = useMemo(() => {
         const addressParts = [
-            outletData?.street,
-            outletData?.street1,
-            outletData?.city,
-            outletData?.state,
-            outletData?.zip,
-            outletData?.country
+            selectedOutletData?.street,
+            selectedOutletData?.street1,
+            selectedOutletData?.city,
+            selectedOutletData?.state,
+            selectedOutletData?.zip,
+            selectedOutletData?.country
         ].filter(Boolean);
         return addressParts.join(', ');
     }, [
-        outletData?.street,
-        outletData?.street1,
-        outletData?.city,
-        outletData?.state,
-        outletData?.zip,
-        outletData?.country
+        selectedOutletData?.street,
+        selectedOutletData?.street1,
+        selectedOutletData?.city,
+        selectedOutletData?.state,
+        selectedOutletData?.zip,
+        selectedOutletData?.country
     ]);
 
     const formatTime = (time) => {
@@ -40,11 +39,11 @@ function useRestaurantInfo() {
     };
 
     const availableTime = useMemo(() => {
-        const { orderAcceptStartTime, orderAcceptEndTime } = outletData;
+        const { orderAcceptStartTime, orderAcceptEndTime } = selectedOutletData;
         return orderAcceptStartTime && orderAcceptEndTime
             ? `${formatTime(orderAcceptStartTime)} - ${formatTime(orderAcceptEndTime)}`
             : 'N/A';
-    }, [outletData?.orderAcceptStartTime, outletData?.orderAcceptEndTime]);
+    }, [selectedOutletData?.orderAcceptStartTime, selectedOutletData?.orderAcceptEndTime]);
 
     return { address, availableTime, theme, personalInfo };
 }

@@ -4,14 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { resetUserState } from "../../slices/userSlice";
 import SignUp from "../SignUpPage/SignUpPage";
 import Login from "../Login";
-import userFallBackImg from "../../../src/assets/user.png";
 import useCustomToast from "../../hooks/Toast/useToast";
 import { Toolbar, IconButton, Badge, Button, Avatar, Box, Stack, Drawer, } from '@mui/material';
-import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { useSession } from "../../hooks/useSession";
 import { openDialog } from "../../slices/dialogSlice";
 import Cart from "../../pages/Cart/Cart";
-import { Close } from "@mui/icons-material";
+import { Close, ShoppingCart } from "@mui/icons-material";
 import ProfileMenu from "../ProfileMenu";
 
 const Header = () => {
@@ -67,7 +65,7 @@ const Header = () => {
           <Stack direction="row" alignItems="center" spacing={4}>
             <IconButton onClick={toggleDrawer(true)} >
               <Badge badgeContent={cartCount || "0"} color="error">
-                <ShoppingBasketIcon sx={{ color: 'primary.light' }} />
+                <ShoppingCart sx={{ color: 'primary.light' }} />
               </Badge>
             </IconButton>
             <Stack direction="row" spacing={3}>

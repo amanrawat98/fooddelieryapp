@@ -7,8 +7,7 @@ import { emailRegex } from "../../constants";
 import { TextField, Button, Typography, CircularProgress, } from "@mui/material";
 import { useForm } from "react-hook-form";
 import useCustomToast from "../../hooks/Toast/useToast";
-import { inputStyles } from "../../theme/utils";
-import { closeDialog } from "../../slices/dialogSlice";
+import { closeDialog, setDialogTitle } from "../../slices/dialogSlice";
 import { useSession } from "../../hooks/useSession";
 import { handleUserLogin } from "../../utility/apiServices";
 import { useMutation } from "react-query";
@@ -122,7 +121,6 @@ const Login = () => {
             })}
             error={!!errors.email}
             helperText={errors.email ? errors.email.message : ''}
-            sx={inputStyles}
           />
           <TextField
             type="password"
@@ -135,7 +133,6 @@ const Login = () => {
             helperText={errors.password ? errors.password.message : ''}
             fullWidth
             variant="outlined"
-            sx={inputStyles}
           />
           <Button
             type="submit"
@@ -143,9 +140,7 @@ const Login = () => {
             fullWidth
             disabled={loading}
             sx={{
-              backgroundColor: "#ff6347",
-              "&:hover": { backgroundColor: "#e5533d" },
-              mb: 2,
+             mb: 2,
             }}
           >
             {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
@@ -154,7 +149,7 @@ const Login = () => {
             type="button"
             variant="outlined"
             fullWidth
-            sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
+            sx={{ mb: 2 }}
             onClick={handleCloseDialog}
           >
             Cancel
@@ -162,8 +157,11 @@ const Login = () => {
           <Typography
             variant="body2"
             align="center"
-            sx={{ cursor: "pointer", color: "#676767" }}
-            onClick={() => setPage("forgotPassword")}
+            sx={{ cursor: "pointer", color: "secondary.main" }}
+            onClick={() => {
+              setPage("forgotPassword")
+              dispatch(setDialogTitle("Forgot Password"))
+            }}
           >
             Forgot Your password?
           </Typography>
@@ -187,7 +185,6 @@ const Login = () => {
             })}
             error={!!errors.email}
             helperText={errors.email ? errors.email.message : ''}
-            sx={inputStyles}
           />
           <Button
             type="submit"
@@ -195,8 +192,6 @@ const Login = () => {
             fullWidth
             disabled={otpLoading}
             sx={{
-              backgroundColor: "#ff6347",
-              "&:hover": { backgroundColor: "#e5533d" },
               mb: 2,
             }}
           >
@@ -206,7 +201,6 @@ const Login = () => {
             type="button"
             variant="outlined"
             fullWidth
-            sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
             onClick={handleCloseDialog}
           >
             Cancel
@@ -228,7 +222,6 @@ const Login = () => {
             })}
             error={!!errors.otp}
             helperText={errors.otp ? errors.otp.message : ''}
-            sx={inputStyles}
           />
           <TextField
             type="password"
@@ -242,7 +235,6 @@ const Login = () => {
             })}
             error={!!errors.password}
             helperText={errors.password ? errors.password.message : ''}
-            sx={inputStyles}
           />
           <TextField
             type="password"
@@ -257,7 +249,6 @@ const Login = () => {
             })}
             error={!!errors.conformPassword}
             helperText={errors.conformPassword ? errors.conformPassword.message : ''}
-            sx={inputStyles}
           />
           <Button
             type="submit"
@@ -265,18 +256,15 @@ const Login = () => {
             fullWidth
             disabled={loading}
             sx={{
-              backgroundColor: "#ff6347",
-              "&:hover": { backgroundColor: "#e5533d" },
               mb: 2,
             }}
           >
-            {loading ? <CircularProgress size={24} color="inherit" /> : "Reset Password"}
+            {loading ? <CircularProgress size={24} color="primary.main" /> : "Reset Password"}
           </Button>
           <Button
             type="button"
             variant="outlined"
             fullWidth
-            sx={{ borderColor: "#ff6347", color: "#ff6347", mb: 2 }}
             onClick={handleCloseDialog}
           >
             Cancel

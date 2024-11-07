@@ -6,8 +6,9 @@ import GoBackButton from "./components/Common/Buttons/GoBackButton";
 import MenuCard from "./components/Common/Cards/MenuCard";
 
 const CategoryViewPage = () => {
-  const outletData = useSelector((state) => state?.restaurant?.outletData);
-  const { menuCategories } = outletData;
+  const { selectedOutletData} = useSelector((state) => state?.outlet);
+
+  const { menuCategories } = selectedOutletData;
   const { menuCategoryId } = useParams();
 
 

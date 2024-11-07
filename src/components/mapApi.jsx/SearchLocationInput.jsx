@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { List, ListItem, ListItemText, Paper, TextField, Typography, Box } from "@mui/material";
+import { List, ListItem, ListItemText, Paper, TextField, Typography, Box, Tooltip } from "@mui/material";
 import { LocationOn } from "@mui/icons-material";
 import debounce from "lodash/debounce";
 
@@ -122,8 +122,9 @@ const SearchLocationInput = ({handleLocationAddress}) => {
   return (
     <div style={{ position: "relative" }}>
       <TextField
-        variant="outlined"
-        placeholder="Enter an address"
+        placeholder="Search an address"
+        variant="standard"
+        type="search"
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
@@ -132,15 +133,10 @@ const SearchLocationInput = ({handleLocationAddress}) => {
         sx={{
           width: "100%",
           mb: 2,
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": { borderRadius: "4px" },
-            padding: "4px 10px",
-            height: "30px",
-            "& input": { padding: "0px", lineHeight: "1.5" },
-          },
         }}
         InputProps={{
           endAdornment: (
+            <Tooltip title="Current Location" placement="top" arrow>
             <Box
               onClick={getCurrentLocation}
               sx={{
@@ -151,6 +147,7 @@ const SearchLocationInput = ({handleLocationAddress}) => {
             >
               <LocationOn />
             </Box>
+            </Tooltip>
           ),
         }}
       />
@@ -183,7 +180,7 @@ const SearchLocationInput = ({handleLocationAddress}) => {
               </List>
             </Paper>
           ) : query && !suggestions.length ? (
-            <Typography variant="body2" sx={{ padding: 2, textAlign: "center" }}>
+            <Typography variant="body2" sx={{ padding: 2, textAlign: "center",color:"primary.main" }}>
               No address available
             </Typography>
           ) : null}

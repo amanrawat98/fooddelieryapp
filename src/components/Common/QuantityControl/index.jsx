@@ -16,7 +16,7 @@ const QuantityControl = ({ quantity, updateQuantity, size = 'medium', sx = {}, i
           sx={{
             fontWeight: '600',
             color: !onlyIcon ? 'text.primary' : "green",
-            fontSize: '1rem',
+            fontSize: '1.2rem',
           }}
         >
           {quantity}

@@ -7,14 +7,15 @@ import GoBackButton from "../../components/Common/Buttons/GoBackButton";
 import MenuCard from "../../components/Common/Cards/MenuCard";
 
 const ProductDetail = () => {
-  const outletData = useSelector((state) => state?.restaurant?.outletData);
+  const selectedOutletData = useSelector((state) => state?.outlet?.selectedOutletData);
+
   const { menuItemId, menuCategoryId } = useParams();
 
   const category = useMemo(() => {
-    return outletData?.menuCategories?.find(
+    return selectedOutletData?.menuCategories?.find(
       (category) => category.menuCategoryId.toString() === menuCategoryId.toString()
     );
-  }, [outletData, menuCategoryId]);
+  }, [selectedOutletData, menuCategoryId]);
 
   const product = useMemo(() => {
     return category?.menuItems?.find(
