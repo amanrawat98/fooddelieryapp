@@ -5,49 +5,33 @@ import { TextField, Button, IconButton, Avatar, Box, MenuItem, Typography, Circu
 import axios from "axios";
 import { setUserData } from "../../slices/userSlice";
 import { Edit } from "@mui/icons-material";
+import { GENDER, userFieldEnum } from "./data";
+import { convertToFormattedDate } from "../../utility/functions";
+import useMutateUser from "../../hooks/useMutateUser";
 
 const User = () => {
   const userData = useSelector((state) => state.user.userData);
   const [isEdit, setIsEdit] = useState(false);
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
-
+  const { register, handleSubmit, reset, getValues, watch, formState: { errors } } = useForm();
+  const { handleUser, isLoading, isError, error } = useMutateUser();
 
   useEffect(() => {
     if (userData) {
       reset({
-        firstName: userData?.firstName || "N/A",
-        email: userData?.email || "N/A",
-        phone: userData?.phone || "N/A",
-        dateOfBirth: userData?.dateOfBirth ? userData.dateOfBirth.split("T")[0] : "",
-        gender: userData?.gender || "N/A",
+        firstName: userData?.firstName || "",
+        lastName: userData?.lastName || "",
+        email: userData?.email || "",
+        phone: userData?.phone || "",
+        dateOfBirth: userData?.dateOfBirth || "",
+        gender: userData?.gender?.toLowerCase() || "",
       });
     }
   }, [userData, reset]);
+  const gender = watch("gender");
 
   const handleUserEdit = async (data) => {
-    setLoading(true);
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/customer-profile`,
-        {
-          firstName: data.firstName,
-          lastName: "",
-          gender: data.gender,
-          anniversaryDate: "",
-          customerId: userData?.customerId,
-          phone: data.phone,
-          email: data.email,
-        }
-      );
-      dispatch(setUserData(response?.data?.result));
-      setIsEdit(false);
-    } catch (error) {
-      console.error("Error updating user profile:", error);
-    } finally {
-      setLoading(false);
-    }
+    handleUser({data,successFunction:()=>{setIsEdit(false)} })
   };
 
   const toggleEditMode = () => {
@@ -65,7 +49,7 @@ const User = () => {
           alt="User"
         />
         {!isEdit && (
-          <Box display={"flex"} alignItems={"center"} gap={2} sx={{fontWeight: 'bold', color: 'primary.main' }}>
+          <Box display={"flex"} alignItems={"center"} gap={2} sx={{ fontWeight: 'bold', color: 'primary.main' }}>
             <Typography variant="h5" color="secondary.main">{`Hi there, ${userData?.firstName}`}</Typography>
 
             <Tooltip title="Edit Profile" placement="top" arrow>
@@ -78,59 +62,100 @@ const User = () => {
 
       <Box component="form" onSubmit={handleSubmit(handleUserEdit)} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {isEdit ? (
+         
+
           <>
-            <TextField
-              label="Name"
-              {...register("firstName", { required: "Name is required" })}
-              error={!!errors.firstName}
-              helperText={errors.firstName?.message}
-              fullWidth
-            />
-            <TextField
-              label="Email"
-              type="email"
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
-                  message: "Invalid email address",
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 2,
+                "& > *": {
+                  flex: "1 1 100%", // Full width by default (single column)
                 },
-              })}
-              error={!!errors.email}
-              helperText={errors.email?.message}
-              fullWidth
-            />
-            <TextField
-              label="Mobile No"
-              type="tel"
-              {...register("phone", { required: "Phone number is required" })}
-              error={!!errors.phone}
-              helperText={errors.phone?.message}
-              fullWidth
-            />
-            <TextField
-              label="Date of Birth"
-              type="date"
-              {...register("dateOfBirth")}
-              // error={!!errors.dateOfBirth}
-              // helperText={errors.dateOfBirth?.message}
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-            />
-            <TextField
-              select
-              label="Gender"
-              {...register("gender", { required: "Gender is required" })}
-              error={!!errors.gender}
-              helperText={errors.gender?.message}
-              fullWidth
+                "@media (min-width: 600px)": {
+                  "& > *": {
+                    flex: "1 1 calc(50% - 8px)", // Two columns on screens larger than 600px
+                  },
+                },
+              }}
             >
-              <MenuItem value="Male">Male</MenuItem>
-              <MenuItem value="Female">Female</MenuItem>
-              <MenuItem value="Other">Other</MenuItem>
-            </TextField>
-
-
+              <TextField
+                label="First Name"
+                name="firstName"
+                {...register("firstName", { required: "Name is required" })}
+                error={!!errors.firstName}
+                helperText={errors.firstName?.message}
+                fullWidth
+              />
+              <TextField
+                label="Last Name"
+                name="lastName"
+                {...register("lastName")}
+                error={!!errors.lastName}
+                helperText={errors.lastName?.message}
+                fullWidth
+              />
+              <TextField
+                label="Email"
+                type="email"
+                name="email"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
+                    message: "Invalid email address",
+                  },
+                })}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                fullWidth
+              />
+              <TextField
+                label="Phone"
+                type="tel"
+                name="phone"
+                {...register("phone", { required: "Phone number is required" })}
+                error={!!errors.phone}
+                helperText={errors.phone?.message}
+                fullWidth
+              />
+              <TextField
+                label="Date of Birth"
+                type="date"
+                name="dateOfBirth"
+                {...register("dateOfBirth")}
+                fullWidth
+                disabled={!!getValues("dateOfBirth")}
+                InputLabelProps={{ shrink: true }}
+              />
+              <TextField
+                select
+                label="Gender"
+                placeholder="Select Gender"
+                name="gender"
+                {...register("gender", { required: "Please select a gender" })}
+                error={!!errors.gender}
+                helperText={errors.gender?.message}
+                fullWidth
+                sx={{
+                  "& .MuiInputBase-root": {
+                    height: "45px",
+                  },
+                }}
+                value={gender}
+              >
+                <MenuItem value="" disabled>
+                  <em>Select Gender</em>
+                </MenuItem>
+                {GENDER?.map(({ label, value }) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Box>
+          
             <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}>
               <Button
                 variant="outlined"
@@ -143,25 +168,33 @@ const User = () => {
                 type="submit"
                 variant="contained"
                 size="small"
-                disabled={loading}
-                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+                disabled={isLoading}
+                startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
               >
-                {loading ? "Saving..." : "Save"}
+                {isLoading ? "Saving..." : "Save"}
               </Button>
-
             </Box>
           </>
+          
         ) : (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {["firstName", "email", "phone", "dateOfBirth", "gender"].map((field) => (
-              <Box key={field} sx={{ display: "flex", alignItems: "center" }}>
+            {userFieldEnum?.map((field) => {
+              let fieldValue = userData?.[field.fieldName]
+              if (field.fieldName === "dateOfBirth") {
+                fieldValue = convertToFormattedDate(fieldValue)
+              }
+              return <Box key={field.fieldName} sx={{ display: "flex", alignItems: "center" }}>
                 <Typography variant="subtitle1" sx={{ flexBasis: "30%", fontWeight: "bold" }}>
-                  {field.charAt(0).toUpperCase() + field.slice(1)}:
+                  {field.label}:
                 </Typography>
-                <Typography variant="body1">{userData?.[field] || "N/A"}</Typography>
+                <Typography variant="body1">
+                  {fieldValue || "N/A"}
+                </Typography>
               </Box>
-            ))}
+            }
+            )}
           </Box>
+
         )}
       </Box>
     </Box>

@@ -32,29 +32,30 @@ const OrderCard = ({ item }) => {
         />
 
         <CardContent sx={{ padding: 0 }}>
-          <Typography variant="h6" sx={{ fontWeight: 'light' }}>
+          <Typography variant="body1" sx={{ fontWeight: 'light' }}>
             {item?.orderRef}
           </Typography>
           <Typography variant="body2" sx={{ fontWeight: 'light' }}>
             {item?.orderDate}
           </Typography>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+          <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
             {item?.outlet?.name}
           </Typography>
         </CardContent>
       </Box>
 
       <Box mt={2}>
-        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
           {`Status: ${item?.orderStatus}`}
         </Typography>
       </Box>
 
       <Box mt={1}>
-  <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+  <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
     Total Price:{' '}
     <Typography
       component="span"
+      variant='body2'
       sx={{ color: 'primary.main', fontWeight: 'bold' }}
     >
       ${item?.orderSubTotal}

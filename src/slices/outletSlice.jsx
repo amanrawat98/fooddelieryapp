@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   selectedOutlet: 0,
   restaurantOutlets: [],
+  selectedOutletData:{}
 };
 
 const outletSlice = createSlice({
@@ -15,9 +16,11 @@ const outletSlice = createSlice({
     setRestaurantOutlets: (state, action) => {
       state.restaurantOutlets = action.payload;
     },
-  
+    setSelectedOutletData: (state, action) => {
+      state.selectedOutletData = action.payload
+    }
   },
 });
 
-export const { setSelectedOutlet, setRestaurantOutlets} = outletSlice.actions;
+export const { setSelectedOutlet, setRestaurantOutlets,setSelectedOutletData } = outletSlice.actions;
 export default outletSlice.reducer;

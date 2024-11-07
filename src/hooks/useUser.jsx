@@ -3,8 +3,10 @@ import { useQuery } from 'react-query';
 import { getUserData } from '../utility/apiServices';
 import { setUserData } from '../slices/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import useCustomToast from './Toast/useToast';
 
 export default function useUser() {
+  const toast=useCustomToast()
     const isUserLogin = useSelector((state) => state?.user?.isUserLogin);
     const dispatch=useDispatch()
     const {

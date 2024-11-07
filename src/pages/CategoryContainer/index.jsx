@@ -6,8 +6,8 @@ import CategoryCard from '../../components/Common/Cards/CategoryCard';
 import GoBackButton from '../../components/Common/Buttons/GoBackButton';
 
 export default function CategoryContainer() {
-    const menuCategories = useSelector((state) => state?.restaurant?.outletData?.menuCategories);
-    
+
+ const menuCategories = useSelector((state) => state?.outlet?.selectedOutletData.menuCategories);
     return (
         <>
         <GoBackButton/>

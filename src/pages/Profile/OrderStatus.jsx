@@ -7,6 +7,13 @@ import {
   Typography,
   Divider,
   CircularProgress,
+  Stack,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from "@mui/material";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -21,7 +28,7 @@ const OrderStatus = () => {
   const { data, isLoading } = useQuery(
     ["order-data", orderId],
     () => handleFetchOrderDetails(orderId).then((response) => response.data.result),
-    { staleTime: 300000 } 
+    { staleTime: 300000 }
   );
 
   const orderStatus = useMemo(
@@ -51,162 +58,169 @@ const OrderStatus = () => {
 
   return (
     <Box sx={{ padding: 3, backgroundColor: "#f9f9fb", minHeight: "100vh" }}>
-  {isLoading ? (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-      }}
-    >
-      <CircularProgress size={40} />
-    </Box>
-  ) : (
-    data && (
-      <>
-        <Box sx={{ marginBottom: 4 }}>
-          <Paper
-            sx={{
-              padding: 3,
-              boxShadow: 4,
-              borderRadius: 2,
-              backgroundColor: "#ffffff",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Order reference:{" "}
-              <Typography
-                component="span"
-                sx={{ fontWeight: "bold", color: "primary.main" }}
+      {isLoading ? (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <CircularProgress size={40} />
+        </Box>
+      ) : (
+        data && (
+          <>
+            <Box sx={{ marginBottom: 4 }}>
+              <Paper
+                sx={{
+                  padding: 3,
+                  boxShadow: 4,
+                  borderRadius: 2,
+                  backgroundColor: "#ffffff",
+                }}
               >
-                {data?.orderRef}
-              </Typography>
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              Ordered on:{" "}
-              <Typography
-                component="span"
-                sx={{ fontWeight: "bold", color: "text.secondary" }}
-              >
-                {data?.orderDate}
-              </Typography>
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              Customer Name:{" "}
-              <Typography
-                component="span"
-                sx={{ fontWeight: "bold", color: "text.secondary" }}
-              >
-                {data.customer?.name}
-              </Typography>
-            </Typography>
-            <Typography variant="h6" mb={2} gutterBottom>
-              Order Type:{" "}
-              <Typography
-                component="span"
-                sx={{ fontWeight: "bold", color: "secondary.main" }}
-              >
-                {data.orderType}
-              </Typography>
-            </Typography>
+                <Typography variant="body1" gutterBottom>
+                  Order reference:{" "}
+                  <Typography
+                    component="span"
+                    variant="body2"
 
-            <Divider sx={{ marginY: 2 }} />
-            {data.orderMenuItems.map((item, index) => (
-              <Box key={index} sx={{ marginBottom: 2 }}>
+                    sx={{ fontWeight: "bold", color: "primary.main" }}
+                  >
+                    {data?.orderRef}
+                  </Typography>
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  Ordered on:{" "}
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    sx={{ fontWeight: "bold", color: "text.secondary" }}
+                  >
+                    {data?.orderDate}
+                  </Typography>
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                  Customer name:{" "}
+                  <Typography
+                    component="span"
+                    variant="body2"
+
+                    sx={{ fontWeight: "bold", color: "text.secondary" }}
+                  >
+                    {data.customer?.name}
+                  </Typography>
+                </Typography>
+                <Typography variant="body1" mb={2} gutterBottom>
+                  Order Type:{" "}
+                  <Typography
+                    component="span"
+                    variant="body2"
+
+                    sx={{ fontWeight: "bold", color: "secondary.main" }}
+                  >
+                    {data.orderType}
+                  </Typography>
+                </Typography>
+
+                <Divider sx={{ marginY: 2 }} />
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell><Typography variant="body1" fontWeight="bold">Item</Typography></TableCell>
+                        <TableCell><Typography variant="body1" fontWeight="bold">Quantity</Typography></TableCell>
+                        <TableCell><Typography variant="body1" fontWeight="bold">Price</Typography></TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {data.orderMenuItems.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell><Typography variant="body2">{item.menuItemName}</Typography></TableCell>
+                          <TableCell><Typography variant="body2">{item.quantity}</Typography></TableCell>
+                          <TableCell>
+                            <Typography variant="body2" fontWeight="bold">
+                              ${item.menuItemPrice}
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+
+                <Stack alignItems="end" spacing={1} mt={1}>
+                  <Typography variant="body1">
+                    Subtotal:{" "}
+                    <Typography component="span" variant="body2" sx={{ fontWeight: "bold", color: "primary.main" }}>
+                      ${data.orderSubTotal}
+                    </Typography>
+                  </Typography>
+                  <Typography variant="body1">
+                    Taxes:{" "}
+                    <Typography component="span" variant="body2" sx={{ fontWeight: "bold", color: "text.secondary" }}>
+                      ${data.orderTax}
+                    </Typography>
+                  </Typography>
+                  <Typography variant="body1">
+                    Total:{" "}
+                    <Typography component="span" variant="body2" sx={{ fontWeight: "bold", color: "secondary.main" }}>
+                      ${data.orderTotal}
+                    </Typography>
+                  </Typography>
+                </Stack>
+
+              </Paper>
+            </Box>
+            <Paper
+              sx={{
+                padding: 3,
+                boxShadow: 4,
+                borderRadius: 2,
+                backgroundColor: "#ffffff",
+              }}
+            >
+              {updatedOrderStatus?.map((item, index) => (
                 <Box
+                  key={index}
                   sx={{
-                    display: "grid",
-                    gridTemplateColumns: "2fr 1fr 1fr",
+                    display: "flex",
+                    alignItems: "center",
                     gap: 2,
+                    paddingY: 1,
                   }}
                 >
-                  <Typography variant="body1">{item.menuItemName}</Typography>
-                  <Typography variant="body1">{`Quantity: ${item.quantity}`}</Typography>
-                  <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                    {`$${item.menuItemPrice}`}
+                  <Box
+                    component="span"
+                    variant="body2"
+
+                    sx={{
+                      color: item.state ? "success.main" : "error.main",
+                      fontSize: 24,
+                    }}
+                  >
+                    {item.icon}
+                  </Box>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: item.state ? "success.main" : "error.main",
+                      fontWeight: "medium",
+                    }}
+                  >
+                    {item.status}
                   </Typography>
                 </Box>
-                {index < data.orderMenuItems.length - 1 && (
-                  <Divider sx={{ marginY: 1 }} />
-                )}
-              </Box>
-            ))}
+              ))}
+            </Paper>
 
-            <Divider sx={{ marginY: 2 }} />
-            <Typography variant="h6" gutterBottom>
-              Subtotal:{" "}
-              <Typography
-                component="span"
-                sx={{ fontWeight: "bold", color: "primary.main" }}
-              >
-                ${data.orderSubTotal}
-              </Typography>
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              Taxes:{" "}
-              <Typography
-                component="span"
-                sx={{ fontWeight: "bold", color: "text.secondary" }}
-              >
-                ${data.orderTax}
-              </Typography>
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              Total:{" "}
-              <Typography
-                component="span"
-                sx={{ fontWeight: "bold", color: "secondary.main" }}
-              >
-                ${data.orderTotal}
-              </Typography>
-            </Typography>
-          </Paper>
-        </Box>
-        <Paper
-  sx={{
-    padding: 3,
-    boxShadow: 4,
-    borderRadius: 2,
-    backgroundColor: "#ffffff",
-  }}
->
-  {updatedOrderStatus?.map((item, index) => (
-    <Box
-      key={index}
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 2,
-        paddingY: 1,
-      }}
-    >
-      <Box
-        component="span"
-        sx={{
-          color: item.state ? "success.main" : "error.main",
-          fontSize: 24, 
-        }}
-      >
-        {item.icon}
-      </Box>
-      <Typography
-        variant="h6"
-        sx={{
-          color: item.state ? "success.main" : "error.main",
-          fontWeight: "medium",
-        }}
-      >
-        {item.status}
-      </Typography>
+          </>
+        )
+      )}
     </Box>
-  ))}
-</Paper>
-
-      </>
-    )
-  )}
-</Box>
 
   );
 };

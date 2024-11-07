@@ -13,15 +13,15 @@ export const getThemeData = async () => {
   return response?.data?.result;
 };
 
-export const getResturantData = async (customerId, sessionKey) => {
+export const getResturantData = async ({ customerId, sessionKey, outletId, latitude, longitude, restaurantId = 5 }) => {
 
   const response = await axios.get(
     `${import.meta.env.VITE_BASE_URL}/restaurant-data/`,
     {
       params: {
-        ...(customerId ? { customerId} : { sessionKey }),
-
-        restaurantId: 5,
+        ...(customerId ? { customerId } : { sessionKey }),
+        ...(latitude || longitude ? { latitude, longitude } : { outletId }),
+        restaurantId
       },
     }
   );
@@ -32,7 +32,7 @@ export const getUserData = async (customerId) => {
   const response = await axios.get(
     `${import.meta.env.VITE_BASE_URL}/customer-profile`,
     {
-      params: {customerId },
+      params: { customerId },
     }
   );
   return response.data;
@@ -41,6 +41,13 @@ export const getUserData = async (customerId) => {
 export const handleUserLogin = async (payload) => {
   const response = await axios.post(
     `${import.meta.env.VITE_BASE_URL}/login`,
+    payload
+  );
+  return response.data;
+};
+export const updateCustomerProfile = async (payload) => {
+  const response = await axios.post(
+    `${import.meta.env.VITE_BASE_URL}/customer-profile`,
     payload
   );
   return response.data;

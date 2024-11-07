@@ -37,7 +37,7 @@ const CartItem = ({ item }) => {
         </Box>
       </Stack>
       <Box display={"flex"} gap={2} marginLeft={"1rem"}>
-        <QuantityControl {...{ quantity: item?.quantity, onlyIcon: true, updateQuantity: (quantity) => { addToCart(quantity, item?.cartMenuItemId) }, sx: { flexDirection: "column-reverse", gap: 1, borderRadius: "1rem" } }} />
+        <QuantityControl {...{ quantity: item?.quantity, isLoading, onlyIcon: true, updateQuantity: (quantity) => { addToCart(quantity, item?.cartMenuItemId) }, sx: { flexDirection: "column-reverse", gap: 1, borderRadius: "1rem" } }} />
         <Tooltip title="Delete" placement="top" arrow>
           <span>
             {isLoading ? (

@@ -9,6 +9,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer/Footer";
 import NotFoundPage from "./components/NotFoundPage";
 import CategoryContainer from "./pages/CategoryContainer";
+import useUser from "./hooks/useUser";
 
 const Home = lazy(() => import('./pages/Home/Home'));
 const Cart = lazy(() => import('./pages/Cart/Cart'));
@@ -20,14 +21,12 @@ const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const CategoryViewPage = lazy(() => import('./CategoryViewPage'));
 
 const App = () => {
-  const { theme, isLoading } = useApp();
+  const user=useUser()
+const { theme, isLoading } = useApp();
 
   if (isLoading) {
     return <LayoutLoader />;
-  }
-
-  
-  const normalRoutes = [
+  }const normalRoutes = [
     { path: "/", element: <Home /> },
     { path: "/cart", element: <Cart /> },
     { path: "/category", element: <CategoryContainer /> },

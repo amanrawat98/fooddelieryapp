@@ -10,11 +10,12 @@ import { createTransform, persistReducer } from "redux-persist";
 
 const selectedOutletTransform = createTransform(
   (inboundState) => ({
-    selectedOutlet: inboundState.selectedOutlet,// only persist selectedOutlet form outlet slice
+    selectedOutlet: inboundState.selectedOutlet,
+    isUserLogin: inboundState.isUserLogin,// only persist selectedOutlet,isUserLogin form outlet,user slice
     // anotherPersistedState: inboundState.anotherPersistedState,
   }),
   (outboundState) => outboundState, 
-  { whitelist: ['outlet'] } 
+  { whitelist: ['outlet',"user"] } 
 );
 const persistConfig = {
   key: "root",

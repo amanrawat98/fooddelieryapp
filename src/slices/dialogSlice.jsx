@@ -32,10 +32,13 @@ const dialogSlice = createSlice({
             state.className = '';
             state.style = {};
             state.sx = {};
-            state.isNoContentPadding=false;
+            state.isNoContentPadding = false;
         },
+        setDialogTitle: (state, action) => {
+            state.title = action.payload
+        }
     },
 });
 
-export const { openDialog, closeDialog } = dialogSlice.actions;
+export const { openDialog, closeDialog,setDialogTitle } = dialogSlice.actions;
 export default dialogSlice.reducer;
