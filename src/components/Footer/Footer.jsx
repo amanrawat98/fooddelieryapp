@@ -56,6 +56,7 @@ const Footer = () => {
               sx={{
                 display: "flex",
                 gap: 2,
+                width:"max-content"
               }}
             >
               <Button

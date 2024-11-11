@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { resetUserState } from "../../slices/userSlice";
@@ -39,7 +39,7 @@ const Header = () => {
   const handleLoginSignUp = (type) => {
     const dialogComponent = {
       login: { content: <Login />, title: "Login" },
-      signup: { content: <SignUp />, title: "Sign Up" }
+      signUp: { content: <SignUp />, title: "Sign Up" }
     }
     dispatch(openDialog({ ...dialogComponent?.[type] }))
   }
@@ -53,7 +53,7 @@ const Header = () => {
     <Box sx={{ backgroundColor: "primary.dark", py: "10px" }}>
       <ProfileMenu {...{ anchorEl, handleClose, handleLogout }} />
       <Box sx={{ px: 4 }}>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
+        <Toolbar sx={{ justifyContent: 'space-between', gap: 1 }}>
           <Link to="/">
             <img
               src={theme?.appLogoImageUrl}
@@ -62,48 +62,51 @@ const Header = () => {
             />
           </Link>
 
-          <Stack direction="row" alignItems="center" spacing={4}>
-            <IconButton onClick={toggleDrawer(true)} >
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={{ xs: 1, sm: 2, md: 4 }} // Responsive spacing based on screen size
+            sx={{ width: '100%', justifyContent: { xs: 'space-between', sm: 'flex-end' } }}
+          >
+            <IconButton onClick={toggleDrawer(true)} sx={{ p: { xs: 0.5, sm: 1 } }}>
               <Badge badgeContent={cartCount || "0"} color="error">
-                <ShoppingCart sx={{ color: 'primary.light' }} />
+                <ShoppingCart sx={{ color: 'primary.light', fontSize: { xs: 20, sm: 24, md: 28 } }} />
               </Badge>
             </IconButton>
-            <Stack direction="row" spacing={3}>
+            <Stack direction="row" spacing={{ xs: 1, sm: 2, md: 3 }} alignItems="center">
               {!isUserLogin ? (
                 <>
                   <Button
                     variant="contained"
                     onClick={() => handleLoginSignUp("login")}
+                    sx={{ minWidth: { xs: 60, sm: 80 }, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                   >
                     Login
                   </Button>
                   <Button
                     variant="outlined"
-                    onClick={() => handleLoginSignUp("signup")}
+                    onClick={() => handleLoginSignUp("signUp")}
+                    sx={{ minWidth: { xs: 60, sm: 80 }, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                   >
                     Sign up
                   </Button>
                 </>
               ) : (
-                <>
-                  {/* <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </Button> */}
-                  <Avatar
-                    alt="User Avatar"
-                    src={userData?.customerImageUrl}
-                    id="basic-button"
-                    aria-controls={open ? 'basic-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? 'true' : undefined}
-                    onClick={handleClick}
-                    sx={{ cursor: 'pointer', width: 36, height: 36, ml: 2 }}
-                  />
-                </>
+                <Avatar
+                  alt="User Avatar"
+                  src={userData?.customerImageUrl}
+                  id="basic-button"
+                  aria-controls={open ? 'basic-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? 'true' : undefined}
+                  onClick={handleClick}
+                  sx={{
+                    cursor: 'pointer',
+                    width: { xs: 28, sm: 36 },
+                    height: { xs: 28, sm: 36 },
+                    ml: { xs: 1, sm: 2 },
+                  }}
+                />
               )}
             </Stack>
           </Stack>
