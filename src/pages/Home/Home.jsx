@@ -8,7 +8,7 @@ import OutletContainer from "../../components/OutletContainer";
 
 const Home = () => {
   const { selectedOutletData} = useSelector((state) => state?.outlet);
-const filteredMenuCategories = selectedOutletData?.menuCategories?.filter((val) => val?.isFeatured)
+const filteredMenuCategories = selectedOutletData?.menuCategories?.filter((val) => val?.isFeatured||true)
   return (
     <Box position="relative">
       <OutletContainer />

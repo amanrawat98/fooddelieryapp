@@ -1,7 +1,7 @@
 // MenuCard.js
 import React from 'react';
-import { Card, CardMedia,  Box, IconButton,  Chip, Rating, Tooltip } from '@mui/material';
-import { AddShoppingCart,FavoriteBorder } from '@mui/icons-material';
+import { Card, CardMedia, Box, IconButton, Chip, Rating, Tooltip } from '@mui/material';
+import { AddShoppingCart, FavoriteBorder } from '@mui/icons-material';
 import useCardModal from './useCardModal';
 import veg from "../../../assets/veg.png"
 import nonVeg from "../../../assets/non_veg.png"
@@ -37,12 +37,12 @@ const SmallCard = ({ item, menuCategoryId }) => {
                             transition: "transform 0.3s ease-in-out",
                             height: "100%",
                             width: "100%",
-                            aspectRatio: 3/2,
+                            aspectRatio: 3 / 2,
                             objectFit: "cover",
                         }}
                     />
 
-                   {false? <Box
+                    {false ? <Box
                         sx={{
                             position: "absolute",
                             top: 0,
@@ -62,7 +62,7 @@ const SmallCard = ({ item, menuCategoryId }) => {
                                 color: "primary.light",
                                 borderRadius: "5px",
                                 fontWeight: "semibold",
-                                width:"fit-content"
+                                width: "fit-content"
                             }}
                         />
                         <Chip
@@ -72,10 +72,10 @@ const SmallCard = ({ item, menuCategoryId }) => {
                                 backgroundColor: "rgba(0, 0, 0, 0.7)",
                                 color: "primary.light",
                                 borderRadius: "5px",
-                                width:"fit-content"
+                                width: "fit-content"
                             }}
                         />
-                    </Box>:null}
+                    </Box> : null}
                 </Card>
             </Box>
             <Box sx={{ display: 'flex', height: "100%", flex: 1, padding: "1rem", justifyContent: "space-between", gap: 2 }}>
@@ -84,11 +84,18 @@ const SmallCard = ({ item, menuCategoryId }) => {
                     justifyContent: "space-between",
                     flexDirection: "column",
                 }}>
-                    <Box sx={{ color: "secondary.main", fontSize: "1rem",display:"flex" }}>
+                    <Box sx={{ color: "secondary.main", fontSize: "1rem", display: "flex" }}>
                         <span style={{ marginRight: "4px" }}>{item?.name}</span>
-                        <Box width={"1.5rem"}>
-                            <img src={item?.mealType === "non-veg"?nonVeg:veg} alt="My PNG" />
-                        </Box>
+                        <Box
+                            sx={{
+                                width: '1.5rem',
+                                height: '1.5rem',
+                                backgroundImage: `url(${item?.mealType === "non-veg" ? nonVeg : veg})`,
+                                backgroundSize: 'contain',
+                                backgroundPosition: 'center',
+                                backgroundRepeat: 'no-repeat',
+                            }}
+                        />
                     </Box>
                     <Box sx={{ color: "secondary.main", fontSize: ".8rem", display: "flex", alignItems: "center" }}>
                         <span>(3)</span>

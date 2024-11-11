@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setThemeData } from "../slices/themeSlice";
 import { createDynamicTheme } from "../theme";
-import { getResturantData, getThemeData } from "../utility/apiServices";
+import { getRestaurantData as getRestaurantData, getThemeData } from "../utility/apiServices";
 import { useSession } from "./useSession";
 import { setRestaurantOutlets, setSelectedOutletData } from "../slices/outletSlice";
 import { setOutletData, setRestaurantData } from "../slices/restaurantDataSlice";
@@ -46,7 +46,7 @@ const useApp = () => {
       await createSession();
     }
 
-    return getResturantData({
+    return getRestaurantData({
       customerId: isUserLogin, sessionKey: sessionId, restaurantId: 5, outletId: selectedOutlet,
       //  latitude, longitude, 
     });

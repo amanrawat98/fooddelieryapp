@@ -126,11 +126,18 @@ const MenuCard = ({ item, menuCategoryId }) => {
 
 
       <CardContent sx={{ padding: "0 0.7rem", display: 'flex', flexDirection: "column", gap: "4px" }}>
-        <Box sx={{ color: "secondary.main", fontSize: "1rem", display:"flex"}}>
+        <Box sx={{ color: "secondary.main", fontSize: "1rem", display: "flex" }}>
           <span style={{ marginRight: "4px" }}>{item?.name}</span>
-          <Box width={"1.5rem"}>
-            <img src={item?.mealType === "non-veg" ? nonVeg : veg} alt="My PNG"/>
-          </Box>
+          <Box
+            sx={{
+              width: '1.5rem',
+              height: '1.5rem',
+              backgroundImage: `url(${item?.mealType === "non-veg" ? nonVeg : veg})`,
+              backgroundSize: 'contain',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+            }}
+          />
         </Box>
         <Box sx={{ color: "secondary.main", fontSize: ".8rem", display: "flex", alignItems: "center" }}>
           <span>(3)</span>
