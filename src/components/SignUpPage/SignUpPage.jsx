@@ -8,10 +8,11 @@ import { emailRegex, phoneRegex } from "../../constants";
 import useCustomToast from "../../hooks/Toast/useToast";
 import { closeDialog, openDialog } from "../../slices/dialogSlice";
 import Login from "../Login";
+import useAuth from "../../hooks/useAuth";
 
 const SignUp = () => {
   const dispatch = useDispatch()
-  const [loading, setLoading] = useState(false);
+  const {signUpMutation} = useAuth();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const restaurantData = useSelector((state) => state.restaurant.restaurantData);
   const toast = useCustomToast();
@@ -42,30 +43,15 @@ const SignUp = () => {
     role: "customer",
   };
 
-  const handleUserSignUp = async (payload) => {
-    try {
-      setLoading(true)
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/signup`,
-        payload
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error during sign up:", error);
-      toast.error(<div>Some thing went wrong form our side</div>)
-    }
-    finally {
-      setLoading(false)
-    }
-  };
+  
 
   const handleClose = () => {
     dispatch(closeDialog());
   };
   const onSubmit = async (data) => {
     const signUpDetails = { ...initialSignUpData, ...data };
-    await handleUserSignUp(signUpDetails);
-    handleClose()
+     signUpMutation.mutate(signUpDetails);
+   
   };
 
 
@@ -80,7 +66,7 @@ const SignUp = () => {
           helperText={errors.firstName ? errors.firstName.message : ""}
           fullWidth
           variant="outlined"
-          sx={{mb: 2}}
+          sx={{ mb: 2 }}
         />
         <TextField
           type="text"
@@ -90,7 +76,7 @@ const SignUp = () => {
           helperText={errors.lastName ? errors.lastName.message : ""}
           fullWidth
           variant="outlined"
-          sx={{mb: 2}}        />
+          sx={{ mb: 2 }} />
         <TextField
           type="email"
           placeholder="Email"
@@ -105,7 +91,7 @@ const SignUp = () => {
           helperText={errors.email ? errors.email.message : ""}
           fullWidth
           variant="outlined"
-          sx={{mb: 2}}        />
+          sx={{ mb: 2 }} />
         <TextField
           type="password"
           placeholder="Password"
@@ -114,7 +100,7 @@ const SignUp = () => {
           helperText={errors.password ? errors.password.message : ""}
           fullWidth
           variant="outlined"
-          sx={{mb: 2}}        />
+          sx={{ mb: 2 }} />
         <TextField
           type="tel"
           placeholder="Phone"
@@ -129,15 +115,15 @@ const SignUp = () => {
           helperText={errors.phone ? errors.phone.message : ""}
           fullWidth
           variant="outlined"
-          sx={{mb: 2}}        />
+          sx={{ mb: 2 }} />
         <Typography
           variant="body2"
           align="center"
           sx={{ cursor: "pointer", color: "secondary.main" }}
-          onClick={() =>dispatch(openDialog({ content: <Login />, title: "Login" }))
-        }
+          onClick={() => dispatch(openDialog({ content: <Login />, title: "Login" }))
+          }
         >
-          Already have an account? <Box component={"span"} sx={{color:"primary.main"}}>Log in</Box>
+          Already have an account? <Box component={"span"} sx={{ color: "primary.main" }}>Log in</Box>
         </Typography>
 
         <Box
@@ -153,7 +139,7 @@ const SignUp = () => {
             type="button"
             variant="outlined"
             sx={{
-            
+
               width: "45%",
             }}
             onClick={handleClose}
@@ -165,13 +151,13 @@ const SignUp = () => {
             type="submit"
             variant="contained"
             fullWidth
-            disabled={loading}
+            disabled={signUpMutation?.isLoading}
             sx={{
-             
+
               width: "45%",
             }}
           >
-            {loading ? (
+            {signUpMutation?.isLoading ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
               "Create Account"

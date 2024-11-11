@@ -1,33 +1,26 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserLoginStatus } from "../../slices/userSlice";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { emailRegex } from "../../constants";
 import { TextField, Button, Typography, CircularProgress, } from "@mui/material";
 import { useForm } from "react-hook-form";
 import useCustomToast from "../../hooks/Toast/useToast";
 import { closeDialog, setDialogTitle } from "../../slices/dialogSlice";
-import { useSession } from "../../hooks/useSession";
-import { handleUserLogin } from "../../utility/apiServices";
-import { useMutation } from "react-query";
+import useAuth from "../../hooks/useAuth";
 
 const Login = () => {
   const dispatch = useDispatch();
   const toast = useCustomToast();
+  const {loginMutation} = useAuth();
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const resturantData = useSelector((state) => state?.restaurant?.restaurantData);
-  const { clearSession, } = useSession()
+  const restaurantData = useSelector((state) => state?.restaurant?.restaurantData);
   let restaurantId;
-  if (resturantData?.result?.restaurantId) {
-    restaurantId = resturantData?.result?.restaurantId;
+  if (restaurantData?.result?.restaurantId) {
+    restaurantId = restaurantData?.result?.restaurantId;
   }
 
-  const navigate = useNavigate();
   const [page, setPage] = useState("login");
-  const [loading, setLoading] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
-  const loginMutation = useMutation(handleUserLogin);
   const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onBlur',
     defaultValues: {
@@ -39,7 +32,6 @@ const Login = () => {
   });
 
   const onSubmit = async (data) => {
-    setLoading(true);
  const payload = {
       ...(data.email ? { email: data.email } : { phone: data.phone }),
       password: data.password,
@@ -48,28 +40,8 @@ const Login = () => {
       outletId: cartItems?.outletId || null,
       temporaryCartId: cartItems?.cartId || null,
     };
-
-    loginMutation.mutate(payload, {
-      onSuccess: (restaurantDataVal) => {
-        const { result, customerCart, restaurantData } = restaurantDataVal || {};
-
-        if (restaurantDataVal.detail) {
-          dispatch(setUserLoginStatus(result?.customerId));
-          // queryClient.invalidateQueries("user-data"); 
-          clearSession();
-          handleCloseDialog();
-          navigate("/");
-          toast.success(<span>Login successfully</span>);
-        }
-      },
-      onError: (error) => {
-        toast.error(<span>Something went wrong</span>);
-        console.error("Login failed:", error);
-      },
-      onSettled: () => {
-        setLoading(false);
-      },
-    });
+    loginMutation.mutate(payload);
+    
   };
   const handleCloseDialog = () => {
     dispatch(closeDialog())
@@ -138,12 +110,12 @@ const Login = () => {
             type="submit"
             variant="contained"
             fullWidth
-            disabled={loading}
+            disabled={loginMutation?.isLoading}
             sx={{
              mb: 2,
             }}
           >
-            {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
+            {loginMutation?.isLoading ? <CircularProgress size={24} color="inherit" /> : "Login"}
           </Button>
           <Button
             type="button"
@@ -254,12 +226,12 @@ const Login = () => {
             type="submit"
             variant="contained"
             fullWidth
-            disabled={loading}
+            disabled={loginMutation?.isLoading}
             sx={{
               mb: 2,
             }}
           >
-            {loading ? <CircularProgress size={24} color="primary.main" /> : "Reset Password"}
+            {loginMutation?.isLoading ? <CircularProgress size={24} color="primary.main" /> : "Reset Password"}
           </Button>
           <Button
             type="button"
