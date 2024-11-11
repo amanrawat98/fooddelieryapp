@@ -1,124 +1,21 @@
-import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import React  from "react";
 import { List, ListItem, ListItemText, Paper, TextField, Typography, Box, Tooltip } from "@mui/material";
 import { LocationOn } from "@mui/icons-material";
-import debounce from "lodash/debounce";
+import useLocationSearch from "./useLocationSearch";
 
 const SearchLocationInput = ({handleLocationAddress}) => {
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  const [showList, setShowList] = useState(false);
+  const {
+    query,
+    suggestions,
+    showList,
+    setQuery,
+    setShowList,
+    getCurrentLocation,
+    handleSuggestionClick,
+  } = useLocationSearch(handleLocationAddress);
 
-  const fetchSuggestions = async (query) => {
-    try {
-      const response = await axios.get(`/api/maps/api/place/autocomplete/json`, {
-        params: {
-          input: query,
-          key: import.meta.env.VITE_GOOGLE_PLACE,
-        },
-      });
-     
-      setSuggestions(response.data.predictions ? response.data.predictions.map(prediction => ({
-        description: prediction.description,
-        place_id: prediction.place_id,
-      })) : []);
-    } catch (error) {
-      console.error("Error fetching suggestions:", error);
-      setSuggestions([]);
-    }
-  };
 
-  const debouncedFetchSuggestions = useCallback(
-    debounce(fetchSuggestions, 300),
-    []
-  );
-
-  useEffect(() => {
-    if (query && showList) {
-      debouncedFetchSuggestions(query);
-    } else {
-      setSuggestions([]);
-    }
-    return () => debouncedFetchSuggestions.cancel();
-  }, [query, showList, debouncedFetchSuggestions]);
-
-  const getCurrentLocation = async () => {
-    if (!navigator.geolocation) {
-      console.error("Geolocation is not supported by this browser.");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      const { latitude, longitude } = position.coords;
-      try {
-        const response = await axios.get(`/api/maps/api/geocode/json`, {
-          params: {
-            latlng: `${latitude},${longitude}`,
-            key: import.meta.env.VITE_GOOGLE_PLACE,
-          },
-        });
-        if (response.data.results.length > 0) {
-          setQuery(response.data.results[0].formatted_address);
-          setSuggestions([]);
-        } else {
-          console.error("No address found for the current location.");
-        }
-      } catch (error) {
-        console.error("Error fetching current location:", error);
-      }
-    });
-  };
-
-  const handleSuggestionClick = async (suggestion) => {
-    setQuery(suggestion.description);
-    setSuggestions([]);
-    setShowList(false);
-
-    try {
-      
-      const response = await axios.get(`/api/maps/api/place/details/json`, {
-        params: {
-          place_id: suggestion.place_id, 
-          key: import.meta.env.VITE_GOOGLE_PLACE,
-        },
-      });
-      const result = response.data.result;
-
-     
-      const addressTypes = {
-        country: "country",
-        state: "administrative_area_level_1",
-        city: "locality",
-        street: "route",
-        landmark: "sublocality_level_1",
-        postalCode:"postal_code"
-      };
-
-      const addressComponents = result.address_components.reduce((acc, component) => {
-        component.types.forEach((type) => {
-          if (Object.values(addressTypes).includes(type)) {
-            const key = Object.keys(addressTypes).find((key) => addressTypes[key] === type);
-            if (key) {
-              acc[key] = component.long_name;
-            }
-          }
-        });
-        return acc;
-      }, {});
-         
-      
-      handleLocationAddress({
-        ...addressComponents,
-        fullAddress: result.formatted_address, 
-        name:result.name,
-        geometry:result.geometry,
-        vicinity:result.vicinity
-      });
-    } catch (error) {
-      console.error("Error fetching address details:", error);
-    }
-  };
-
+  
   return (
     <div style={{ position: "relative" }}>
       <TextField

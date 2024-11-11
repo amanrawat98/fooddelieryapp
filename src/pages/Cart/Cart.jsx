@@ -11,9 +11,9 @@ import { Box, Button, Container, Divider, FormControlLabel, Paper, Radio, RadioG
 import GoBackButton from "../../components/Common/Buttons/GoBackButton";
 import { openDialog } from "../../slices/dialogSlice";
 import Login from "../../components/Login";
-import { Edit, LocationOn } from "@mui/icons-material";
 import AddressContainer from "./AddressContainer";
 import CartItems from "./CartItems";
+import useLocationSearch from "../../components/mapApi.jsx/useLocationSearch";
 
 export const deliveryFee = 2;
 
@@ -23,7 +23,7 @@ const Cart = ({ toggleDrawer }) => {
   const cartitems = useSelector((state) => state?.cart?.cartItems);
   const { userData, isUserLogin } = useSelector((state) => state?.user);
   const address = userData?.addresses || [];
-
+  const { isAddressInRange } = useLocationSearch()
   const [selectedAddress, setSelectedAddress] = useState({ ...address?.[0] });
   const [deliveryType, setDeliveryType] = useState("takeaway");
   const [clientSecret, setClientSecret] = useState("");
@@ -55,7 +55,13 @@ const Cart = ({ toggleDrawer }) => {
         handleNotLogin();
         return;
       }
-
+      const defaultAddress = address?.find(address => address?.isDefault);
+      const formedAddress = `${defaultAddress.landmark}, ${defaultAddress.areaLocality}`
+      const isAddressInOutletArea = await isAddressInRange(formedAddress)
+        if(!isAddressInOutletArea){
+          toast.error(<span>We cannot process your order in this area at the moment. Please try a different location.</span>);
+          return
+        }
       const payload = { outletId, cartId };
       const { clientSecret, paymentIntentId } = await handleCreatePaymentIntent(payload);
       setClientSecret(clientSecret);
@@ -91,9 +97,9 @@ const Cart = ({ toggleDrawer }) => {
       {/* <GoBackButton /> */}
       <Box sx={{ position: 'relative', p: 3 }}>
         <ToastContainer position="top-center" />
-        <CartItems   {...{cartitems,cartId,cartItems}}/>
-       
-      
+        <CartItems   {...{ cartitems, cartId, cartItems }} />
+
+
         <Box sx={{ mt: 3, px: 2 }}>
           <RadioGroup
             row
@@ -135,7 +141,7 @@ const Cart = ({ toggleDrawer }) => {
           </Box>
         </Box>
         {deliveryType === "delivery" && (
-          <AddressContainer {...{ selectedAddress,  handleAddAddress }} />
+          <AddressContainer {...{ selectedAddress, handleAddAddress }} />
         )}
 
         {clientSecret && (

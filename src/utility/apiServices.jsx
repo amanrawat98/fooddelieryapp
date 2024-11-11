@@ -45,6 +45,13 @@ export const handleUserLogin = async (payload) => {
   );
   return response.data;
 };
+export const handleUserSignUp = async (payload) => {
+  const response = await axios.post(
+    `${import.meta.env.VITE_BASE_URL}/signup`,
+    payload
+  );
+  return response.data;
+};
 export const updateCustomerProfile = async (payload) => {
   const response = await axios.post(
     `${import.meta.env.VITE_BASE_URL}/customer-profile`,
