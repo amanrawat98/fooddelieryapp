@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import debounce from "lodash/debounce";
+import { useSelector } from "react-redux";
 
 const useLocationSearch = (handleLocationAddress) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showList, setShowList] = useState(false);
-
+  const { selectedOutletData } = useSelector((state) => state?.outlet);
+  const { deliveryRadiusKm, latitude, longitude } = selectedOutletData;
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const radlat1 = Math.PI * lat1 / 180;
     const radlat2 = Math.PI * lat2 / 180;
@@ -20,7 +22,7 @@ const useLocationSearch = (handleLocationAddress) => {
   };
 
 
-  const isAddressInRange = async (address, lat=30.89607849999999, lon=75.8130765, range=5) => {
+  const isAddressInRange = async (address, lat = latitude, lon = longitude, range = deliveryRadiusKm) => {
     try {
       const geocodeResponse = await axios.get(`/api/maps/api/geocode/json`, {
         params: {
@@ -37,7 +39,7 @@ const useLocationSearch = (handleLocationAddress) => {
 
         return distance <= range;
       }
-      return false; 
+      return false;
     } catch (error) {
       console.error("Error geocoding address:", error);
       return false;
@@ -90,7 +92,7 @@ const useLocationSearch = (handleLocationAddress) => {
             },
           });
           if (response.data.results.length > 0) {
-            
+
             setQuery(response.data.results?.[0].formatted_address);
             setShowList(true);
             setSuggestions([]);
@@ -140,8 +142,8 @@ const useLocationSearch = (handleLocationAddress) => {
         return acc;
       }, {});
 
-     
-     
+
+
 
       handleLocationAddress({
         ...addressComponents,
@@ -154,9 +156,9 @@ const useLocationSearch = (handleLocationAddress) => {
       console.error("Error fetching address details:", error);
     }
   };
- 
 
- 
+
+
   return {
     query,
     suggestions,
