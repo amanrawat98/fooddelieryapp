@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from "react";
-import { Outlet, Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { Box, ThemeProvider } from "@mui/material";
 import LayoutLoader from "./components/Loading/LayoutLoader";
 import CommonDialog from "./components/Common/CommonDialog";
@@ -21,12 +21,20 @@ const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const CategoryViewPage = lazy(() => import('./CategoryViewPage'));
 
 const App = () => {
-  const user=useUser()
-const { theme, isLoading } = useApp();
+  const user = useUser()
+  const { theme, isLoading } = useApp();
+  const location = useLocation();
+
+  useEffect(() => {
+    const contentArea = document.getElementById('content-area');
+    if (contentArea) {
+      contentArea.scrollTop = 0;
+    }
+  }, [location]);
 
   if (isLoading) {
     return <LayoutLoader />;
-  }const normalRoutes = [
+  } const normalRoutes = [
     { path: "/", element: <Home /> },
     { path: "/cart", element: <Cart /> },
     { path: "/category", element: <CategoryContainer /> },
@@ -46,9 +54,11 @@ const { theme, isLoading } = useApp();
         <Route path="/" element={
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             <Header />
-            <Box sx={{
-              flex: 1, overflowY: 'auto', display: "flex", flexDirection: "column"
-            }}>
+            <Box
+              id="content-area"
+              sx={{
+                flex: 1, overflowY: 'auto', display: "flex", flexDirection: "column"
+              }}>
               <Box sx={{ flex: 1 }}>
                 <Suspense fallback={<LayoutLoader />}>
                   <Outlet />
@@ -58,12 +68,12 @@ const { theme, isLoading } = useApp();
             </Box>
           </Box>
         }>
-         
+
           {normalRoutes.map(route => (
             <Route key={route.path} path={route.path} element={route.element} />
           ))}
 
-          
+
           <Route path="/profile" element={
             <ProtectedRoutes>
               <Profile />
